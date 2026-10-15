@@ -1,4 +1,12 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2316273a%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23e5b65f%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2015%2016%207l10%208v10H6z%22%2F%3E%3Cpath%20d%3D%22M10%2021l4-4%203%202.5%205-5.5%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+<meta property="og:title" content="Bilan Locatif">
+<meta property="og:description" content="Cash-flow, rendements, crédit, fiscalité et revente de ton investissement locatif.">
 <title>Bilan Locatif</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Analyse ton investissement locatif comme un pro : cash-flow, rendements, crédit, fiscalité (LMNP, foncier, SCI à l'IS, Jeanbrun), revente et plus-value, TRI.">
@@ -6,6 +14,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
 <style>
 /* Layout : établi à deux colonnes. Bandeau d'indicateurs collant ; à gauche les hypothèses (rail de 7 sections + formulaire), à droite les analyses en onglets. */
 :root{
@@ -104,8 +114,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* Établi */
 .bench{display:grid;grid-template-columns:minmax(0,580px) minmax(0,1fr);gap:16px;align-items:start}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);min-width:0}
-.hyp{display:grid;grid-template-columns:184px minmax(0,1fr);position:sticky;top:calc(var(--band-h,118px) + 12px);max-height:calc(100vh - var(--band-h,118px) - 24px);overflow:hidden}
-.rail{border-right:1px solid var(--line);padding:10px 8px;display:flex;flex-direction:column;gap:2px;overflow:auto;background:var(--surface-2);border-radius:var(--r) 0 0 var(--r)}
+/* La carte des hypothèses reste visible à côté des analyses : sa hauteur est bornée à l'écran et le formulaire défile à l'intérieur.
+   grid-template-rows: minmax(0,1fr) est indispensable, sinon la rangée prend la hauteur du contenu et le bas du formulaire est coupé. */
+.hyp{display:grid;grid-template-columns:184px minmax(0,1fr);grid-template-rows:minmax(0,1fr);position:sticky;top:calc(var(--band-h,118px) + 12px);height:calc(100vh - var(--band-h,118px) - 24px);height:calc(100dvh - var(--band-h,118px) - 24px);min-height:420px;overflow:hidden}
+.rail{border-right:1px solid var(--line);padding:10px 8px;display:flex;flex-direction:column;gap:2px;overflow:auto;min-height:0;background:var(--surface-2);border-radius:var(--r) 0 0 var(--r)}
 .rail-h{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:4px 10px 8px}
 .rail button{display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:9px;align-items:center;text-align:left;border:0;background:transparent;border-radius:9px;padding:8px 9px;cursor:pointer;color:var(--muted)}
 .rail button:hover{background:var(--surface-3)}
@@ -114,7 +126,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .rail .m{font-size:11.8px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
 .rail button[aria-selected="true"]{background:var(--surface);box-shadow:0 1px 2px rgba(20,32,48,.08),inset 0 0 0 1px var(--line)}
 .rail button[aria-selected="true"] .ic,.rail button[aria-selected="true"] .t{color:var(--accent-ink)}
-.form{padding:16px 20px 22px;overflow:auto;min-width:0;overscroll-behavior:contain}
+.form{padding:16px 20px 40px;overflow-y:auto;min-width:0;min-height:0;scrollbar-gutter:stable;
+  background:linear-gradient(var(--surface) 30%,transparent) center top/100% 28px no-repeat local,linear-gradient(transparent,var(--surface) 70%) center bottom/100% 28px no-repeat local,
+  radial-gradient(farthest-side at 50% 0,rgba(20,32,48,.13),transparent) center top/100% 10px no-repeat scroll,radial-gradient(farthest-side at 50% 100%,rgba(20,32,48,.13),transparent) center bottom/100% 10px no-repeat scroll;background-color:var(--surface)}
 .form h2{font-family:var(--f-display);font-size:20px;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
 .form .lead{margin:2px 0 10px;color:var(--muted);font-size:13px;max-width:58ch}
 .form h3{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:18px 0 0;padding-top:12px;border-top:1px solid var(--line)}
@@ -176,6 +190,52 @@ textarea.txt{min-height:84px;resize:vertical}
 .seg2{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;margin-top:6px}
 .seg2 button{border:0;background:transparent;border-radius:8px;padding:5px 11px;font-weight:600;font-size:12.5px;color:var(--muted);cursor:pointer}
 .seg2 button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+
+/* Estimations : un champ vide affiche en gris la valeur estimée ; les repères bas / marché / haut s'écrivent en petit dessous */
+.inp input::placeholder{color:var(--faint);opacity:1;font-weight:500}
+.inp .tag{display:none;margin-right:6px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-ink);background:var(--accent-soft);border-radius:999px;padding:2px 7px;white-space:nowrap}
+.inp.est{border-style:dashed}
+.inp.est .tag{display:inline-block}
+.tiers{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin-top:7px}
+.tiers .tl{align-self:center;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--faint);font-weight:600;margin-right:2px}
+.tier{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:4px 10px 5px;cursor:pointer;text-align:left;line-height:1.2;font:inherit}
+.tier small{font-size:10.5px;font-weight:600;color:var(--faint);white-space:nowrap}
+.tier b{font-size:12.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tier:hover{border-color:var(--line-strong)}
+.tier:hover b{color:var(--ink)}
+.tier.used{border-style:dashed;border-color:var(--accent)}
+.tier[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.tier[aria-pressed="true"] b{color:var(--accent-ink)}
+.estbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:-4px 0 14px;padding:9px 14px;border-radius:12px;border:1px dashed var(--accent);background:var(--accent-soft);font-size:13px;color:var(--ink)}
+.estbar .ei{font-family:var(--f-display);font-weight:800;font-size:19px;line-height:1;color:var(--accent-ink)}
+.estbar .ek{display:flex;flex-wrap:wrap;gap:5px}
+.estbar .ek button{border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer}
+.estbar .ek button:hover{border-color:var(--accent);color:var(--accent-ink)}
+.estbar .eh{color:var(--muted);font-size:12px}
+.estbar.manque{border-color:var(--warn);background:var(--warn-soft)}
+.estbar.manque .ei{color:var(--warn)}
+.inp .tag .t-req{display:none}
+.inp.req{border-style:dashed;border-color:var(--warn)}
+.inp.req .tag{display:inline-block;color:var(--warn);background:var(--warn-soft)}
+.inp.req .tag .t-est{display:none}
+.inp.req .tag .t-req{display:inline}
+.aide{margin-top:14px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);display:grid;gap:8px;font-size:13px;line-height:1.5}
+.aide .rt{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.aide p{margin:0;color:var(--muted)}
+.aide p b{color:var(--ink);font-weight:600}
+.aide a{color:var(--accent-ink);font-weight:600}
+.attente{display:grid;gap:14px;max-width:640px;margin:10px auto;padding:26px 24px;border:1px dashed var(--line-strong);border-radius:14px}
+.attente h3{margin:0;font-family:var(--f-display);font-size:21px;letter-spacing:-.01em;text-wrap:balance}
+.attente .sub{margin:0;color:var(--muted)}
+.attente ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.attente li{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:10px;background:var(--surface-2)}
+.attente li div{min-width:0}
+.attente li small{display:block;color:var(--muted);font-size:12.5px}
+.attente li.ok{opacity:.65}
+.attente li .ok-v{font-weight:700;color:var(--pos);font-variant-numeric:tabular-nums}
+.flag{font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--line);margin-top:4px}
+.flag.critique{border-color:var(--neg);color:var(--neg)}
+.flag.attention{border-color:var(--warn);color:var(--warn)}
 
 /* Analyses */
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:4px 12px 0;overflow-x:auto;scrollbar-width:thin}
@@ -298,7 +358,8 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
 }
 @media (max-width:1180px){
   .bench{grid-template-columns:1fr}
-  .hyp{position:static;max-height:none}
+  .hyp{position:static;height:auto;min-height:0;grid-template-rows:none}
+  .form{overflow:visible}
 }
 @media (max-width:760px){
   .band{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -402,6 +463,8 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
     </div>
   </section>
 
+  <div class="estbar" id="estbar" hidden></div>
+
   <main class="bench">
     <section class="card hyp" aria-label="Hypothèses">
       <nav class="rail" id="rail" role="tablist" aria-orientation="vertical" aria-label="Sections des hypothèses"></nav>
@@ -492,11 +555,26 @@ const DEFAULT_SIM = {
   // Revente
   reventeMode: "auto", reventeFixe: 0, detention: 10, revalo: 3, valeurTravauxMode: "nondefini", valeurTravaux: 0,
   fraisRevente: 0, ira: false, pvFrais: "auto", pvTravaux: "auto", actualisation: 1,
-  // Autres
-  adresse: "", surface: 50, note: "",
+  // Le bien
+  ville: "", dept: "", adresse: "", typeBien: "appartement", etat: "bon", dpe: "", surface: 50, note: "",
   // Affichage
   anneeRef: 2
 };
+
+// Champs qu'on peut laisser vides : le moteur utilise alors un repère standard (sauf surface, prix et loyer, à chercher soi-même)
+const NULLABLES = ["surface", "prix", "agence", "travaux", "travauxMois", "mobilier", "plans", "apport", "duree", "taux", "tauxAss", "courtage", "dossier", "caution", "differeMois",
+  "loyer", "chargesLoc", "occupation", "evolLoyer", "nuitee", "occupationCD", "commission", "conciergerie", "courantes", "cfe", "evolCharges",
+  "terrain", "dureeBati", "dureeMobilier", "dureeTravaux", "revenusFoyer", "parts", "detention", "revalo", "valeurTravaux", "fraisRevente", "actualisation"];
+const CHARGES = ["copro", "tf", "gli", "gerance", "comptable", "pno", "autres"];
+const _vide = v => v === null || v === "" || (typeof v === "number" && Number.isNaN(v));
+// Nouvelle simulation : rien n'est pré-rempli
+const NOUVELLE_SIM = (() => {
+  const s = JSON.parse(JSON.stringify(DEFAULT_SIM));
+  s.name = "Nouvelle simulation";
+  for (const k of NULLABLES) s[k] = null;
+  for (const k of CHARGES) s[k] = { mode: DEFAULT_SIM[k].mode, v: null };
+  return s;
+})();
 
 const _n = (x, d = 0) => { const v = typeof x === "string" ? parseFloat(x.replace(/[\s  ]/g, "").replace(",", ".")) : +x; return Number.isFinite(v) ? v : d; };
 const _pos = (x, d = 0) => Math.max(0, _n(x, d));
@@ -506,6 +584,9 @@ const _charge = (c, d) => ({ mode: ["an", "mois", "trim", "pct"].includes(c && c
 // Remet un état saisi (éventuellement incomplet ou ancien) dans un format sûr
 function normaliser(s0) {
   const d = DEFAULT_SIM, s = Object.assign({}, d, s0 || {});
+  // Un champ explicitement vidé reste vide (null) : il sera estimé dans simuler()
+  const nuls = s0 ? NULLABLES.filter(k => k in s0 && _vide(s0[k])) : [];
+  const nulsCh = s0 ? CHARGES.filter(k => s0[k] && typeof s0[k] === "object" && _vide(s0[k].v)) : [];
   for (const k of ["prix", "debours", "notaireFixe", "agence", "travaux", "mobilier", "plans", "apport", "courtage", "dossier", "caution",
     "loyer", "chargesLoc", "nuitee", "courantes", "cfe", "revenusFoyer", "reventeFixe", "valeurTravaux", "surface"]) s[k] = _pos(s[k], d[k]);
   s.travauxMois = Math.round(_clamp(_n(s.travauxMois, 0), 0, 60));
@@ -532,7 +613,184 @@ function normaliser(s0) {
   for (const k of ["pret", "ira", "residenceServices", "travauxDeductibles", "renoEnergetique", "sciSortie"]) s[k] = !!s[k];
   s.mode = s.mode === "rapide" ? "rapide" : "complet";
   if (s.mode === "rapide") s.location = "annee";
+  // Le bien
+  for (const k of ["ville", "adresse", "note", "name"]) s[k] = typeof s[k] === "string" ? s[k] : String(s[k] == null ? "" : s[k]);
+  s.ville = s.ville.slice(0, 120); s.adresse = s.adresse.slice(0, 200);
+  s.typeBien = s.typeBien === "maison" ? "maison" : "appartement";
+  s.etat = ["bon", "rafraichir", "renover", "lourd"].includes(s.etat) ? s.etat : "bon";
+  s.dpe = ["A", "B", "C", "D", "E", "F", "G"].includes(s.dpe) ? s.dpe : "";
+  s.dept = typeof s.dept === "string" && /^(\d{2}|2[AB]|97\d)$/.test(s.dept) ? s.dept : "";
+  for (const k of nuls) s[k] = null;
+  for (const k of nulsCh) s[k] = { mode: s[k].mode, v: null };
   return s;
+}
+
+/* ---------- Le lieu et les estimations ---------- */
+// Pas de base de prix ni de loyers par ville : ces chiffres vieillissent vite. Le prix, le loyer et la surface viennent de toi
+// (annonce, annonces de location du quartier) ; les autres champs vides reçoivent des repères tirés de règles stables.
+const normNom = t => String(t || "").toLowerCase().replace(/œ/g, "oe").replace(/æ/g, "ae").normalize("NFD").replace(/[̀-ͯ]/g, "")
+  .replace(/\(.*?\)/g, " ").replace(/['’`\-]/g, " ").replace(/\bst\b/g, "saint").replace(/\bste\b/g, "sainte").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+// Communes où les loyers sont encadrés en 2026 (liste PAP, 26 février 2026) : une règle légale, qui change rarement
+const ENCADREMENT = [["Paris", "75"], ["Lille", "59"], ["Hellemmes", "59"], ["Lomme", "59"], ["Lyon", "69"], ["Villeurbanne", "69"], ["Montpellier", "34"], ["Bordeaux", "33"],
+  ["Aubervilliers", "93"], ["Épinay-sur-Seine", "93"], ["Pierrefitte-sur-Seine", "93"], ["Saint-Denis", "93"], ["Villetaneuse", "93"], ["Stains", "93"],
+  ["L'Île-Saint-Denis", "93"], ["La Courneuve", "93"], ["Saint-Ouen-sur-Seine", "93"], ["Bagnolet", "93"], ["Bobigny", "93"], ["Bondy", "93"],
+  ["Le Pré-Saint-Gervais", "93"], ["Les Lilas", "93"], ["Montreuil", "93"], ["Noisy-le-Sec", "93"], ["Pantin", "93"], ["Romainville", "93"],
+  ["Bayonne", "64"], ["Biarritz", "64"], ["Anglet", "64"], ["Saint-Jean-de-Luz", "64"], ["Hendaye", "64"], ["Urrugne", "64"],
+  ["Grenoble", "38"], ["Fontaine", "38"], ["Échirolles", "38"]];
+const ENC_DEPS = new Map();
+for (const [n, c] of ENCADREMENT) { const k = normNom(n); ENC_DEPS.set(k, (ENC_DEPS.get(k) || []).concat(c)); }
+const NOMS_AMBIGUS = new Set(["saint denis", "fontaine", "montreuil"]); // homonymes ailleurs en France : il faut le code postal
+function depDeCP(cp) { if (cp.startsWith("97")) return cp.slice(0, 3); if (cp.startsWith("20")) return +cp.slice(0, 3) < 202 ? "2A" : "2B"; return cp.slice(0, 2); }
+
+// Où est le bien ? Le département se lit dans « Reims (51) » ou dans un code postal (ville ou adresse)
+function lieu(s) {
+  const brut = String(s.ville || ""), adr = String(s.adresse || "");
+  let dep = null;
+  const md = brut.match(/\((\d{2,3}|2[abAB])\)/); if (md) dep = md[1].toUpperCase();
+  const cp = (brut + " " + adr).match(/\b(\d{5})\b/); if (!dep && cp) dep = depDeCP(cp[1]);
+  if (!dep && /^(\d{2}|2[AB]|97\d)$/.test(s.dept || "")) dep = s.dept;
+  let nom = normNom(brut.replace(/\b\d{5}\b/g, " ")).replace(/\b\d{1,2} ?(e|er|eme|arrondissement)?\b/g, " ").replace(/\b(cedex|arrondissement)\b/g, " ").replace(/\s+/g, " ").trim();
+  if (!nom) { const ma = adr.match(/\b\d{5}\b\s*([^,;]+)/); if (ma) nom = normNom(ma[1]).replace(/\b(cedex|\d+)\b/g, " ").replace(/\s+/g, " ").trim(); }
+  const deps = ENC_DEPS.get(nom) || [];
+  if (!dep && deps.length === 1 && !NOMS_AMBIGUS.has(nom)) dep = deps[0]; // « Paris 11e » sans code postal : c'est bien Paris
+  const encadrement = dep ? deps.includes(dep) : deps.length === 1 && !NOMS_AMBIGUS.has(nom);
+  // Charges de copropriété plus élevées à Paris, en Île-de-France et sur la Côte d'Azur
+  const zone = !dep ? 1 : dep === "75" ? 1.4 : ["92", "93", "94"].includes(dep) ? 1.3 : ["77", "78", "91", "95"].includes(dep) ? 1.15 : dep === "06" ? 1.2 : 1;
+  return { dep, nom: brut.trim(), encadrement, dom: !!dep && dep.startsWith("97"), zone };
+}
+const TRAVAUX_M2 = { rafraichir: 250, renover: 800, lourd: 1400, energie: 350 };
+// Taux de crédit (octobre 2026) : meilleurs taux Pretto, moyennes CAFPI et Crédit Logement, taux barème avant négociation
+const TAUX_MAJ = "octobre 2026";
+const TAUX_MARCHE = [[10, 3.0, 3.15, 3.4], [15, 3.15, 3.25, 3.5], [20, 3.25, 3.4, 3.7], [25, 3.35, 3.5, 3.85], [30, 3.5, 3.65, 4.0]];
+function tauxMarche(duree) {
+  const t = TAUX_MARCHE; if (duree <= t[0][0]) return t[0].slice(1); if (duree >= t[t.length - 1][0]) return t[t.length - 1].slice(1);
+  for (let i = 1; i < t.length; i++) if (duree <= t[i][0]) { const f = (duree - t[i - 1][0]) / (t[i][0] - t[i - 1][0]); return [1, 2, 3].map(j => Math.round((t[i - 1][j] + f * (t[i][j] - t[i - 1][j])) * 100) / 100); }
+}
+const _arr = (v, pas) => Math.round(v / pas) * pas;
+const _e = v => Math.round(v).toLocaleString("fr-FR") + " €";
+// Les chiffres à chercher soi-même : surface et prix (annonce), loyer ou prix par nuit (annonces de location du quartier)
+const requis = s => ["surface", "prix", s.location === "courte" ? "nuitee" : "loyer"];
+// Tant qu'ils manquent, le calcul tourne sur des valeurs de secours jamais affichées (deux jeux, pour repérer ce qui en dépend)
+const SECOURS = [{ surface: [45, 90], prix: 150000, loyer: 600, nuitee: 80 }, { surface: [70, 120], prix: 260000, loyer: 950, nuitee: 120 }];
+
+// Complète les champs vides avec des repères ; renvoie aussi, pour chaque champ, la fourchette basse / courante / haute
+function estimer(s, variante = 0) {
+  const x = Object.assign({}, s), est = {}, auto = [], manque = [];
+  const L = lieu(s), maison = s.typeBien === "maison";
+  const etat = s.notaireType === "neuf" ? "neuf" : s.etat;
+  const meuble = s.location === "courte" || REGIMES[s.regime].meuble === true;
+  const passoire = s.dpe === "F" || s.dpe === "G";
+  const fill = (k, v) => { if (x[k] == null) { x[k] = v; auto.push(k); } };
+  const tiers = (vals, labels) => vals.map((v, i) => [labels[i], v]);
+
+  // Le bien : surface, prix et loyer viennent de toi
+  const sec = SECOURS[variante];
+  for (const k of requis(s)) if (x[k] == null) { manque.push(k); x[k] = k === "surface" ? sec.surface[maison ? 1 : 0] : sec[k]; }
+  if (x.loyer == null) x.loyer = 0;
+  if (x.nuitee == null) x.nuitee = 0;
+  const S = Math.max(9, x.surface);
+
+  // Investissement
+  const ag = s.agenceMode === "pct" ? [0, 4, 6] : [0, _arr(0.04 * x.prix, 100), _arr(0.06 * x.prix, 100)];
+  est.agence = { v: 0, t: tiers(ag, ["Inclus dans le prix", "Courant (4 %)", "Élevé (6 %)"]), info: "Seulement si l'annonce précise « honoraires à la charge de l'acquéreur »." };
+  fill("agence", 0);
+  const travEst = etat === "neuf" ? 0 : TRAVAUX_M2[etat] ? _arr(TRAVAUX_M2[etat] * S, 500) : passoire ? _arr(TRAVAUX_M2.energie * S, 500) : 0;
+  est.travaux = { v: travEst, t: tiers(["rafraichir", "renover", "lourd"].map(k => _arr(TRAVAUX_M2[k] * S, 500)), ["Rafraîchir", "Rénover", "Rénovation lourde"]),
+    info: `Environ 250 €/m² pour rafraîchir, 800 €/m² pour rénover, 1 400 €/m² en rénovation lourde${passoire ? ", 350 €/m² pour une rénovation énergétique" : ""}.` };
+  fill("travaux", travEst);
+  const travM = x.travaux > 0 ? (etat === "lourd" ? 6 : etat === "renover" ? 3 : x.travaux / S >= 600 ? 3 : 1) : 0;
+  est.travauxMois = { v: travM, t: null, info: "D'après l'état du bien et le montant des travaux." };
+  fill("travauxMois", travM);
+  const mobEst = meuble ? _arr(Math.max(3500, 110 * S) * (s.location === "courte" ? 1.3 : 1), 100) : 0;
+  est.mobilier = { v: mobEst, t: meuble ? tiers([_arr(Math.max(2500, 60 * S), 100), mobEst, _arr(Math.max(5000, 180 * S), 100)], ["Essentiel", "Confort", "Haut de gamme"]) : null,
+    info: meuble ? `Pour ${Math.round(S)} m² : environ 60 €/m² pour l'essentiel, 110 €/m² pour un meublé confortable${s.location === "courte" ? " (+30 % en courte durée)" : ""}, 180 €/m² en haut de gamme. Le logement doit contenir la liste d'équipements obligatoires : literie, plaques, frigo, vaisselle, rangements…` : "Location nue : pas de mobilier à prévoir." };
+  fill("mobilier", mobEst);
+  fill("plans", 0); est.plans = { v: 0, t: null };
+
+  // Financement
+  const not = fraisNotaire(x).total, agence = s.agenceMode === "pct" ? x.prix * x.agence / 100 : x.agence;
+  const inc = s.inclus || {};
+  const finance = x.prix + (inc.notaire ? not : 0) + (inc.agence ? agence : 0) + (inc.travaux ? x.travaux : 0) + (inc.mobilier ? x.mobilier : 0) + (inc.plans ? x.plans : 0);
+  const cout = x.prix + not + agence + x.travaux + x.mobilier + x.plans;
+  fill("duree", 20); est.duree = { v: 20, t: tiers([15, 20, 25], ["Court", "Courant", "Long"]), info: "Le plus souvent 20 à 25 ans pour un investissement locatif." };
+  const tm = tauxMarche(x.duree);
+  est.taux = { v: tm[1], t: tiers(tm, ["Excellent dossier", "Moyenne", "Barème banque"]), info: `Taux pour ${x.duree} ans relevés en ${TAUX_MAJ} : meilleurs taux, moyenne, taux affiché avant négociation. Ils bougent chaque mois : vérifie le taux du jour auprès de ta banque ou d'un courtier.`, date: TAUX_MAJ };
+  fill("taux", tm[1]);
+  est.tauxAss = { v: 0.25, t: tiers([0.1, 0.25, 0.4], ["Délégation, moins de 40 ans", "Moyenne", "Contrat de la banque"]), info: "En % du capital emprunté par an." };
+  fill("tauxAss", 0.25);
+  est.dossier = { v: 750, t: tiers([0, 750, 1500], ["Négociés", "Courants", "Élevés"]), info: "Facturés par la banque pour monter le prêt : souvent 500 à 1 000 €, parfois négociés jusqu'à zéro (un courtier y aide)." }; fill("dossier", 750);
+  const fraisPerso = _arr(not + agence + 750, 500), p20 = _arr(0.2 * x.prix, 1000), pcF = x.prix > 0 ? Math.round(fraisPerso / x.prix * 100) : 0;
+  est.apport = { v: 0, t: [["Sans apport", 0], [`Les frais (${pcF} % du prix)`, fraisPerso], ["20 % du prix", p20]].sort((u, w) => u[1] - w[1]),
+    info: `Calculé sur ton prix de ${_e(x.prix)} : les frais (notaire, agence, frais de dossier) font ${_e(fraisPerso)}, soit ${pcF} % du prix ; 20 % du prix font ${_e(p20)}. Les banques demandent souvent un apport qui couvre au moins les frais.` };
+  fill("apport", 0);
+  const emp = Math.max(0, finance - x.apport);
+  const pct1 = _arr(0.01 * emp, 100);
+  est.courtage = { v: 0, t: pct1 < 1500 ? tiers([0, pct1, 1500], ["Sans courtier", "1 % du prêt", "Forfait"]) : tiers([0, 1500, pct1], ["Sans courtier", "Forfait", "1 % du prêt"]) }; fill("courtage", 0);
+  const cau = s.cautionMode === "pct" ? [0.8, 1.2, 2] : [_arr(0.008 * emp, 50), _arr(0.012 * emp, 50), _arr(0.02 * emp, 50)];
+  est.caution = { v: cau[1], t: tiers(cau, ["Caution, bon dossier", "Caution courante", "Hypothèque"]),
+    info: `Calculée sur le montant emprunté : ${_e(emp)}. Caution d'un organisme (type Crédit Logement) : environ 0,8 à 1,2 % du prêt, dont une partie est restituée à la fin ; hypothèque : environ 2 %.` };
+  fill("caution", cau[1]);
+  const difM = x.travauxMois > 0 ? x.travauxMois : 6;
+  est.differeMois = { v: difM, t: null }; fill("differeMois", difM);
+
+  // Charges de copropriété (utiles aussi pour les charges refacturées)
+  const coproM2 = maison ? [0, 0, 0] : [15, 25, 40].map(v => v * L.zone);
+  const coproAn = c => Math.round(c * S / 10) * 10;
+  let coproEff; // charges de copropriété annuelles retenues
+  const ch = k => x[k] && x[k].v != null ? x[k] : null;
+  // Exploitation
+  const chCopro = ch("copro");
+  if (chCopro) coproEff = chCopro.mode === "an" ? chCopro.v : chCopro.mode === "mois" ? chCopro.v * 12 : chCopro.mode === "trim" ? chCopro.v * 4 : null;
+  if (coproEff == null) coproEff = x.chargesLoc != null && !maison ? x.chargesLoc * 12 / 0.5 : coproAn(coproM2[1]);
+  const clEst = maison ? 0 : _arr(coproEff * 0.5 / 12, 5);
+  est.chargesLoc = { v: clEst, t: maison ? null : tiers([_arr(coproEff * 0.35 / 12, 5), clEst, _arr(coproEff * 0.65 / 12, 5)], ["Peu de services", "Courantes", "Chauffage collectif"]),
+    info: maison ? "Maison : en général seule la taxe d'ordures ménagères est refacturée." : "Part des charges de copropriété refacturée au locataire : environ la moitié, davantage avec chauffage collectif ou ascenseur." };
+  fill("chargesLoc", clEst);
+  est.occupation = { v: 96, t: tiers([92, 96, 100], ["1 mois vide par an", "Courant", "Toujours loué"]) }; fill("occupation", 96);
+  const evL = passoire ? 0 : 1;
+  est.evolLoyer = { v: evL, t: tiers([0, 1, 2], ["Gelé", "IRL modéré", "IRL soutenu"]), info: passoire ? "Logement classé F ou G : le loyer ne peut plus être augmenté." : "Révision annuelle selon l'indice de référence des loyers." };
+  fill("evolLoyer", evL);
+  est.occupationCD = { v: 60, t: tiers([45, 60, 75], ["Basse", "Courante", "Très demandé"]) }; fill("occupationCD", 60);
+  est.commission = { v: 15, t: null }; fill("commission", 15);
+  est.conciergerie = { v: 20, t: tiers([0, 20, 25], ["Toi-même", "Conciergerie", "Premium"]) }; fill("conciergerie", 20);
+  const cour = [2, 3, 4].map(v => _arr(v * S, 10));
+  est.courantes = { v: cour[1], t: tiers(cour, ["Économe", "Courant", "Confort"]), info: "Énergie, internet, abonnements, consommables." }; fill("courantes", cour[1]);
+
+  // Revenus de l'année 1 (pour les charges exprimées en % des revenus)
+  const revAn = s.location === "courte" ? x.nuitee * 365 * x.occupationCD / 100 : (x.loyer + (s.mode === "rapide" ? 0 : x.chargesLoc)) * 12 * x.occupation / 100;
+  const enMode = (k, an, pas) => { const mo = s[k].mode; return mo === "an" ? _arr(an, pas || 10) : mo === "mois" ? Math.round(an / 12) : mo === "trim" ? Math.round(an / 4) : (revAn > 0 ? Math.round(an / revAn * 10000) / 100 : 0); };
+  const charge = (k, ans, labels, info, pas) => {
+    const v = enMode(k, ans[1], pas);
+    est[k] = { v, t: labels ? tiers(ans.map(a => enMode(k, a, pas)), labels) : null, info };
+    if (x[k].v == null) { x[k] = { mode: s[k].mode, v }; auto.push(k); }
+  };
+  charge("copro", maison ? [0, 0, 0] : coproM2.map(coproAn), maison ? null : ["Petite copropriété", "Courante", "Ascenseur, gardien"],
+    maison ? "Maison individuelle : pas de copropriété." : `Calculé pour ${Math.round(S)} m² : ${Math.round(coproM2[0])} €/m² par an sans services, ${Math.round(coproM2[1])} €/m² en moyenne, ${Math.round(coproM2[2])} €/m² avec chauffage collectif, ascenseur ou gardien${L.zone > 1 ? " (majorés ici : Paris, Île-de-France ou Côte d'Azur)" : ""}. Le vrai montant figure obligatoirement sur l'annonce.`);
+  charge("tf", [15, 20, 26].map(v => v * S), ["Basse", "Moyenne", "Haute"], "Le vrai montant est sur l'annonce ou l'avis de taxe foncière du vendeur : demande-le. À défaut, compte 15 à 26 €/m² par an (moyenne de 20 €/m² dans les 32 plus grandes villes, Meilleurtaux).");
+  charge("gli", [0, 0.025, 0.035].map(p => p * revAn), ["Sans", "Courante (2,5 %)", "Complète (3,5 %)"], `Calculée sur tes loyers annuels charges comprises : ${_e(revAn)} (loyer et charges × 12 × taux d'occupation). Contrat courant : 2,5 % ; garantie complète : 3,5 %. En option.`);
+  charge("gerance", [0, 0.05, 0.08].map(p => p * revAn), ["Toi-même", "En ligne (5 %)", "Agence (8 %)"], "Gestion par une agence : en option.");
+  const compta = s.regime === "lmnpReel" ? [250, 450, 750] : s.regime === "sciIs" ? [1000, 1500, 2000] : null;
+  charge("comptable", compta || [0, 0, 0], compta ? ["En ligne", "Courant", "Cabinet"] : null, compta ? (s.regime === "sciIs" ? "Une SCI à l'IS tient une comptabilité complète." : "LMNP au réel : liasse fiscale chaque année.") : "Pas de comptable obligatoire avec ce régime.");
+  const pnoAn = (maison ? 180 * Math.sqrt(S / 90) : 130 * Math.sqrt(S / 50));
+  charge("pno", [pnoAn * 0.55, pnoAn, pnoAn * 1.7], ["Basse", "Moyenne", "Haute"], `Pour ${maison ? "une maison" : "un appartement"} de ${Math.round(S)} m² : environ ${_e(pnoAn)} par an (repère : 130 € pour un appartement de 50 m², 180 € pour une maison de 90 m²). Obligatoire en copropriété.`, 5);
+  const aut = etat === "neuf" ? [0.005, 0.01, 0.02] : [0.01, 0.03, 0.05];
+  charge("autres", aut.map(p => p * revAn), etat === "neuf" ? ["Très peu", "Neuf", "Prudent"] : ["Récent", "Courant", "Ancien"], `Calculé sur tes loyers annuels : ${_e(revAn)}. Petites réparations et remplacements : ${etat === "neuf" ? "dans le neuf, compte 0,5 à 2 % des loyers par an" : "compte 1 % des loyers par an pour un bien récent, 3 % en moyenne, 5 % pour un bien ancien"}.`);
+  const cfeDue = meuble && s.regime !== "sciIs" && revAn >= 5000;
+  est.cfe = { v: cfeDue ? 250 : 0, t: cfeDue ? tiers([100, 250, 500], ["Petite commune", "Courante", "Grande ville"]) : null,
+    info: meuble ? (cfeDue ? "Due en location meublée dès 5 000 € de recettes par an ; le montant dépend de la commune." : "Exonération en dessous de 5 000 € de recettes par an.") : "Location nue : pas de CFE." };
+  fill("cfe", est.cfe.v);
+  est.evolCharges = { v: 2, t: tiers([1, 2, 3], ["Stable", "Courante", "Forte"]), info: "La taxe foncière et les charges augmentent souvent plus vite que les loyers." }; fill("evolCharges", 2);
+
+  // Fiscalité
+  const terr = maison ? 25 : 15; est.terrain = { v: terr, t: null }; fill("terrain", terr);
+  for (const [k, v] of [["dureeBati", 30], ["dureeMobilier", 7], ["dureeTravaux", 15], ["revenusFoyer", 30000], ["parts", 1], ["fraisRevente", 0], ["actualisation", 1]]) { if (!est[k]) est[k] = { v, t: null }; fill(k, v); }
+
+  // Revente
+  est.detention = { v: 10, t: tiers([10, 22, 30], ["Moyen terme", "Exonéré d'IR", "Exonéré total"]), info: "La plus-value est exonérée d'impôt sur le revenu après 22 ans, de tout impôt après 30 ans." }; fill("detention", 10);
+  est.revalo = { v: 1.5, t: tiers([0, 1.5, 3], ["Prudent", "Modéré", "Dynamique"]), info: "Sur longue période, les prix suivent à peu près l'inflation ; ils ont baissé de 0,8 % sur un an (Notaires-Insee, 2e trimestre 2026)." }; fill("revalo", 1.5);
+  const valT = _arr(x.prix + x.travaux, 1000);
+  est.valeurTravaux = { v: valT, t: null, info: "Par défaut, le prix d'achat plus les travaux." }; fill("valeurTravaux", valT);
+  return { s: x, est, auto, manque, lieu: L };
 }
 
 // Frais de notaire : droits de mutation + émoluments proportionnels (TTC) + contribution de sécurité immobilière + débours
@@ -620,7 +878,10 @@ function tri(flux) {
 }
 
 function simuler(s0) {
-  const s = normaliser(s0);
+  const s0n = normaliser(s0), EST = estimer(s0n), s = EST.s, LIEU = EST.lieu;
+  // Tant qu'un chiffre clé manque, les repères qui en dépendent ne veulent rien dire : on les repère en recalculant avec l'autre jeu de secours
+  let incertains = [];
+  if (EST.manque.length) { const E2 = estimer(s0n, 1); incertains = Object.keys(EST.est).filter(k => JSON.stringify(EST.est[k]) !== JSON.stringify(E2.est[k])); }
   const W = [];
   const warn = (k, txt, niveau = "attention") => { if (!W.some(w => w.k === k)) W.push({ k, txt, niveau }); };
   const reg = s.regime, meuble = REGIMES[reg].meuble !== false, isSCI = reg === "sciIs";
@@ -876,10 +1137,15 @@ function simuler(s0) {
   if (isSCI && s.comptable.v === 0) warn("sci-compta", "Une SCI à l'IS tient une comptabilité complète : compte 1 000 à 2 000 € de frais d'expert-comptable par an.", "info");
   if (s.differe !== "aucun" && s.differeMois > 0) warn("differe", `Différé ${s.differe} de ${s.differeMois} mois : ${s.differe === "total" ? "les intérêts s'ajoutent au capital et alourdissent le coût du crédit" : "seuls les intérêts et l'assurance sont payés pendant ce temps"}.`, "info");
   if (rv.tri !== null && mise < 0.02 * coutTotal) warn("tri", "Mise de départ quasi nulle : le TRI devient très élevé et peu parlant. Regarde plutôt l'enrichissement et l'effort mensuel.", "info");
+  // Le bien : DPE, encadrement des loyers, écart avec les repères du marché
+  if (s.dpe === "G") warn("dpe", LIEU.dom ? "Logement classé G : en outre-mer, il ne pourra plus être loué (nouveau bail ou renouvellement) à partir du 1er janvier 2028. Prévois une rénovation énergétique." : "Logement classé G : interdit à la location (nouveau bail ou renouvellement) depuis le 1er janvier 2025. Il faut une rénovation énergétique qui le fait sortir de la classe G avant de louer.", LIEU.dom ? "attention" : "critique");
+  else if (s.dpe === "F") warn("dpe", `Logement classé F : location interdite (nouveau bail ou renouvellement) à partir du 1er janvier ${LIEU.dom ? 2031 : 2028}, et loyer gelé dès aujourd'hui. Prévois une rénovation énergétique.`, "attention");
+  else if (s.dpe === "E") warn("dpe", "Logement classé E : location interdite à partir du 1er janvier 2034. Une rénovation énergétique d'ici là protège la valeur du bien.", "info");
+  if (LIEU.encadrement && s.location === "annee") warn("encadrement", `${LIEU.nom || "Cette commune"} applique l'encadrement des loyers : le loyer hors charges ne peut pas dépasser le loyer de référence majoré fixé par arrêté préfectoral (sauf complément de loyer justifié).`, "info");
   if (s.location === "courte" && s.tourisme === "nonClasse") warn("lm", "Meublé de tourisme non classé : abattement micro-BIC de 30 % seulement, plafond 15 000 €. Les communes peuvent limiter la location à 90 jours par an pour une résidence principale.", "info");
 
   return { s, notaire, agence, fraisAcq, coutTotal, finance, emprunt, caution, fraisBancaires, mise, H, rows, credit, mensualite, totInterets, totAssurance,
-    coutCredit: totInterets + totAssurance + fraisBancaires, Y, rv, parAnnee, k, warnings: W, revente };
+    coutCredit: totInterets + totAssurance + fraisBancaires, Y, rv, parAnnee, k, warnings: W, revente, est: EST.est, auto: EST.auto, manque: EST.manque, incertains, lieu: LIEU };
 }
 
 // Compare les régimes possibles à loyer identique
@@ -896,9 +1162,9 @@ function comparerRegimes(s0) {
 }
 // Leviers : effet de quelques décisions concrètes sur le cash-flow et l'enrichissement
 function leviers(s0) {
-  const s = normaliser(s0), base = simuler(s), yr = Math.min(base.H, s.anneeRef) - 1, out = [];
+  const s0n = normaliser(s0), base = simuler(s0n), s = base.s, yr = Math.min(base.H, s.anneeRef) - 1, out = [];
   const add = (id, label, patch, note) => {
-    const x = simuler(Object.assign({}, s, patch));
+    const x = simuler(Object.assign({}, s0n, patch));
     out.push({ id, label, note, patch, dCf: (x.Y[yr].cf - base.Y[yr].cf) / 12, dEnrich: x.rv.enrichissement - base.rv.enrichissement, dMise: x.mise - base.mise });
   };
   add("prix", "Négocier le prix de 5 %", { prix: Math.round(s.prix * 0.95), notaireFixe: s.notaireMode === "fixe" ? Math.round(s.notaireFixe * 0.95) : s.notaireFixe,
@@ -910,7 +1176,7 @@ function leviers(s0) {
     if (s.duree <= 25) add("duree", "Allonger le crédit de 5 ans", { duree: s.duree + 5 }, "Mensualité plus faible, mais plus d'intérêts au total.");
     if (base.emprunt > 10000) add("apport", "Apporter 10 000 € de plus", { apport: s.apport + 10000 }, "Moins d'emprunt, mais plus d'argent immobilisé.");
   }
-  const cp = comparerRegimes(s).filter(x => !x.critique);
+  const cp = comparerRegimes(s0n).filter(x => !x.critique);
   if (cp.length) { const best = cp.reduce((a, b) => (b.enrichissement > a.enrichissement ? b : a), cp[0]); if (best.regime !== s.regime) add("regime", "Passer en " + REGIMES[best.regime].court, { regime: best.regime }, REGIMES[best.regime].meuble === false ? "Location nue." : "Location meublée."); }
   return out.sort((a, b) => b.dEnrich - a.dEnrich);
 }
@@ -948,8 +1214,9 @@ let db = store.get(KEY);
 if (!db || typeof db !== "object" || !db.sims || !Object.keys(db.sims).length) { const id = uid(); db = { cur: id, sims: { [id]: { s: clone(DEFAULT_SIM), updated: Date.now() } } }; }
 if (!db.sims[db.cur]) db.cur = Object.keys(db.sims)[0];
 let S = normaliser(db.sims[db.cur].s);
-let R = simuler(S);
-const ui = Object.assign({ section: "invest", ana: "synthese", per: "an", metric: "cf", rend: "netNet", emp: "synthese", fisc: "tableau", ech: "an", ampYear: 1, fiscYear: 1 }, store.get(UI_KEY) || {});
+let R = simuler(S), X = R.s;
+function calc() { S = normaliser(S); R = simuler(S); X = R.s; }
+const ui = Object.assign({ section: "bien", ana: "synthese", per: "an", metric: "cf", rend: "netNet", emp: "synthese", fisc: "tableau", ech: "an", ampYear: 1, fiscYear: 1 }, store.get(UI_KEY) || {});
 let saveTimer = null;
 function save() {
   clearTimeout(saveTimer);
@@ -986,21 +1253,91 @@ const REG_TXT = {
 
 /* ---------- Champs du formulaire ---------- */
 let fid = 0;
+const NUL_UI = new Set([...NULLABLES, ...CHARGES.map(c => c + ".v")]);
+// Repères cliquables sous le champ : seulement là où ils aident vraiment (calcul détaillé dans le « i ») ; ailleurs, juste la valeur en gris
+const REPERES = new Set(["mobilier", "apport", "dossier", "caution", "copro", "gli", "pno", "autres"]);
+const estKey = k => k.replace(/\.v$/, "");
+const vide = k => getK(S, k) == null;
+// Unité courte pour les repères : « 625 € », « 3,40 % », « 45 m² », « 20 ans »
+function fmtChip(v, dec, u) { const t = dec > 0 ? nf(dec).format(v) : nf(0).format(Math.round(v)); return u ? t + (u === "€" || u === "%" ? " " : " ") + u : t; }
+function uniteCourte(unit) { if (!unit) return ""; if (unit.startsWith("€")) return "€"; if (unit.startsWith("%")) return "%"; return unit.split(" ")[0]; }
 function num(k, label, o = {}) {
   const id = o.id || k.replace(/\./g, "-");
   const auto = o.auto != null;
-  const v = auto ? o.auto : getK(S, k);
+  const raw = auto ? o.auto : getK(S, k);
   const dec = o.dec != null ? o.dec : 0;
+  const req = !auto && raw == null && requis(S).includes(k); // à chercher soi-même : surface, prix, loyer
+  const estime = !auto && raw == null && !req;
+  const flou = estime && (R.incertains || []).includes(estKey(k)); // repère qui attend la surface, le prix ou le loyer
+  const E = !auto && R.est ? R.est[estKey(k)] : null;
   const mode = o.mode ? `<select class="mode" id="m-${id}" data-k="${o.mode.k}" aria-label="Mode de saisie : ${esc(label)}">${o.mode.opts.map(([val, t]) => `<option value="${val}"${String(o.mode.value != null ? o.mode.value : getK(S, o.mode.k)) === val ? " selected" : ""}>${esc(t)}</option>`).join("")}</select>` : "";
   const tip = o.tip ? ` <button type="button" class="tip" data-tip="${esc(o.tip)}" aria-label="Aide">i</button>` : "";
   return `<div class="fld">
     <div class="fld-top"><label for="f-${id}">${esc(label)}${tip}</label>${mode}</div>
     <div class="fld-row">
-      <div class="inp${auto ? " auto" : ""}"><input id="f-${id}" data-k="${k}" data-num data-dec="${dec}"${o.min != null ? ` data-min="${o.min}"` : ""}${o.max != null ? ` data-max="${o.max}"` : ""}${o.autoKey ? ` data-auto="${o.autoKey}"` : ""} inputmode="decimal" autocomplete="off" value="${fmtIn(v, dec)}"><span class="u">${esc(o.unit || "")}</span></div>
+      <div class="inp${auto ? " auto" : ""}${estime ? " est" : ""}${req ? " req" : ""}"><input id="f-${id}" data-k="${k}" data-num data-dec="${dec}"${o.autoKey ? ` data-auto="${o.autoKey}"` : ""} inputmode="decimal" autocomplete="off" value="${estime ? "" : fmtIn(raw, dec)}" placeholder="${estime && !flou ? fmtIn(getK(X, k), dec) : ""}"${E && REPERES.has(estKey(k)) ? ` aria-describedby="r-${id}"` : ""}><span class="tag"><span class="t-est" title="Repère standard : tape ton chiffre pour le remplacer">estimé</span><span class="t-req" title="Chiffre à chercher toi-même">à remplir</span></span><span class="u">${esc(o.unit || "")}</span></div>
       <div class="step" role="group" aria-label="Ajuster"><button type="button" data-step="${-(o.step || 1)}" data-for="f-${id}" aria-label="Diminuer ${esc(label)}">−</button><button type="button" data-step="${o.step || 1}" data-for="f-${id}" aria-label="Augmenter ${esc(label)}">+</button></div>
     </div>
+    ${E && REPERES.has(estKey(k)) ? `<div class="tiers" id="r-${id}" data-tiers="${k}" data-dec="${dec}" data-u="${esc(uniteCourte(o.unit))}"></div>` : ""}
     ${o.hint ? `<p class="hint">${o.hint}</p>` : ""}
   </div>`;
+}
+// Repères bas / courant / haut sous un champ (comme les niveaux de vie du simulateur rentier)
+function tiersHTML(el) {
+  const k = el.dataset.tiers, E = R.est[estKey(k)], dec = +el.dataset.dec || 0, u = el.dataset.u;
+  const raw = getK(S, k), eff = getK(X, k), tol = dec ? 0.005 : 0.5;
+  const info = E && E.info ? `<button type="button" class="tip" data-tip="${esc(E.info)}" aria-label="D'où vient l'estimation">i</button>` : "";
+  if ((R.incertains || []).includes(estKey(k))) return ""; // repères calculés après la surface, le prix ou le loyer
+  if (!E || !E.t) return info ? `<span class="tl">Repère${info}</span>` : "";
+  return `<span class="tl">Repères${info}</span>` + E.t.map(([lab, v]) => `<button type="button" class="tier${raw == null && Math.abs(eff - v) < tol ? " used" : ""}" data-setk="${k}" data-v="${v}" aria-pressed="${raw != null && Math.abs(raw - v) < tol}"><small>${esc(lab)}</small><b>${fmtChip(v, dec, u)}</b></button>`).join("");
+}
+// Après chaque calcul : valeurs grisées des champs vides et repères à jour, sans reconstruire le formulaire
+function syncEst() {
+  $$("#form [data-num]").forEach(inp => {
+    if (inp.dataset.auto) return;
+    const k = inp.dataset.k, raw = getK(S, k), w = inp.closest(".inp"), dec = +inp.dataset.dec || 0;
+    const req = raw == null && requis(S).includes(k), flou = (R.incertains || []).includes(estKey(k));
+    if (raw == null) { if (document.activeElement !== inp) inp.value = ""; inp.placeholder = req || flou ? "" : fmtIn(getK(X, k), dec); }
+    else inp.placeholder = "";
+    w.classList.toggle("est", raw == null && !req); w.classList.toggle("req", req);
+  });
+  $$("#form [data-tiers]").forEach(el => { el.innerHTML = tiersHTML(el); });
+  const ai = $("#aide"); if (ai) ai.innerHTML = aideHTML();
+  // Petits chiffres calculés dans les aides des champs
+  $$("#form [data-live]").forEach(el => { el.textContent = el.dataset.live === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
+}
+// Bandeau au-dessus des hypothèses : ce qu'il manque, sinon les chiffres importants qui viennent d'un repère standard
+const REQ_LAB = { surface: "Surface", prix: "Prix", loyer: "Loyer", nuitee: "Prix par nuit" };
+const CLES = [["travaux", "Travaux", "invest"], ["mobilier", "Mobilier", "invest"], ["chargesLoc", "Charges locatives", "expl"], ["taux", "Taux du crédit", "fin"], ["tauxAss", "Assurance emprunteur", "fin"],
+  ["copro", "Copropriété", "charges"], ["tf", "Taxe foncière", "charges"], ["pno", "Assurance PNO", "charges"], ["comptable", "Comptable", "charges"], ["cfe", "CFE", "charges"]];
+function clesEstimees() {
+  if ((R.manque || []).length) return [];
+  const rap = X.mode === "rapide", courte = X.location === "courte", a = new Set(R.auto || []);
+  return CLES.filter(([k]) => {
+    if (!a.has(k)) return false;
+    if (rap && k !== "taux") return false; // estimation rapide : charges forfaitaires
+    if (courte && k === "chargesLoc") return false;
+    if (!X.pret && (k === "taux" || k === "tauxAss")) return false;
+    return (CHARGES.includes(k) ? X[k].v : X[k]) > 0;
+  });
+}
+function renderEstBar() {
+  const el = $("#estbar"), m = R.manque || [], cl = clesEstimees();
+  el.classList.toggle("manque", m.length > 0);
+  el.hidden = !m.length && !cl.length;
+  if (m.length) {
+    el.innerHTML = `<span class="ei" aria-hidden="true">!</span><span><b>${m.length === 1 ? "Il manque 1 chiffre" : "Il manque " + m.length + " chiffres"}</b> pour calculer :</span>
+      <span class="ek">${m.map(k => `<button type="button" data-goto="${k}">${REQ_LAB[k]}</button>`).join("")}</span><span class="eh">Tout le reste a déjà un repère standard.</span>`;
+    return;
+  }
+  el.innerHTML = cl.length ? `<span class="ei" aria-hidden="true">≈</span><span><b>Résultat estimé</b> : ${cl.length === 1 ? "1 chiffre vient" : cl.length + " chiffres viennent"} de repères standards</span>
+    <span class="ek">${cl.map(([k, l]) => `<button type="button" data-goto="${k}">${l}</button>`).join("")}</span><span class="eh">Remplace-les par les vrais quand tu les as.</span>` : "";
+}
+function allerAuChamp(k) {
+  const sec = REQ_LAB[k] ? "bien" : (CLES.find(c => c[0] === k) || [])[2];
+  if (S.mode !== "rapide" && sec && ui.section !== sec) { ui.section = sec; renderRail(); renderForm(); save(); }
+  const inp = $(`#form [data-k="${k}"][data-num], #form [data-k="${k}.v"][data-num]`);
+  if (inp) { inp.scrollIntoView({ block: "center", behavior: "smooth" }); inp.focus({ preventScroll: true }); }
 }
 function sel(k, label, opts, hint, o = {}) {
   const id = o.id || k.replace(/\./g, "-");
@@ -1013,7 +1350,7 @@ function sw(k, label, sub) {
   return `<label class="sw" for="c-${k}"><span>${esc(label)}${sub ? `<small>${sub}</small>` : ""}</span><input type="checkbox" role="switch" id="c-${k}" data-k="${k}"${getK(S, k) ? " checked" : ""}></label>`;
 }
 function txt(k, label, o = {}) {
-  return `<div class="fld"><div class="fld-top"><label for="t-${k}">${esc(label)}</label></div>${o.area ? `<textarea class="txt" id="t-${k}" data-k="${k}" data-text maxlength="2000">${esc(getK(S, k))}</textarea>` : `<input class="txt" id="t-${k}" data-k="${k}" data-text type="text" maxlength="200" value="${esc(getK(S, k))}">`}${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
+  return `<div class="fld"><div class="fld-top"><label for="t-${k}">${esc(label)}</label></div>${o.area ? `<textarea class="txt" id="t-${k}" data-k="${k}" data-text maxlength="2000">${esc(getK(S, k))}</textarea>` : `<input class="txt" id="t-${k}" data-k="${k}" data-text type="text" maxlength="${o.max || 200}" value="${esc(getK(S, k))}"${o.list ? ` list="${o.list}"` : ""}${o.ph ? ` placeholder="${esc(o.ph)}"` : ""} autocomplete="off">`}${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
 }
 function chargeFld(k, label, hint) {
   const c = S[k], isPct = c.mode === "pct";
@@ -1026,23 +1363,29 @@ const ctas = list => `<div class="ctas">${list.map(([act, t, pri]) => `<button t
 
 /* ---------- Sections ---------- */
 const SECTIONS = [
+  { id: "bien", label: "Le bien", icon: "pin" },
   { id: "invest", label: "Investissement", icon: "key" },
   { id: "fin", label: "Financement", icon: "bank" },
   { id: "expl", label: "Exploitation", icon: "door" },
   { id: "charges", label: "Charges", icon: "receipt" },
   { id: "fisc", label: "Fiscalité", icon: "scale" },
-  { id: "revente", label: "Revente", icon: "tag" },
-  { id: "infos", label: "Infos du bien", icon: "pin" }
+  { id: "revente", label: "Revente", icon: "tag" }
 ];
+// Sections dont un chiffre important est estimé : leur résumé dans le rail commence par « ≈ »
+const SEC_EST = id => clesEstimees().some(c => c[2] === id);
 function railSummary(id) {
+  if ((R.manque || []).length && id !== "bien" && id !== "fisc") return "À compléter";
+  return (SEC_EST(id) ? "≈ " : "") + railTexte(id);
+}
+function railTexte(id) {
   switch (id) {
+    case "bien": return (S.ville.trim() || (S.typeBien === "maison" ? "Maison" : "Appartement")) + " · " + ((R.manque || []).length ? "à compléter" : nf(0).format(X.surface) + " m²");
     case "invest": return eur(R.coutTotal);
     case "fin": return S.pret && R.emprunt > 0 ? eur(R.mensualite) + " / mois" : "Achat comptant";
-    case "expl": return S.location === "courte" ? eur(S.nuitee) + " / nuit · " + pc(S.occupationCD, 0) : eur(S.loyer + S.chargesLoc) + " / mois CC";
+    case "expl": return X.location === "courte" ? eur(X.nuitee) + " / nuit · " + pc(X.occupationCD, 0) : eur(X.loyer + X.chargesLoc) + " / mois CC";
     case "charges": return eur(R.Y[0].charges) + " / an";
-    case "fisc": return REGIMES[S.regime].court + (S.regime === "sciIs" ? "" : S.tmiMode === "calcul" ? " · TMI calculée" : " · TMI " + S.tmi + " %");
-    case "revente": return plural(S.detention, "an") + " · " + eur(R.rv.prix);
-    case "infos": return S.surface > 0 ? nf(0).format(S.surface) + " m² · " + eur(S.prix / S.surface) + " / m²" : "Adresse, surface";
+    case "fisc": return REGIMES[X.regime].court + (X.regime === "sciIs" ? "" : X.tmiMode === "calcul" ? " · TMI calculée" : " · TMI " + X.tmi + " %");
+    case "revente": return plural(X.detention, "an") + " · " + eur(R.rv.prix);
   }
   return "";
 }
@@ -1054,16 +1397,33 @@ function regimeOpts() {
 }
 
 const FORMS = {
+  bien() {
+    const courte = S.location === "courte";
+    return head("Le bien", "Trois chiffres viennent de toi : la surface et le prix (sur l'annonce), le loyer (ta recherche). Les autres champs ont un repère standard, que tu remplaces quand tu as le vrai chiffre.") +
+      txt("ville", "Ville", { ph: "Ex. Reims", max: 120 }) +
+      txt("adresse", "Adresse", { ph: "N°, rue, code postal et ville", hint: "Le code postal sert à repérer l'encadrement des loyers et l'outre-mer." }) +
+      `<div class="fld"><div class="fld-top"><span class="lab">Type de bien</span></div><div class="seg2" role="group" aria-label="Type de bien"><button type="button" data-type="appartement" aria-pressed="${S.typeBien === "appartement"}">Appartement</button><button type="button" data-type="maison" aria-pressed="${S.typeBien === "maison"}">Maison</button></div></div>` +
+      num("surface", "Surface habitable", { unit: "m²", step: 1, hint: "Sur l'annonce (surface loi Carrez en copropriété)." }) +
+      num("prix", "Prix d'achat", { id: "prix-b", unit: "€", step: 1000, hint: "Le prix de l'annonce, hors frais de notaire." }) +
+      (courte ? num("nuitee", "Prix moyen par nuit", { id: "nuitee-b", unit: "€", step: 5, hint: "D'après des annonces comparables sur Airbnb ou Booking." })
+        : num("loyer", "Loyer hors charges", { id: "loyer-b", unit: "€ / mois", step: 10, hint: "Ta recherche dans les annonces de location du quartier : voir ci-dessous." })) +
+      sel("etatSel", "État du bien", [["neuf", "Neuf (VEFA)"], ["bon", "Ancien, bon état"], ["rafraichir", "Ancien, à rafraîchir"], ["renover", "Ancien, à rénover"], ["lourd", "Ancien, rénovation lourde"]],
+        "Il règle les travaux estimés et les frais de notaire (droits réduits dans le neuf).", { value: S.notaireType === "neuf" ? "neuf" : S.etat, id: "etat" }) +
+      sel("dpe", "Diagnostic énergétique (DPE)", [["", "Je ne sais pas"], ["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"], ["E", "E"], ["F", "F"], ["G", "G"]],
+        S.dpe === "G" ? "Classe G : interdit à la location depuis 2025 (2028 en outre-mer), sauf travaux." : S.dpe === "F" ? "Classe F : interdit à la location à partir de 2028 et loyer gelé dès maintenant." : S.dpe === "E" ? "Classe E : interdit à la location à partir de 2034." : "Les classes F et G imposent des travaux avant de louer.") +
+      `<div id="aide" class="aide">${aideHTML()}</div>` +
+      txt("note", "Note descriptive du bien", { area: true, hint: "Elle apparaît en tête du rapport imprimé." });
+  },
   invest() {
     const autoN = S.notaireMode === "auto";
     return head("Investissement", "Le prix et tout ce que tu paies pour acheter et équiper le bien.") +
-      num("prix", "Prix d'achat", { unit: "€", step: 1000, hint: "Prix net vendeur, hors frais de notaire." }) +
+      num("prix", "Prix d'achat", { unit: "€", step: 1000, hint: "Le prix de l'annonce, hors frais de notaire." }) +
       num("notaireFixe", "Frais de notaire", { id: "notaire", unit: "€", step: 100, auto: autoN ? R.notaire.total : null, autoKey: "notaire",
         mode: { k: "notaireSel", value: autoN ? "auto-" + S.notaireType : "fixe", opts: [["auto-ancien", "Calcul auto (bien ancien)"], ["auto-neuf", "Calcul auto (neuf, VEFA)"], ["fixe", "Montant fixé"]] },
         hint: autoN ? `${S.notaireType === "neuf" ? "Droits réduits du neuf" : "Droits de mutation à " + (S.dmto === "4.5" ? "5,81 %" : "6,32 %")}, émoluments du notaire et débours. <button type="button" class="lnk" data-act="notaire">Voir le détail</button>` : "Montant indiqué par ton notaire. Repasse en calcul auto pour l'estimer." }) +
       num("agence", "Honoraires d'agence", { unit: S.agenceMode === "pct" ? "% du prix" : "€", step: S.agenceMode === "pct" ? 0.5 : 500, dec: S.agenceMode === "pct" ? 2 : 0,
         mode: { k: "agenceMode", opts: [["fixe", "Montant fixé"], ["pct", "% du prix"]] }, hint: "Seulement s'ils sont à ta charge (annonce « honoraires acquéreur »)." }) +
-      num("travaux", "Travaux", { unit: "€", step: 1000 }) +
+      num("travaux", "Travaux", { unit: "€", step: 1000, hint: "Le niveau de travaux se règle avec l'état du bien, dans « Le bien »." }) +
       num("travauxMois", "Durée des travaux", { unit: "mois", step: 1, hint: "Aucun loyer n'est encaissé pendant les travaux." }) +
       num("mobilier", "Mobilier", { unit: "€", step: 500, hint: "Location meublée : amortissable au régime réel." }) +
       num("plans", "Plans d'architecte", { unit: "€", step: 500 }) +
@@ -1074,12 +1434,12 @@ const FORMS = {
     if (S.pret) {
       h += num("apport", "Apport", { unit: "€", step: 1000, hint: "Ce que tu mets de ta poche : il réduit le montant emprunté." }) +
         num("duree", "Durée du crédit", { unit: "ans", step: 1 }) +
-        num("taux", "Taux du crédit", { unit: "%", step: 0.05, dec: 2, hint: "Hors assurance." }) +
+        num("taux", "Taux du crédit", { unit: "%", step: 0.05, dec: 2, hint: `Hors assurance. En gris : le taux moyen d'${TAUX_MAJ} pour cette durée ; vérifie le tien auprès de ta banque.` }) +
         num("tauxAss", "Taux de l'assurance emprunteur", { unit: "%", step: 0.01, dec: 2, hint: "En % du capital emprunté, chaque année." }) +
         num("courtage", "Frais de courtage", { unit: "€", step: 100 }) +
         num("dossier", "Frais de dossier bancaire", { unit: "€", step: 100 }) +
         num("caution", "Caution ou garantie", { unit: S.cautionMode === "pct" ? "% du prêt" : "€", step: S.cautionMode === "pct" ? 0.1 : 100, dec: S.cautionMode === "pct" ? 2 : 0,
-          mode: { k: "cautionMode", opts: [["fixe", "Montant fixé"], ["pct", "% du prêt"]] }, hint: "Crédit Logement ou hypothèque : souvent autour de 1 % du prêt." }) +
+          mode: { k: "cautionMode", opts: [["fixe", "Montant fixé"], ["pct", "% du prêt"]] } }) +
         sel("typePret", "Type de prêt", [["constantes", "Mensualités constantes"], ["amortConstant", "Amortissement constant"], ["inFine", "In fine"]]) +
         sel("differe", "Différé de remboursement", [["aucun", "Aucun"], ["partiel", "Partiel (intérêts seuls)"], ["total", "Total (rien à payer)"]], "Pratique pendant des travaux : le différé fait partie de la durée du crédit.") +
         (S.differe !== "aucun" ? num("differeMois", "Durée du différé", { unit: "mois", step: 1 }) : "") +
@@ -1091,12 +1451,12 @@ const FORMS = {
     let h = head("Exploitation", "Ce que le bien encaisse chaque année.") +
       sel("location", "Type de location", [["annee", "Location à l'année"], ["courte", "Location courte durée"]]);
     if (S.location === "annee") {
-      h += num("loyer", "Loyer hors charges", { unit: "€ / mois", step: 10 }) +
+      h += num("loyer", "Loyer hors charges", { unit: "€ / mois", step: 10, hint: "Ta recherche dans les annonces de location du quartier (aide dans « Le bien »)." }) +
         num("chargesLoc", "Charges locatives", { unit: "€ / mois", step: 5, hint: "Provisions refacturées au locataire : elles s'ajoutent aux revenus et compensent les frais de copropriété." }) +
-        num("occupation", "Taux d'occupation", { unit: "%", step: 1, hint: "92 % correspond à environ un mois de vacance par an." }) +
+        num("occupation", "Taux d'occupation", { unit: "%", step: 1 }) +
         num("evolLoyer", "Évolution annuelle du loyer", { unit: "%", step: 0.25, dec: 2, hint: "Révision annuelle selon l'IRL de l'Insee." });
     } else {
-      h += num("nuitee", "Prix moyen par nuit", { unit: "€", step: 5 }) +
+      h += num("nuitee", "Prix moyen par nuit", { unit: "€", step: 5, hint: "D'après des annonces comparables sur Airbnb ou Booking." }) +
         num("occupationCD", "Taux d'occupation", { unit: "%", step: 1, hint: "Part des nuits louées sur l'année." }) +
         num("commission", "Commission des plateformes", { unit: "% du CA", step: 0.5, dec: 1 }) +
         num("conciergerie", "Ménage et conciergerie", { unit: "% du CA", step: 1, dec: 1 }) +
@@ -1110,20 +1470,20 @@ const FORMS = {
   charges() {
     return head("Charges", "Ce que tu paies chaque année en tant que propriétaire.") +
       chargeFld("copro", "Frais de copropriété", "Total des appels de fonds, y compris la part refacturée au locataire.") +
-      chargeFld("tf", "Taxe foncière", "Souvent un à deux mois de loyer par an.") +
-      chargeFld("gli", "Assurance loyers impayés", "Environ 2,5 à 3,5 % des loyers.") +
-      chargeFld("gerance", "Frais de gérance", "Agence : 6 à 8 % des loyers en général.") +
-      chargeFld("comptable", "Frais de comptable", "LMNP au réel : 300 à 600 € par an ; SCI à l'IS : 1 000 à 2 000 €.") +
+      chargeFld("tf", "Taxe foncière", "Le vrai montant : sur l'avis de taxe foncière du vendeur. En gris : environ 20 €/m² par an.") +
+      chargeFld("gli", "Assurance loyers impayés") +
+      chargeFld("gerance", "Frais de gérance") +
+      chargeFld("comptable", "Frais de comptable") +
       chargeFld("pno", "Assurance propriétaire non occupant", "Obligatoire en copropriété.") +
       chargeFld("autres", "Autres / imprévus", "Petites réparations, remplacements.") +
-      num("cfe", "CFE", { unit: "€ / an", step: 50, hint: "Cotisation foncière des entreprises : due en location meublée." }) +
+      num("cfe", "CFE", { unit: "€ / an", step: 50, hint: "Cotisation foncière des entreprises, en location meublée." }) +
       num("evolCharges", "Réévaluation annuelle des charges", { unit: "%", step: 0.25, dec: 2 }) +
       recapBox("charges");
   },
   fisc() {
     const reg = S.regime, nue = REGIMES[reg].meuble === false;
     let h = head("Fiscalité", "Comment tes loyers sont imposés.") +
-      sel("regime", "Régime fiscal", regimeOpts(), `${REG_TXT[reg](S)} <button type="button" class="lnk" data-act="go:comparatif">Comparer les régimes</button>`);
+      sel("regime", "Régime fiscal", regimeOpts(), `${REG_TXT[reg](X)} <button type="button" class="lnk" data-act="go:comparatif">Comparer les régimes</button>`);
     if (nue && reg !== "jeanbrun") h += sel("defisc", "Réduction d'impôt", Object.entries(DEFISC).map(([k, d]) => [k, d.label]),
       S.defisc.startsWith("denormandie") ? "Denormandie : ancien avec travaux d'au moins 25 % du coût total, dans une commune éligible. Réduction de 2 % par an du prix de revient (plafond 300 000 € et 5 500 €/m²)." :
       S.defisc !== "aucune" ? "Loc'Avantages : réduction d'impôt calculée sur les loyers, convention de 6 ans avec l'Anah, loyer sous le marché." : "Loc'Avantages et Denormandie sont ouverts jusqu'à fin 2027. Pinel n'accepte plus de nouveaux investissements.");
@@ -1145,7 +1505,7 @@ const FORMS = {
       h += `<h3>Ton imposition</h3><div class="fld" style="border-top:0"><div class="seg2" role="group" aria-label="Taux d'imposition"><button type="button" data-tmimode="fixe" aria-pressed="${S.tmiMode === "fixe"}">Taux marginal fixe</button><button type="button" data-tmimode="calcul" aria-pressed="${S.tmiMode === "calcul"}">Calculer avec mes revenus</button></div></div>`;
       if (S.tmiMode === "fixe") h += sel("tmi", "Taux marginal d'imposition", [[0, "0 %"], [11, "11 %"], [30, "30 %"], [41, "41 %"], [45, "45 %"]], "La tranche du barème où tombe le dernier euro de revenu de ton foyer.");
       else h += num("revenusFoyer", "Revenu net imposable du foyer (hors ce bien)", { unit: "€ / an", step: 1000 }) +
-        num("parts", "Nombre de parts", { unit: "parts", step: 0.5, dec: 1, hint: `TMI actuelle de ton foyer : <b>${tmiFoyer(S.revenusFoyer, S.parts)} %</b>. L'impôt est calculé au barème 2026, quotient familial et décote compris.` });
+        num("parts", "Nombre de parts", { unit: "parts", step: 0.5, dec: 1, hint: `TMI actuelle de ton foyer : <b data-live="tmi">${tmiFoyer(X.revenusFoyer, X.parts)} %</b>. L'impôt est calculé au barème 2026, quotient familial et décote compris.` });
     }
     return h + recapBox("fisc") + ctas([["go:fisc", "Détail du calcul de l'impôt", true], ["go:comparatif", "Comparer les régimes"]]);
   },
@@ -1153,10 +1513,10 @@ const FORMS = {
     const auto = S.reventeMode === "auto";
     let h = head("Revente", "Ce que tu récupères le jour où tu revends.") +
       num("reventeFixe", "Prix de revente", { id: "revente", unit: "€", step: 1000, auto: auto ? R.rv.prix : null, autoKey: "revente",
-        mode: { k: "reventeMode", opts: [["auto", `Calcul auto (+${nf(2).format(S.revalo)} % par an)`], ["fixe", "Montant fixé"]] } }) +
+        mode: { k: "reventeMode", opts: [["auto", `Calcul auto (+${nf(2).format(X.revalo)} % par an)`], ["fixe", "Montant fixé"]] } }) +
       num("detention", "Nombre d'années de détention", { unit: "ans", step: 1 }) +
       `<h3>Revalorisation du bien</h3>` +
-      num("revalo", "Revalorisation annuelle du bien", { unit: "%", step: 0.25, dec: 2, hint: "Sur longue période, les prix suivent à peu près l'inflation." }) +
+      num("revalo", "Revalorisation annuelle du bien", { unit: "%", step: 0.25, dec: 2 }) +
       sel("valeurTravauxMode", "Valeur de marché du bien", [["nondefini", "Le prix d'achat"], ["defini", "Une autre valeur (après travaux, achat sous le marché)"]], "La revalorisation part de cette valeur.") +
       (S.valeurTravauxMode === "defini" ? num("valeurTravaux", "Valeur de marché", { unit: "€", step: 1000, hint: "Après travaux, ou si tu as acheté moins cher que le marché." }) : "") +
       num("fraisRevente", "Frais de revente", { unit: "% du prix", step: 0.5, dec: 1, hint: "Diagnostics, agence côté vendeur." }) +
@@ -1167,39 +1527,45 @@ const FORMS = {
     h += num("actualisation", "Taux d'actualisation (VAN)", { unit: "%", step: 0.25, dec: 2, hint: "Le rendement d'un placement sans risque auquel tu compares l'opération." });
     return h + recapBox("revente") + ctas([["go:revente", "Simuler la plus-value à la revente", true]]);
   },
-  infos() {
-    return head("Infos du bien", "Pour t'y retrouver dans tes simulations et dans le rapport.") +
-      txt("adresse", "Adresse") +
-      num("surface", "Superficie", { unit: "m²", step: 1 }) +
-      txt("note", "Note descriptive du bien", { area: true, hint: "Elle apparaît en tête du rapport imprimé." }) +
-      recapBox("infos");
-  }
 };
+// Encadré « Où trouver les bons chiffres » de la section Le bien : des liens vers les sources, toujours à jour, plutôt que des chiffres recopiés
+function aideHTML() {
+  const L = R.lieu || {}, courte = X.location === "courte", flags = [];
+  if (L.encadrement && !courte) flags.push(["", `Loyers encadrés${L.nom ? " à " + L.nom : ""} : le loyer hors charges ne peut pas dépasser le plafond de la zone. Vérifie-le sur le simulateur officiel de la ville avant de fixer le loyer.`]);
+  if (X.dpe === "G") flags.push(["critique", "DPE G : interdit à la location tant que des travaux ne le font pas sortir de cette classe."]);
+  else if (X.dpe === "F") flags.push(["attention", "DPE F : interdit à la location à partir de 2028, loyer gelé dès maintenant."]);
+  const lien = (href, t) => `<a href="${href}" target="_blank" rel="noopener">${t}</a>`;
+  return `<div class="rt">Où trouver les bons chiffres</div>
+    <p><b>Prix</b> : celui de l'annonce. Pour savoir s'il est juste, regarde les ventes réelles de la rue sur l'${lien("https://explore.data.gouv.fr/immobilier", "explorateur DVF")} (site officiel et gratuit de l'État).</p>
+    <p><b>${courte ? "Prix par nuit" : "Loyer"}</b> : ${courte ? "ouvre cinq annonces comparables sur Airbnb ou Booking, à la même saison, et garde le prix du milieu."
+      : `ouvre cinq annonces de location proches (même quartier, surface voisine) sur Leboncoin, SeLoger ou PAP, garde celle du milieu et retire les charges.`}</p>
+    <p><b>Copropriété et taxe foncière</b> : les charges de copropriété figurent obligatoirement sur l'annonce ; pour la taxe foncière, demande l'avis au vendeur.</p>
+    ${flags.map(([c, f]) => `<div class="flag ${c}">${esc(f)}</div>`).join("")}`;
+}
 
 function row(label, val, o = {}) { return `<div class="row${o.tot ? " tot" : ""}"><span>${esc(label)}${o.small ? `<small>${o.small}</small>` : ""}</span><b class="${o.cls || ""}">${val}</b></div>`; }
 const RECAPS = {
-  invest: () => `<div class="rt">Récapitulatif</div>` + row("Prix d'achat", eur(S.prix)) + row("Frais de notaire", eur(R.notaire.total)) + (R.agence ? row("Honoraires d'agence", eur(R.agence)) : "") +
-    (S.travaux + S.mobilier + S.plans ? row("Travaux, mobilier, plans", eur(S.travaux + S.mobilier + S.plans)) : "") + row("Coût total du projet", eur(R.coutTotal), { tot: true, small: "Hors frais liés au prêt" }),
-  fin: () => `<div class="rt">Récapitulatif du financement</div>` + row("Prix d'achat", eur(S.prix)) + row("Coûts supplémentaires", eur(R.coutTotal - S.prix), { small: "Notaire, travaux, etc." }) +
+  invest: () => `<div class="rt">Récapitulatif</div>` + row("Prix d'achat", eur(X.prix)) + row("Frais de notaire", eur(R.notaire.total)) + (R.agence ? row("Honoraires d'agence", eur(R.agence)) : "") +
+    (X.travaux + X.mobilier + X.plans ? row("Travaux, mobilier, plans", eur(X.travaux + X.mobilier + X.plans)) : "") + row("Coût total du projet", eur(R.coutTotal), { tot: true, small: "Hors frais liés au prêt" }),
+  fin: () => `<div class="rt">Récapitulatif du financement</div>` + row("Prix d'achat", eur(X.prix)) + row("Coûts supplémentaires", eur(R.coutTotal - X.prix), { small: "Notaire, travaux, etc." }) +
     row("Coût total du projet", eur(R.coutTotal)) + (R.fraisBancaires ? row("Frais bancaires", eur(R.fraisBancaires), { small: "Courtage, dossier, garantie" }) : "") +
     row("Montant emprunté", eur(R.emprunt)) + row("Cash nécessaire", eur(R.mise), { small: "Apport et frais non financés" }) +
     (R.emprunt > 0 ? row("Échéance mensuelle", eur(R.mensualite), { tot: true, small: "Assurance comprise" }) + row("Coût total du crédit", eur(R.coutCredit), { small: "Intérêts, assurance et frais" }) : ""),
   expl: () => { const y1 = R.Y[0], ref = R.Y[R.k.annee - 1];
-    return `<div class="rt">Récapitulatif</div>` + (S.location === "annee" ? row("Loyer charges comprises", eur(S.loyer + S.chargesLoc) + " / mois") : row("Chiffre d'affaires théorique", eur(S.nuitee * 365 * S.occupationCD / 100) + " / an")) +
+    return `<div class="rt">Récapitulatif</div>` + (X.location === "annee" ? row("Loyer charges comprises", eur(X.loyer + X.chargesLoc) + " / mois") : row("Chiffre d'affaires théorique", eur(X.nuitee * 365 * X.occupationCD / 100) + " / an")) +
       row("Revenu brut année 1", eur(y1.revenus)) + (ref.y !== 1 ? row("Revenu brut année " + ref.y, eur(ref.revenus)) : "") +
-      (S.surface > 0 && S.location === "annee" ? row("Loyer au m²", nf(2).format(S.loyer / S.surface) + " € / m²") : ""); },
+      (X.surface > 0 && X.location === "annee" ? row("Loyer au m²", nf(2).format(X.loyer / X.surface) + " € / m²") : ""); },
   charges: () => { const y1 = R.Y[0]; return `<div class="rt">Récapitulatif</div>` + row("Charges annuelles (année 1)", eur(y1.charges)) + row("Montant mensuel moyen", eur(y1.charges / 12)) +
     (y1.recup ? row("Dont refacturé au locataire", eur(y1.recup), { small: "Via les charges locatives" }) : "") + (R.Y[0].revenus > 0 ? row("Part des revenus", pct(y1.charges / y1.revenus, 1), { tot: true }) : ""); },
   fisc: () => { const y1 = R.Y[0], y2 = R.Y[1]; const isS = S.regime === "sciIs";
     const base = isS ? y1.fisc.find(l => l[0] === "Résultat imposable") : null;
     return `<div class="rt">Comptabilité année 1</div>` + row(isS ? "Recettes de la SCI" : "Revenu annuel brut", eur(y1.revenus)) +
       row(isS ? "Résultat imposable" : "Total imposable", eur(isS ? (base ? base[1] : 0) : Math.max(0, y1.baseIR))) +
-      (isS ? "" : row("Taux marginal d'imposition", S.tmiMode === "calcul" ? tmiFoyer(S.revenusFoyer + Math.max(0, y1.baseIR), S.parts) + " %" : S.tmi + " %")) +
+      (isS ? "" : row("Taux marginal d'imposition", X.tmiMode === "calcul" ? tmiFoyer(X.revenusFoyer + Math.max(0, y1.baseIR), X.parts) + " %" : X.tmi + " %")) +
       row("Montant à payer (année 1)", eur(y1.impot), { tot: true, small: isS ? "Impôt sur les sociétés" : "Prélèvements sociaux et impôt sur le revenu" }) + row("Montant à payer (année 2)", eur(y2.impot)); },
   revente: () => { const rv = R.rv; return `<div class="rt">Revente après ${plural(rv.N, "an")}</div>` + row("Prix de revente", eur(rv.prix)) + (rv.frais ? row("Frais de revente", eur(-rv.frais)) : "") +
     row("Capital restant dû", eur(-rv.crd)) + (rv.ira ? row("Indemnités de remboursement", eur(-rv.ira)) : "") + row(rv.pv.sci ? "Impôt sur la plus-value (IS)" : "Impôt sur la plus-value", eur(-rv.pv.impot)) +
     row("Produit net de la revente", eur(rv.net), { tot: true }) + row("Enrichissement total", eur(rv.enrichissement), { cls: rv.enrichissement >= 0 ? "pos" : "neg" }); },
-  infos: () => `<div class="rt">Ratios</div>` + (S.surface > 0 ? row("Prix au m²", eur(S.prix / S.surface)) + row("Coût total au m²", eur(R.coutTotal / S.surface)) + (S.location === "annee" ? row("Loyer au m²", nf(2).format(S.loyer / S.surface) + " € / m² / mois") : "") : row("Superficie", "à renseigner"))
 };
 
 /* ---------- Rendu des hypothèses ---------- */
@@ -1208,27 +1574,33 @@ function renderRail() {
     <svg class="ic" aria-hidden="true"><use href="#i-${sct.icon}"/></svg><span class="t">${sct.label}</span><span class="m" data-sum="${sct.id}">${esc(railSummary(sct.id))}</span></button>`).join("");
 }
 function renderRailSums() { $$("[data-sum]").forEach(el => { el.textContent = railSummary(el.dataset.sum); }); }
-const MODESW = () => `<div class="modesw" role="group" aria-label="Niveau de détail"><button type="button" data-mode="rapide" aria-pressed="${S.mode === "rapide"}">Estimation rapide<small>5 champs, résultat immédiat</small></button><button type="button" data-mode="complet" aria-pressed="${S.mode === "complet"}">Simulation complète<small>7 sections, tous les paramètres</small></button></div>`;
-FORMS.rapide = () => head("Estimation rapide", "Les cinq chiffres qui comptent ; le reste suit des hypothèses standards.") +
-  num("prix", "Prix d'achat", { unit: "€", step: 1000, hint: `Frais de notaire calculés au barème : ${eur(R.notaire.total)}.` }) +
-  num("loyer", "Loyer mensuel hors charges", { unit: "€ / mois", step: 10 }) +
+const MODESW = () => `<div class="modesw" role="group" aria-label="Niveau de détail"><button type="button" data-mode="rapide" aria-pressed="${S.mode === "rapide"}">Estimation rapide<small>Quelques champs, résultat immédiat</small></button><button type="button" data-mode="complet" aria-pressed="${S.mode === "complet"}">Simulation complète<small>7 sections, tous les paramètres</small></button></div>`;
+FORMS.rapide = () => head("Estimation rapide", "La surface, le prix et le loyer suffisent : le reste suit des repères standards.") +
+  txt("ville", "Ville", { ph: "Ex. Reims", max: 120 }) +
+  num("surface", "Surface habitable", { unit: "m²", step: 1, hint: "Sur l'annonce." }) +
+  num("prix", "Prix d'achat", { unit: "€", step: 1000, hint: `Frais de notaire calculés au barème : <span data-live="notaire">${eur(R.notaire.total)}</span>.` }) +
+  num("loyer", "Loyer mensuel hors charges", { unit: "€ / mois", step: 10, hint: "Ta recherche : l'annonce du milieu parmi cinq locations proches, hors charges." }) +
   num("apport", "Apport", { unit: "€", step: 1000 }) +
   num("duree", "Durée du crédit", { unit: "ans", step: 1 }) +
-  num("taux", "Taux du crédit", { unit: "%", step: 0.05, dec: 2 }) +
-  `<div class="assume"><b>Hypothèses de l'estimation rapide</b><ul><li>Charges forfaitaires : 25 % des loyers (taxe foncière, copropriété, assurances, entretien).</li><li>Assurance emprunteur ${nf(2).format(S.tauxAss)} %, location à l'année, occupation ${S.occupation} %.</li><li>Fiscalité : ${esc(REGIMES[S.regime].label)}${S.regime === "sciIs" ? "" : ", taux marginal " + S.tmi + " %"}.</li><li>Revente après ${plural(S.detention, "an")}, bien revalorisé de ${nf(2).format(S.revalo)} % par an.</li></ul></div>` +
+  num("taux", "Taux du crédit", { unit: "%", step: 0.05, dec: 2, hint: `En gris : le taux moyen d'${TAUX_MAJ} ; vérifie le tien auprès de ta banque.` }) +
+  `<div class="assume"><b>Hypothèses de l'estimation rapide</b><ul><li>Charges forfaitaires : 25 % des loyers (taxe foncière, copropriété, assurances, entretien).</li><li>Assurance emprunteur ${nf(2).format(X.tauxAss)} %, location à l'année, occupation ${X.occupation} %.</li><li>Fiscalité : ${esc(REGIMES[X.regime].label)}${X.regime === "sciIs" ? "" : ", taux marginal " + X.tmi + " %"}.</li><li>Revente après ${plural(X.detention, "an")}, bien revalorisé de ${nf(2).format(X.revalo)} % par an.</li></ul></div>` +
   ctas([["mode:complet", "Affiner avec la simulation complète", true]]);
 function renderForm() {
   const f = $("#form"), st = f.scrollTop;
+  if (!FORMS[ui.section] || ui.section === "rapide") ui.section = "bien";
   $(".hyp").classList.toggle("rapide", S.mode === "rapide");
   f.innerHTML = MODESW() + (S.mode === "rapide" ? FORMS.rapide() : FORMS[ui.section]());
   f.setAttribute("aria-labelledby", "tab-" + ui.section);
-  renderRecaps(); f.scrollTop = st;
+  renderRecaps(); syncEst(); f.scrollTop = st;
 }
-function renderRecaps() { $$("[data-recap]").forEach(el => { el.innerHTML = RECAPS[el.dataset.recap](); }); }
+function renderRecaps() {
+  const m = (R.manque || []).length;
+  $$("[data-recap]").forEach(el => { el.innerHTML = m ? `<p class="hint" style="margin:0">Le récapitulatif s'affiche dès que la surface, le prix et le loyer sont remplis.</p>` : RECAPS[el.dataset.recap](); });
+}
 function syncAuto(from) {
   const a = $("#f-notaire"); if (a && S.notaireMode === "auto" && a !== from) a.value = fmtIn(R.notaire.total, 0);
   const b = $("#f-revente"); if (b && S.reventeMode === "auto" && b !== from) b.value = fmtIn(R.rv.prix, 0);
-  const t = $(".mode#m-revente"); if (t && t.options[0]) t.options[0].textContent = `Calcul auto (+${nf(2).format(S.revalo)} % par an)`;
+  const t = $(".mode#m-revente"); if (t && t.options[0]) t.options[0].textContent = `Calcul auto (+${nf(2).format(X.revalo)} % par an)`;
 }
 
 /* ---------- Bandeau d'indicateurs ---------- */
@@ -1239,6 +1611,11 @@ function renderBand() {
   ys.value = String(R.k.annee);
   $("#k-metric").value = ui.metric; $("#k-rend").value = ui.rend;
   $$(".seg [data-per]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.per === ui.per)));
+  if ((R.manque || []).length) { // rien d'affiché tant que la surface, le prix et le loyer manquent
+    ["#k-v1", "#k-v2", "#k-v3", "#k-v4", "#k-v5"].forEach(q => { const e = $(q); e.textContent = "—"; e.className = "kpi-v"; });
+    ["#k-s2", "#k-s3", "#k-s4"].forEach(q => { $(q).textContent = "À compléter"; });
+    $("#k-s5").textContent = REGIMES[X.regime].court; spark([], 0); return;
+  }
   const ref = R.Y[R.k.annee - 1], div = ui.per === "mois" ? 12 : 1;
   const v1 = metricVal(ref, ui.metric) / div;
   const e1 = $("#k-v1"); e1.textContent = eur(v1) + (ui.per === "mois" ? " / mois" : " / an");
@@ -1249,13 +1626,13 @@ function renderBand() {
   const nn = R.k.net;
   $("#k-s2").innerHTML = ui.rend === "net" || ui.rend === "netNet" ? `Net de charges ${pct(nn, 1)} · <b>${grade(nn).t}</b>` : `Sur ${eur(R.coutTotal)} de coût total`;
   $("#k-v3").textContent = eur(R.mise);
-  $("#k-s3").innerHTML = R.emprunt > 0 ? `Mensualité <b>${eur(R.mensualite)}</b> sur ${plural(S.duree, "an")}` : "Achat sans crédit";
+  $("#k-s3").innerHTML = R.emprunt > 0 ? `Mensualité <b>${eur(R.mensualite)}</b> sur ${plural(X.duree, "an")}` : "Achat sans crédit";
   $("#k-l4").textContent = "Enrichissement à " + plural(R.rv.N, "an");
   const e4 = $("#k-v4"); e4.textContent = eur(R.rv.enrichissement); e4.className = "kpi-v" + (R.rv.enrichissement < 0 ? " neg" : "");
   $("#k-s4").innerHTML = `TRI <b>${R.rv.tri === null ? "non défini" : pct(R.rv.tri, 1)}</b> · VAN ${eur(R.rv.van)}`;
   $("#k-l5").textContent = (S.regime === "sciIs" ? "Impôt de la SCI" : "Impôt") + " année " + R.k.annee;
   const e5 = $("#k-v5"); e5.textContent = eur(ref.impot) + (ui.per === "mois" ? "" : " / an"); e5.className = "kpi-v" + (Math.round(ref.impot) < 0 ? " pos" : "");
-  $("#k-s5").textContent = REGIMES[S.regime].court + (S.regime === "sciIs" ? " · IS 15 % / 25 %" : S.tmiMode === "calcul" ? " · barème 2026" : " · TMI " + S.tmi + " %");
+  $("#k-s5").textContent = REGIMES[X.regime].court + (X.regime === "sciIs" ? " · IS 15 % / 25 %" : X.tmiMode === "calcul" ? " · barème 2026" : " · TMI " + X.tmi + " %");
 }
 function spark(vals, cur) {
   const svg = $("#k-spark"), W = 128, H = 38, P = 3;
@@ -1319,10 +1696,21 @@ function renderTabs() {
 function sub(name, list, cur) { return `<div class="subtabs" role="tablist" aria-label="${esc(name)}">${list.map(([id, t]) => `<button type="button" role="tab" data-sub="${name}:${id}" aria-selected="${cur === id}">${t}</button>`).join("")}</div>`; }
 function tipBtn(k) { return `<button type="button" class="tip" data-tip-k="${k}" aria-label="Définition">i</button>`; }
 
+// Tant que la surface, le prix ou le loyer manquent : la liste de ce qu'il reste à remplir, à la place des analyses
+function attenteHTML() {
+  const courte = X.location === "courte", m = R.manque;
+  const items = [["surface", "Surface", "Sur l'annonce", "m²"], ["prix", "Prix d'achat", "Sur l'annonce", "€"],
+    courte ? ["nuitee", "Prix par nuit", "Ta recherche sur Airbnb ou Booking", "€"] : ["loyer", "Loyer hors charges", "Ta recherche dans les annonces de location du quartier", "€ / mois"]];
+  return `<div class="attente"><h3>Encore ${m.length === 1 ? "un chiffre" : m.length === 2 ? "deux chiffres" : "trois chiffres"} et le bilan s'affiche</h3>
+    <p class="sub">Tout le reste a déjà un repère standard : frais de notaire, crédit, charges, impôts. Tu les affineras ensuite.</p>
+    <ul>${items.map(([k, l, o, u]) => { const ok = !m.includes(k);
+      return `<li class="${ok ? "ok" : ""}"><div><b>${l}</b><small>${o}</small></div>${ok ? `<span class="ok-v">✓ ${fmtIn(getK(S, k), 0)} ${u}</span>` : `<button type="button" class="btn sm primary" data-goto="${k}">Remplir</button>`}</li>`; }).join("")}</ul></div>`;
+}
 function renderAna(force) {
-  const key = [ui.ana, ui.emp, ui.fisc, ui.ech, S.regime, S.pret && R.emprunt > 0, S.location, S.duree, R.H].join("|");
   const el = $("#ana");
   el.setAttribute("aria-labelledby", "atab-" + ui.ana);
+  if ((R.manque || []).length) { anaKey = ""; el.innerHTML = attenteHTML(); return; }
+  const key = [ui.ana, ui.emp, ui.fisc, ui.ech, X.regime, X.pret && R.emprunt > 0, X.location, X.duree, R.H].join("|");
   if (force || key !== anaKey) { anaKey = key; el.innerHTML = VIEWS[ui.ana].build(); }
   VIEWS[ui.ana].fill();
 }
@@ -1401,15 +1789,15 @@ const VIEWS = {
       let b = `<div class="ana-h"><div><h2 id="emp-h"></h2><p id="emp-p"></p></div>` +
         sub("emp", [["synthese", "Synthèse"], ["amort", "Amortissement"], ["graph", "Graphiques"], ["ech", "Échéancier"]], ui.emp) + `</div>`;
       if (ui.emp === "synthese") b += `<div class="donut-wrap"><div class="cv donut"><canvas id="c-loan" role="img" aria-label="Répartition du coût du prêt"></canvas></div><div id="loan-l"></div></div>`;
-      if (ui.emp === "amort") b += `<div class="range"><label for="r-amp">Année</label><input type="range" id="r-amp" min="1" max="${S.duree}" value="${Math.min(ui.ampYear, S.duree)}"><b id="r-amp-v"></b></div><div class="donut-wrap"><div class="cv donut"><canvas id="c-amort" role="img" aria-label="Capital remboursé, intérêts et restant dû à la date choisie"></canvas></div><div id="amort-l"></div></div>`;
+      if (ui.emp === "amort") b += `<div class="range"><label for="r-amp">Année</label><input type="range" id="r-amp" min="1" max="${X.duree}" value="${Math.min(ui.ampYear, X.duree)}"><b id="r-amp-v"></b></div><div class="donut-wrap"><div class="cv donut"><canvas id="c-amort" role="img" aria-label="Capital remboursé, intérêts et restant dû à la date choisie"></canvas></div><div id="amort-l"></div></div>`;
       if (ui.emp === "graph") b += `<div class="duo">${[["c-g1", "Capital remboursé chaque année"], ["c-g2", "Intérêts payés chaque année"], ["c-g3", "Assurance payée chaque année"], ["c-g4", "Capital restant dû"]].map(([id, t]) => `<figure class="fig"><figcaption>${t}</figcaption><div class="cv"><canvas id="${id}" role="img" aria-label="${t}"></canvas></div></figure>`).join("")}</div>`;
       if (ui.emp === "ech") b += `<div style="margin-bottom:10px"><div class="subtabs" role="group"><button type="button" data-ech="an" aria-selected="${ui.ech === "an"}">Par année</button><button type="button" data-ech="mois" aria-selected="${ui.ech === "mois"}">Par mois</button></div></div><div class="tbl-wrap" id="ech-t"></div>`;
       return b;
     },
     fill() {
       if (!(S.pret && R.emprunt > 0)) return;
-      $("#emp-h").textContent = `Prêt de ${eur(R.emprunt)} à ${nf(2).format(S.taux)} % sur ${plural(S.duree, "an")}`;
-      $("#emp-p").textContent = `${{ constantes: "Mensualités constantes", amortConstant: "Amortissement constant", inFine: "In fine" }[S.typePret]}${S.differe !== "aucun" ? ", différé " + S.differe + " de " + S.differeMois + " mois" : ""}, assurance ${nf(2).format(S.tauxAss)} % du capital emprunté.`;
+      $("#emp-h").textContent = `Prêt de ${eur(R.emprunt)} à ${nf(2).format(X.taux)} % sur ${plural(X.duree, "an")}`;
+      $("#emp-p").textContent = `${{ constantes: "Mensualités constantes", amortConstant: "Amortissement constant", inFine: "In fine" }[X.typePret]}${X.differe !== "aucun" ? ", différé " + X.differe + " de " + X.differeMois + " mois" : ""}, assurance ${nf(2).format(X.tauxAss)} % du capital emprunté.`;
       const c = C();
       const L = (rows) => `<div class="legend">${rows.map(([col, l, v]) => `<div class="it"><i class="sw2" style="background:${col}"></i><span>${l}</span><b>${v}</b></div>`).join("")}</div>`;
       if (ui.emp === "synthese") {
@@ -1420,7 +1808,7 @@ const VIEWS = {
           { responsive: true, maintainAspectRatio: false, animation: false, cutout: "62%", plugins: { legend: { display: false }, tooltip: { backgroundColor: c.tipBg, titleColor: c.tipInk, bodyColor: c.tipInk, callbacks: { label: ctx => ` ${ctx.label} : ${eur(ctx.parsed)}` } } } });
       }
       if (ui.emp === "amort") {
-        const y = Math.min(ui.ampYear, S.duree), up = R.rows.slice(0, y * 12);
+        const y = Math.min(ui.ampYear, X.duree), up = R.rows.slice(0, y * 12);
         const cap = up.reduce((a, r) => a + r.capital, 0), it = up.reduce((a, r) => a + r.interet, 0), as = up.reduce((a, r) => a + r.assurance, 0), crd = up.length ? up[up.length - 1].crd : R.emprunt;
         $("#r-amp-v").textContent = "Année " + y;
         $("#amort-l").innerHTML = L([[c.s[0], "Cumul du capital remboursé", eur(cap)], [c.s[1], "Cumul des intérêts payés", eur(it)], [c.s[2], "Cumul de l'assurance", eur(as)], [c.rest, "Restant dû", eur(crd)]]);
@@ -1430,7 +1818,7 @@ const VIEWS = {
       }
       if (ui.emp === "graph") {
         if (!window.Chart) return ["c-g1", "c-g2", "c-g3", "c-g4"].forEach(noChart);
-        const Y = R.credit.slice(0, S.duree), lab = Y.map((_, i) => i + 1), area = col => ({ fill: "origin", backgroundColor: col + "1f" });
+        const Y = R.credit.slice(0, X.duree), lab = Y.map((_, i) => i + 1), area = col => ({ fill: "origin", backgroundColor: col + "1f" });
         draw("c-g1", "line", { labels: lab, datasets: [line("Capital remboursé", Y.map(o => o.capital), c.s[0], area(c.s[0]))] }, opts({ title: it => "Année " + it[0].label }));
         draw("c-g2", "line", { labels: lab, datasets: [line("Intérêts", Y.map(o => o.interets), c.s[1], area(c.s[1]))] }, opts({ title: it => "Année " + it[0].label }));
         draw("c-g3", "line", { labels: lab, datasets: [line("Assurance", Y.map(o => o.assurance), c.s[2], area(c.s[2]))] }, opts({ title: it => "Année " + it[0].label }));
@@ -1438,7 +1826,7 @@ const VIEWS = {
       }
       if (ui.emp === "ech") {
         let h;
-        if (ui.ech === "an") h = `<table class="tbl"><thead><tr><th>Année</th><th>Mensualités</th><th>Capital</th><th>Intérêts</th><th>Assurance</th><th>Restant dû</th></tr></thead><tbody>${R.credit.slice(0, S.duree).map((o, i) => `<tr><td>${i + 1}</td><td>${eur(o.mensualites)}</td><td>${eur(o.capital)}</td><td>${eur(o.interets)}</td><td>${eur(o.assurance)}</td><td>${eur(o.crd)}</td></tr>`).join("")}</tbody></table>`;
+        if (ui.ech === "an") h = `<table class="tbl"><thead><tr><th>Année</th><th>Mensualités</th><th>Capital</th><th>Intérêts</th><th>Assurance</th><th>Restant dû</th></tr></thead><tbody>${R.credit.slice(0, X.duree).map((o, i) => `<tr><td>${i + 1}</td><td>${eur(o.mensualites)}</td><td>${eur(o.capital)}</td><td>${eur(o.interets)}</td><td>${eur(o.assurance)}</td><td>${eur(o.crd)}</td></tr>`).join("")}</tbody></table>`;
         else h = `<table class="tbl"><thead><tr><th>Mois</th><th>Échéance</th><th>Capital</th><th>Intérêts</th><th>Assurance</th><th>Restant dû</th></tr></thead><tbody>${R.rows.map(r => `<tr><td>${r.m}</td><td>${eur(r.mensualite + r.assurance)}</td><td>${eur(r.capital)}</td><td>${eur(r.interet)}</td><td>${eur(r.assurance)}</td><td>${eur(r.crd)}</td></tr>`).join("")}</tbody></table>`;
         $("#ech-t").innerHTML = h;
       }
@@ -1456,8 +1844,8 @@ const VIEWS = {
     },
     fill() {
       const isS = S.regime === "sciIs";
-      $("#fi-p").textContent = `${isS ? "Impôt sur les sociétés payé par la SCI" : S.tmiMode === "calcul" ? `Barème 2026 appliqué à ton foyer (${nf(1).format(S.parts)} part${S.parts > 1 ? "s" : ""})` : "Taux marginal de " + S.tmi + " %"}, projection sur ${R.H} ans.`;
-      $("#fi-note").textContent = REG_TXT[S.regime](S);
+      $("#fi-p").textContent = `${isS ? "Impôt sur les sociétés payé par la SCI" : X.tmiMode === "calcul" ? `Barème 2026 appliqué à ton foyer (${nf(1).format(X.parts)} part${X.parts > 1 ? "s" : ""})` : "Taux marginal de " + X.tmi + " %"}, projection sur ${R.H} ans.`;
+      $("#fi-note").textContent = REG_TXT[S.regime](X);
       if (ui.fisc === "tableau") {
         const hasRed = R.Y.some(o => o.reduction > 0);
         $("#fi-t").innerHTML = `<table class="tbl"><thead><tr><th>Année</th><th>Revenus</th><th>${isS ? "Résultat imposable" : "Base imposable"}</th>${isS ? "" : "<th>Prélèvements sociaux</th><th>Impôt sur le revenu</th>"}${hasRed ? "<th>Réduction</th>" : ""}<th>Montant à payer</th></tr></thead><tbody>${R.Y.map(o => {
@@ -1484,11 +1872,11 @@ const VIEWS = {
       <figure class="fig" style="margin-top:14px"><figcaption>Impôt payé chaque année selon le régime</figcaption><div class="cv tall"><canvas id="c-cp" role="img" aria-label="Impôt par année et par régime"></canvas></div></figure>
       <p class="note">Le TRI et l'enrichissement tiennent compte de l'impôt sur la plus-value à la revente, y compris la réintégration des amortissements en LMNP et en Jeanbrun. « Conditions » : le régime exige des critères que ton projet ne remplit pas (par exemple Jeanbrun dans l'ancien sans 30 % de travaux). Jeanbrun impose aussi un loyer plafonné, souvent 15 % sous le marché, et 9 ans de location.</p>`,
     fill() {
-      $("#cp-p").textContent = `Mêmes hypothèses, revente après ${plural(S.detention, "an")}. À loyer identique : un meublé se loue souvent 10 à 20 % plus cher qu'un logement nu.`;
+      $("#cp-p").textContent = `Mêmes hypothèses, revente après ${plural(X.detention, "an")}. ` + ((R.auto || []).includes("loyer") ? "Le loyer estimé tient compte du type de location : environ 12 % de plus en meublé." : "À loyer identique : un meublé se loue souvent 10 à 20 % plus cher qu'un logement nu.");
       const cp = comparerRegimes(S); const best = cp.filter(x => !x.critique).reduce((a, b) => (b.enrichissement > a.enrichissement ? b : a), cp[0]);
-      $("#cp-t").innerHTML = `<table class="tbl"><thead><tr><th>Régime</th><th>Impôt sur ${S.detention} ans</th><th>Cash-flow / mois</th><th>Impôt plus-value</th><th>Enrichissement</th><th>TRI</th><th></th></tr></thead><tbody>${cp.map(x => `<tr class="${x.regime === S.regime ? "hl" : ""}"><td title="${esc(x.label)}">${esc(REGIMES[x.regime].court)}${x.regime === best.regime ? `<span class="badge">Meilleur</span>` : ""}${x.critique ? `<span class="badge soft">Conditions</span>` : ""}</td><td>${eur(x.impotCumul)}</td><td class="${x.cfMoyenMois >= 0 ? "pos" : "neg"}">${eur(x.cfMoyenMois)}</td><td>${eur(x.impotPV)}</td><td><b>${eur(x.enrichissement)}</b></td><td>${x.tri === null ? "—" : pct(x.tri, 1)}</td><td>${x.regime === S.regime ? `<span class="badge soft">Choisi</span>` : `<button type="button" class="btn sm" data-choose="${x.regime}">Choisir</button>`}</td></tr>`).join("")}</tbody></table>`;
+      $("#cp-t").innerHTML = `<table class="tbl"><thead><tr><th>Régime</th><th>Impôt sur ${X.detention} ans</th><th>Cash-flow / mois</th><th>Impôt plus-value</th><th>Enrichissement</th><th>TRI</th><th></th></tr></thead><tbody>${cp.map(x => `<tr class="${x.regime === X.regime ? "hl" : ""}"><td title="${esc(x.label)}">${esc(REGIMES[x.regime].court)}${x.regime === best.regime ? `<span class="badge">Meilleur</span>` : ""}${x.critique ? `<span class="badge soft">Conditions</span>` : ""}</td><td>${eur(x.impotCumul)}</td><td class="${x.cfMoyenMois >= 0 ? "pos" : "neg"}">${eur(x.cfMoyenMois)}</td><td>${eur(x.impotPV)}</td><td><b>${eur(x.enrichissement)}</b></td><td>${x.tri === null ? "—" : pct(x.tri, 1)}</td><td>${x.regime === X.regime ? `<span class="badge soft">Choisi</span>` : `<button type="button" class="btn sm" data-choose="${x.regime}">Choisir</button>`}</td></tr>`).join("")}</tbody></table>`;
       if (!window.Chart) return noChart("c-cp");
-      const c = C(), H = Math.max(S.detention, Math.min(R.H, 25));
+      const c = C(), H = Math.max(X.detention, Math.min(R.H, 25));
       draw("c-cp", "line", { labels: Array.from({ length: H }, (_, i) => i + 1), datasets: cp.map((x, i) => line(REGIMES[x.regime].court, x.impots.slice(0, H), c.s[i % 6], { borderWidth: x.regime === S.regime ? 3 : 2 })) },
         opts({ legend: true, title: it => "Année " + it[0].label }));
     }
@@ -1503,7 +1891,7 @@ const VIEWS = {
       $("#rv-h").textContent = `Revente à ${eur(rv.prix)} après ${plural(rv.N, "an")}`;
       const st = (l, v, k, s, cls) => `<div class="stat"><div class="l">${l}${k ? tipBtn(k) : ""}</div><div class="v ${cls || ""}">${v}</div>${s ? `<div class="s">${s}</div>` : ""}</div>`;
       $("#rv-s").innerHTML = st("Enrichissement", eur(rv.enrichissement), "enrich", "", rv.enrichissement >= 0 ? "pos" : "neg") +
-        st("VAN", eur(rv.van), "van", "Actualisée à " + pc(S.actualisation, 2)) + st("TRI", rv.tri === null ? "Non défini" : pct(rv.tri, 2), "tri", R.mise < 0.02 * R.coutTotal ? "Mise quasi nulle : peu parlant" : "") +
+        st("VAN", eur(rv.van), "van", "Actualisée à " + pc(X.actualisation, 2)) + st("TRI", rv.tri === null ? "Non défini" : pct(rv.tri, 2), "tri", R.mise < 0.02 * R.coutTotal ? "Mise quasi nulle : peu parlant" : "") +
         st("Cash-on-cash", R.k.coc === null ? "—" : pct(R.k.coc, 1), "coc", "Année " + R.k.annee) + st("Multiple", rv.multiple === null ? "—" : "× " + nf(2).format(rv.multiple), "multiple", "Investi : " + eur(rv.investi));
       $("#rv-f").innerHTML = `<table class="tbl"><thead><tr><th>Année</th><th>Cash-flow</th><th>Revente</th><th>Flux</th></tr></thead><tbody>${rv.flux.map((f, t) => {
         const cf = t === 0 ? -R.mise : (S.regime === "sciIs" ? null : R.Y[t - 1].cf);
@@ -1527,9 +1915,8 @@ const VIEWS = {
 
 /* ---------- Mise à jour générale ---------- */
 function update(o = {}) {
-  S = normaliser(S);
-  R = simuler(S);
-  renderBand(); renderRailSums(); renderRecaps(); syncAuto(o.from);
+  calc();
+  renderBand(); renderEstBar(); renderRailSums(); renderRecaps(); syncAuto(o.from); syncEst();
   renderAna();
   save();
 }
@@ -1538,6 +1925,7 @@ function update(o = {}) {
 const STRUCT = new Set(["regime", "location", "pret", "differe", "typePret", "notaireSel", "agenceMode", "cautionMode", "reventeMode", "valeurTravauxMode", "defisc", "jbType", "jbNiveau", "fraisAcq", "tourisme", "residenceServices", "travauxDeductibles", "renoEnergetique", "sciSortie", "ira"]);
 function convCharge(k, to) {
   const c = S[k], from = c.mode; if (from === to) return;
+  if (c.v == null) { S[k] = { mode: to, v: null }; return; }
   const rev = R.Y[0].revenus || 0;
   const annual = from === "an" ? c.v : from === "mois" ? c.v * 12 : from === "trim" ? c.v * 4 : c.v / 100 * rev;
   const v = to === "an" ? annual : to === "mois" ? annual / 12 : to === "trim" ? annual / 4 : (rev > 0 ? annual / rev * 100 : 0);
@@ -1546,8 +1934,9 @@ function convCharge(k, to) {
 function applySelect(k, v) {
   if (k === "notaireSel") { if (v === "fixe") { S.notaireFixe = Math.round(R.notaire.total); S.notaireMode = "fixe"; } else { S.notaireMode = "auto"; S.notaireType = v.split("-")[1]; } return; }
   if (k === "reventeMode") { if (v === "fixe") S.reventeFixe = Math.round(R.rv.prix); S.reventeMode = v; return; }
-  if (k === "agenceMode") { if (v !== S.agenceMode) S.agence = v === "pct" ? (S.prix > 0 ? Math.round(R.agence / S.prix * 10000) / 100 : 0) : Math.round(R.agence); S.agenceMode = v; return; }
-  if (k === "cautionMode") { if (v !== S.cautionMode) S.caution = v === "pct" ? (R.emprunt > 0 ? Math.round(R.caution / R.emprunt * 10000) / 100 : 0) : Math.round(R.caution); S.cautionMode = v; return; }
+  if (k === "agenceMode") { if (v !== S.agenceMode && S.agence != null) S.agence = v === "pct" ? (X.prix > 0 ? Math.round(R.agence / X.prix * 10000) / 100 : 0) : Math.round(R.agence); S.agenceMode = v; return; }
+  if (k === "cautionMode") { if (v !== S.cautionMode && S.caution != null) S.caution = v === "pct" ? (R.emprunt > 0 ? Math.round(R.caution / R.emprunt * 10000) / 100 : 0) : Math.round(R.caution); S.cautionMode = v; return; }
+  if (k === "etatSel") { if (v === "neuf") S.notaireType = "neuf"; else { S.notaireType = "ancien"; S.etat = v; } return; }
   const m = k.match(/^(\w+)\.mode$/); if (m) { convCharge(m[1], v); return; }
   if (k === "tmi" || k === "parts") { S[k] = +v; return; }
   setK(S, k, v);
@@ -1558,21 +1947,29 @@ const form = $("#form");
 form.addEventListener("input", e => {
   const t = e.target;
   if (t.matches("[data-num]")) {
+    if (t.value.trim() === "" && !t.dataset.auto && NUL_UI.has(t.dataset.k)) { setK(S, t.dataset.k, null); update({ from: t }); return; }
     const v = parseNum(t.value); if (v === null) return;
     if (t.dataset.auto === "notaire" && S.notaireMode === "auto") { S.notaireMode = "fixe"; const m = $("#m-notaire"); if (m) m.value = "fixe"; const w = t.closest(".inp"); if (w) w.classList.remove("auto"); }
     if (t.dataset.auto === "revente" && S.reventeMode === "auto") { S.reventeMode = "fixe"; const m = $("#m-revente"); if (m) m.value = "fixe"; const w = t.closest(".inp"); if (w) w.classList.remove("auto"); }
     setK(S, t.dataset.k, v);
     if (t.dataset.k === "travauxMois") $$("[data-k='travauxMois']").forEach(x => { if (x !== t) x.value = fmtIn(v, 0); });
     update({ from: t });
-  } else if (t.matches("[data-text]")) { setK(S, t.dataset.k, t.value); save(); if (t.dataset.k === "adresse") renderRailSums(); }
+  } else if (t.matches("[data-text]")) {
+    setK(S, t.dataset.k, t.value);
+    if (t.dataset.k === "ville" || t.dataset.k === "adresse") update();
+    else save();
+  }
 });
 form.addEventListener("change", e => {
   const t = e.target;
-  if (t.matches("select[data-k]")) { applySelect(t.dataset.k, t.value); S = normaliser(S); R = simuler(S); renderForm(); update(); }
-  else if (t.matches("input[type=checkbox][data-k]")) { setK(S, t.dataset.k, t.checked); S = normaliser(S); R = simuler(S); if (STRUCT.has(t.dataset.k)) renderForm(); update(); }
+  if (t.matches("select[data-k]")) { applySelect(t.dataset.k, t.value); calc(); renderForm(); update(); }
+  else if (t.matches("input[type=checkbox][data-k]")) { setK(S, t.dataset.k, t.checked); calc(); if (STRUCT.has(t.dataset.k)) renderForm(); update(); }
 });
 form.addEventListener("focusout", e => {
   const t = e.target; if (!t.matches("[data-num]")) return;
+  // Frais de notaire ou prix de revente effacés : retour au calcul automatique
+  if (t.value.trim() === "" && t.dataset.auto === "notaire" && S.notaireMode === "fixe") { S.notaireMode = "auto"; calc(); renderForm(); update(); return; }
+  if (t.value.trim() === "" && t.dataset.auto === "revente" && S.reventeMode === "fixe") { S.reventeMode = "auto"; calc(); renderForm(); update(); return; }
   const auto = (t.dataset.auto === "notaire" && S.notaireMode === "auto") ? R.notaire.total : (t.dataset.auto === "revente" && S.reventeMode === "auto") ? R.rv.prix : null;
   t.value = fmtIn(auto != null ? auto : getK(S, t.dataset.k), +t.dataset.dec || 0);
 });
@@ -1580,6 +1977,7 @@ function stepField(b) {
   const inp = document.getElementById(b.dataset.for); if (!inp) return;
   const k = inp.dataset.k, dec = +inp.dataset.dec || 0, st = +b.dataset.step;
   let cur = getK(S, k);
+  if (cur == null) cur = requis(S).includes(k) ? 0 : getK(X, k);
   if (inp.dataset.auto === "notaire" && S.notaireMode === "auto") { cur = R.notaire.total; S.notaireMode = "fixe"; const m = $("#m-notaire"); if (m) m.value = "fixe"; inp.closest(".inp").classList.remove("auto"); }
   if (inp.dataset.auto === "revente" && S.reventeMode === "auto") { cur = R.rv.prix; S.reventeMode = "fixe"; const m = $("#m-revente"); if (m) m.value = "fixe"; inp.closest(".inp").classList.remove("auto"); }
   let v = Math.round(((+cur || 0) + st) / Math.abs(st)) * Math.abs(st);
@@ -1602,7 +2000,9 @@ addEventListener("pointerup", stopHold); addEventListener("pointercancel", stopH
 form.addEventListener("keydown", e => { const b = e.target.closest("[data-step]"); if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); stepField(b); } });
 form.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b || b.dataset.step) return;
-  if (b.dataset.tmimode) { S.tmiMode = b.dataset.tmimode; S = normaliser(S); R = simuler(S); renderForm(); update(); return; }
+  if (b.dataset.setk) { const k = b.dataset.setk, v = +b.dataset.v; setK(S, k, v); $$(`#form [data-k="${k}"][data-num]`).forEach(x => { x.value = fmtIn(v, +x.dataset.dec || 0); }); update(); return; }
+  if (b.dataset.type) { S.typeBien = b.dataset.type; calc(); renderForm(); update(); return; }
+  if (b.dataset.tmimode) { S.tmiMode = b.dataset.tmimode; calc(); renderForm(); update(); return; }
   if (b.dataset.mode) { setMode(b.dataset.mode); return; }
   if (b.dataset.act) act(b.dataset.act);
 });
@@ -1613,7 +2013,7 @@ function setMode(m) {
     const vides = ["copro", "tf", "gli", "gerance", "comptable", "pno", "autres"].every(k => S[k].v === 0) && S.cfe === 0;
     if (vides) { S.autres = { mode: "pct", v: 25 }; if (S.copro.v === 0) S.chargesLoc = 0; }
   }
-  S.mode = m; S = normaliser(S); R = simuler(S); renderRail(); renderForm(); update();
+  S.mode = m; calc(); renderRail(); renderForm(); update();
 }
 function act(a) {
   if (a === "notaire") return openNotaire();
@@ -1636,17 +2036,19 @@ $("#tabs").addEventListener("keydown", e => {
 });
 $("#ana").addEventListener("click", e => {
   const b = e.target.closest("button,tr[data-fy]"); if (!b) return;
+  if (b.dataset.goto) { allerAuChamp(b.dataset.goto); return; }
   if (b.dataset.sub) { const [n, v] = b.dataset.sub.split(":"); ui[n] = v; renderAna(true); save(); return; }
   if (b.dataset.tper) { ui.per = b.dataset.tper; renderAna(true); renderBand(); save(); return; }
   if (b.dataset.ech) { ui.ech = b.dataset.ech; renderAna(true); save(); return; }
-  if (b.dataset.lever) { const l = (VIEWS.synthese.lev || [])[+b.dataset.lever]; if (l) { Object.assign(S, clone(l.patch)); S = normaliser(S); R = simuler(S); renderForm(); update(); renderAna(true); } return; }
-  if (b.dataset.choose) { S.regime = b.dataset.choose; S = normaliser(S); R = simuler(S); if (ui.section === "fisc") renderForm(); update(); renderAna(true); return; }
+  if (b.dataset.lever) { const l = (VIEWS.synthese.lev || [])[+b.dataset.lever]; if (l) { Object.assign(S, clone(l.patch)); calc(); renderForm(); update(); renderAna(true); } return; }
+  if (b.dataset.choose) { S.regime = b.dataset.choose; calc(); if (ui.section === "fisc") renderForm(); update(); renderAna(true); return; }
   if (b.dataset.fy) { ui.fisc = "annee"; ui.fiscYear = +b.dataset.fy; renderAna(true); save(); }
 });
 $("#ana").addEventListener("input", e => {
   if (e.target.id === "r-amp") { ui.ampYear = +e.target.value; VIEWS.emprunt.fill(); save(); }
   if (e.target.id === "r-fy") { ui.fiscYear = +e.target.value; VIEWS.fisc.fill(); save(); }
 });
+$("#estbar").addEventListener("click", e => { const b = e.target.closest("[data-goto]"); if (b) allerAuChamp(b.dataset.goto); });
 $("#k-metric").addEventListener("change", e => { ui.metric = e.target.value; renderBand(); save(); });
 $("#k-rend").addEventListener("change", e => { ui.rend = e.target.value; renderBand(); save(); });
 $("#k-year").addEventListener("change", e => { S.anneeRef = +e.target.value; update(); renderForm(); });
@@ -1684,7 +2086,7 @@ function notaireBody() {
   const d = R.notaire.detail;
   if (!d) return `<p class="hint">Les frais sont saisis en montant fixé : ${eur(R.notaire.total)}. Choisis « Calcul auto » dans Investissement pour les estimer.</p>`;
   return `<div class="list">
-    <div class="r"><span>Prix d'achat</span><b>${eur(S.prix)}</b></div>
+    <div class="r"><span>Prix d'achat</span><b>${eur(X.prix)}</b></div>
     <div class="r"><span>Droits de mutation (${pc(d.taux, 3)})</span><b>${eur(d.dmto)}</b></div>
     <div class="r"><span>Émoluments du notaire (barème réglementé, HT)</span><b>${eur(d.emol)}</b></div>
     <div class="r"><span>TVA 20 % sur les émoluments</span><b>${eur(d.tva)}</b></div>
@@ -1698,7 +2100,7 @@ function openNotaire() {
     `<div class="fld"><label for="n-deb">Formalités et débours</label><div class="fld-row"><div class="inp"><input id="n-deb" inputmode="decimal" value="${fmtIn(S.debours, 0)}"><span class="u">€</span></div></div><p class="hint">Urbanisme, état hypothécaire, cadastre, publication : environ 1 000 €. Ton notaire te donnera le montant exact.</p></div>
     <div id="n-body" style="margin-top:8px">${notaireBody()}</div>
     <p class="note">Émoluments : 3,870 % jusqu'à 6 500 €, 1,596 % jusqu'à 17 000 €, 1,064 % jusqu'à 60 000 €, 0,799 % au-delà (tarif réglementé). Dans le neuf, les droits tombent à 0,715 %.</p>`);
-  const refresh = () => { S = normaliser(S); R = simuler(S); $("#n-body").innerHTML = notaireBody(); update(); if (ui.section === "invest") { const a = $("#f-notaire"); if (a && S.notaireMode === "auto") a.value = fmtIn(R.notaire.total, 0); } };
+  const refresh = () => { calc(); $("#n-body").innerHTML = notaireBody(); update(); if (ui.section === "invest") { const a = $("#f-notaire"); if (a && S.notaireMode === "auto") a.value = fmtIn(R.notaire.total, 0); } };
   const dm = $("#n-dmto"); if (dm) dm.addEventListener("change", e => { S.dmto = e.target.value; refresh(); if (ui.section === "invest") renderForm(); });
   $("#n-deb").addEventListener("input", e => { const v = parseNum(e.target.value); if (v !== null) { S.debours = v; refresh(); } });
 }
@@ -1707,7 +2109,7 @@ function simList() {
   return Object.entries(db.sims).sort((a, b) => b[1].updated - a[1].updated).map(([id, x]) => {
     let r; try { r = simuler(x.s); } catch (e) { r = null; }
     const d = new Date(x.updated);
-    return `<div class="simrow${id === db.cur ? " cur" : ""}" data-id="${id}"><div style="min-width:0"><div class="n">${esc(x.s.name || "Simulation")}</div><div class="d">${d.toLocaleDateString("fr-FR")} · ${r ? eur(r.Y[Math.min(r.H, r.s.anneeRef) - 1].cf / 12) + " / mois · " + pct(r.k.brut, 1) + " brut · " + eur(r.coutTotal) : ""}</div></div>
+    return `<div class="simrow${id === db.cur ? " cur" : ""}" data-id="${id}"><div style="min-width:0"><div class="n">${esc(x.s.name || "Simulation")}</div><div class="d">${d.toLocaleDateString("fr-FR")}${x.s.ville ? " · " + esc(x.s.ville) : ""} · ${r && r.manque.length ? "à compléter" : r ? eur(r.Y[Math.min(r.H, r.s.anneeRef) - 1].cf / 12) + " / mois · " + pct(r.k.brut, 1) + " brut · " + eur(r.coutTotal) : ""}</div></div>
       <div class="a">${id === db.cur ? `<span class="pill info">Ouverte</span>` : `<button type="button" class="btn sm primary" data-open="${id}">Ouvrir</button>`}<button type="button" class="btn sm" data-dup="${id}">Dupliquer</button>${Object.keys(db.sims).length > 1 ? `<button type="button" class="btn sm danger" data-del="${id}">Supprimer</button>` : ""}</div></div>`;
   }).join("");
 }
@@ -1759,19 +2161,20 @@ function doImport(text) {
   } catch (err) { msg.className = "msg err"; msg.textContent = "Ce texte n'est pas un export de Bilan Locatif. Vérifie que tu as tout copié, du premier { au dernier }."; }
 }
 function switchTo(id) { flush(); db.cur = id; S = normaliser(db.sims[id].s); store.set(KEY, db); fullRender(); }
-function newSim() { flush(); const id = uid(); const s = clone(DEFAULT_SIM); s.name = "Nouvelle simulation"; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); ui.section = "invest"; fullRender(); }
+function newSim() { flush(); const id = uid(); const s = clone(NOUVELLE_SIM); db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); ui.section = "bien"; ui.ana = "synthese"; fullRender(); $("#form").scrollTop = 0; }
 $("#btn-sims").addEventListener("click", openSims);
 $("#btn-new").addEventListener("click", newSim);
 $("#btn-dup").addEventListener("click", () => { flush(); const id = uid(); const s = clone(S); s.name = (S.name || "Simulation") + " (copie)"; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); fullRender(); });
 
 /* ---------- Rapport imprimable (hors aperçu intégré) ---------- */
 function buildReport() {
+  if ((R.manque || []).length) return `<h1>${esc(X.name)}</h1><p>Simulation incomplète : remplis ${R.manque.map(k => REQ_LAB[k].toLowerCase()).join(", ")} pour obtenir le rapport.</p>`;
   const r = R, rv = r.rv, N = rv.N, t = (head, rows) => `<table><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(x => `<tr>${x.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
-  return `<h1>${esc(S.name)}</h1><p class="muted">${[S.adresse ? esc(S.adresse) : "", S.surface ? nf(0).format(S.surface) + " m²" : "", new Date().toLocaleDateString("fr-FR"), "Bilan Locatif"].filter(Boolean).join(" · ")}</p>${S.note ? `<p>${esc(S.note)}</p>` : ""}
+  return `<h1>${esc(X.name)}</h1><p class="muted">${[X.adresse ? esc(X.adresse) : "", X.ville ? esc(X.ville) : "", X.surface ? nf(0).format(X.surface) + " m²" : "", new Date().toLocaleDateString("fr-FR"), "Bilan Locatif"].filter(Boolean).join(" · ")}</p>${X.note ? `<p>${esc(X.note)}</p>` : ""}
   <div class="kp"><div>Cash-flow année ${r.k.annee}<b>${eur(r.k.cf / 12)} / mois</b></div><div>Rendement brut / net<b>${pct(r.k.brut)} / ${pct(r.k.net)}</b></div><div>Enrichissement à ${N} ans<b>${eur(rv.enrichissement)}</b></div><div>Mise de départ<b>${eur(r.mise)}</b></div><div>Mensualité<b>${r.emprunt ? eur(r.mensualite) : "—"}</b></div><div>TRI<b>${rv.tri === null ? "—" : pct(rv.tri, 1)}</b></div></div>
-  <h2>Hypothèses</h2>${t(["Poste", "Valeur"], [["Prix d'achat", eur(S.prix)], ["Frais de notaire", eur(r.notaire.total)], ["Travaux, mobilier, plans", eur(S.travaux + S.mobilier + S.plans)], ["Coût total du projet", eur(r.coutTotal)], ["Emprunt", r.emprunt ? `${eur(r.emprunt)} à ${nf(2).format(S.taux)} % sur ${S.duree} ans` : "Aucun"], [S.location === "annee" ? "Loyer" : "Prix par nuit", S.location === "annee" ? `${eur(S.loyer)} HC + ${eur(S.chargesLoc)} de charges, occupation ${S.occupation} %` : `${eur(S.nuitee)}, occupation ${S.occupationCD} %`], ["Charges année 1", eur(r.Y[0].charges)], ["Régime fiscal", REGIMES[S.regime].label + (S.regime === "sciIs" ? "" : S.tmiMode === "calcul" ? " (barème du foyer)" : `, TMI ${S.tmi} %`)], ["Revente", `${N} ans, ${eur(rv.prix)}`]])}
+  ${clesEstimees().length ? `<p class="muted">Repères standards utilisés pour : ${clesEstimees().map(c => c[1].toLowerCase()).join(", ")}.</p>` : ""}<h2>Hypothèses</h2>${t(["Poste", "Valeur"], [["Prix d'achat", eur(X.prix)], ["Frais de notaire", eur(r.notaire.total)], ["Travaux, mobilier, plans", eur(X.travaux + X.mobilier + X.plans)], ["Coût total du projet", eur(r.coutTotal)], ["Emprunt", r.emprunt ? `${eur(r.emprunt)} à ${nf(2).format(X.taux)} % sur ${X.duree} ans` : "Aucun"], [X.location === "annee" ? "Loyer" : "Prix par nuit", X.location === "annee" ? `${eur(X.loyer)} HC + ${eur(X.chargesLoc)} de charges, occupation ${X.occupation} %` : `${eur(X.nuitee)}, occupation ${X.occupationCD} %`], ["Charges année 1", eur(r.Y[0].charges)], ["Régime fiscal", REGIMES[X.regime].label + (X.regime === "sciIs" ? "" : X.tmiMode === "calcul" ? " (barème du foyer)" : `, TMI ${X.tmi} %`)], ["Revente", `${N} ans, ${eur(rv.prix)}`]])}
   <h2>Trésorerie</h2>${t(["Année", "Revenus", "Charges", "Crédit", "Impôt", "Cash-flow", "Restant dû"], r.Y.slice(0, Math.max(N, 1)).map(o => [o.y, eur(o.revenus), eur(-o.charges), eur(-o.credit), eur(-o.impot), eur(o.cf), eur(o.crd)]))}
-  <h2>Revente et plus-value</h2>${t(["Poste", "Montant"], rv.pv.lignes.map(([l, v, ty]) => [esc(l), ty === "pct" ? pc(v) : ty === "int" ? v : eur(v)]).concat([["Capital restant dû", eur(-rv.crd)], ["Produit net de la revente", eur(rv.net)], ["Enrichissement", eur(rv.enrichissement)], ["VAN (" + pc(S.actualisation) + ")", eur(rv.van)]]))}
+  <h2>Revente et plus-value</h2>${t(["Poste", "Montant"], rv.pv.lignes.map(([l, v, ty]) => [esc(l), ty === "pct" ? pc(v) : ty === "int" ? v : eur(v)]).concat([["Capital restant dû", eur(-rv.crd)], ["Produit net de la revente", eur(rv.net)], ["Enrichissement", eur(rv.enrichissement)], ["VAN (" + pc(X.actualisation) + ")", eur(rv.van)]]))}
   <p class="muted">Estimation fondée sur les règles fiscales 2026. Elle ne remplace ni un notaire ni un expert-comptable.</p>`;
 }
 if (TOP) { const pb = $("#btn-print"); pb.hidden = false; pb.addEventListener("click", () => { $("#report").innerHTML = buildReport(); window.print(); }); addEventListener("beforeprint", () => { $("#report").innerHTML = buildReport(); }); }
@@ -1788,9 +2191,9 @@ if (window.matchMedia) { const mqd = matchMedia("(prefers-color-scheme: dark)");
 
 /* ---------- Démarrage ---------- */
 function fullRender() {
-  R = simuler(S);
+  calc();
   $("#sim-name").value = S.name;
-  renderRail(); renderForm(); renderTabs(); renderBand(); renderAna(true);
+  renderRail(); renderForm(); renderTabs(); renderBand(); renderEstBar(); renderAna(true);
 }
 const band = $("#band");
 const setBandH = () => document.documentElement.style.setProperty("--band-h", band.offsetHeight + "px");
@@ -1802,4 +2205,5 @@ fullRender();
 })();
 </script>
 
-</body></html>
+</body>
+</html>
