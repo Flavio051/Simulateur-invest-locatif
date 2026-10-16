@@ -17,7 +17,7 @@
 </head>
 <body>
 <style>
-/* Layout : établi à deux colonnes. Bandeau d'indicateurs collant ; à gauche les hypothèses (rail de 7 sections + formulaire), à droite les analyses en onglets. */
+/* Layout : établi à deux colonnes. Bandeau d'indicateurs collant ; à gauche les hypothèses (rail de 8 sections + formulaire), à droite les analyses en onglets. */
 :root{
   --bg:#eef1f4; --surface:#ffffff; --surface-2:#f5f7f9; --surface-3:#e8edf2;
   --line:#dbe1e8; --line-strong:#c2cbd6;
@@ -447,6 +447,7 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
     <symbol id="i-door" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 4l8.5 7v9.5h-17z"/><path d="M10 20.5v-5.5h4v5.5"/></g></symbol>
     <symbol id="i-receipt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></g></symbol>
     <symbol id="i-scale" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M8 20h8M5 8h14M5 8l-3 6.5h6zM19 8l-3 6.5h6z"/></g></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8V6.8A1.8 1.8 0 0 1 6.8 5H17v3"/><rect x="4" y="8" width="16" height="11" rx="2.5"/><path d="M15.5 13.5h1.5"/></g></symbol>
     <symbol id="i-tag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.5V4h8.5L21 13.5 13.5 21z"/><circle cx="7.6" cy="8.4" r="1.4"/></g></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6.5-6 6.5-11.5a6.5 6.5 0 0 0-13 0C5.5 15 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></g></symbol>
     <symbol id="i-list" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></g></symbol>
@@ -1202,6 +1203,18 @@ function simuler(s0) {
     coutCredit: totInterets + totAssurance + fraisBancaires, Y, rv, parAnnee, k, warnings: W, revente, est: EST.est, auto: EST.auto, manque: EST.manque, incertains, infosIncertaines, lieu: LIEU };
 }
 
+// Capacité d'emprunt, règles du HCSF (maintenues le 15 septembre 2026) : mensualités jusqu'à 35 % des revenus nets avant impôt,
+// assurance comprise, 25 ans au plus. Pratique des banques : environ 70 % des loyers (déjà perçus ou attendus du bien) comptés en revenus.
+const HCSF = { taux: 0.35, loyers: 0.7, dureeMax: 25 };
+function mensualiteParEuro(duree, taux, tauxAss) { const n = Math.max(1, duree) * 12, i = taux / 1200; return (i > 0 ? i / (1 - Math.pow(1 + i, -n)) : 1 / n) + tauxAss / 1200; }
+function revenusBanque(p, loyerBien = 0) { return (p.salaire || 0) + (p.salaire2 || 0) + HCSF.loyers * ((p.loyers || 0) + loyerBien); }
+function capaciteEmprunt(p, duree, taux, tauxAss, loyerBien = 0) {
+  const k = mensualiteParEuro(duree, taux, tauxAss);
+  const pour = r => { const m = Math.max(0, HCSF.taux * r - (p.credits || 0)); return { revenus: r, mensualite: m, capital: m / k }; };
+  return { sans: pour(revenusBanque(p)), avec: pour(revenusBanque(p, loyerBien)) };
+}
+function tauxEndettement(p, mensualiteBien, loyerBien = 0) { const r = revenusBanque(p, loyerBien); return r > 0 ? ((p.credits || 0) + mensualiteBien) / r : null; }
+
 // Compare les régimes possibles à loyer identique
 function comparerRegimes(s0) {
   const s = normaliser(s0);
@@ -1259,7 +1272,7 @@ const TOP = (() => { try { return window.top === window.self; } catch (e) { retu
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
 /* ---------- Stockage ---------- */
-const KEY = "bilan-locatif-v1", UI_KEY = "bilan-locatif-ui", THEME_KEY = "bilan-locatif-theme";
+const KEY = "bilan-locatif-v1", UI_KEY = "bilan-locatif-ui", THEME_KEY = "bilan-locatif-theme", PROFIL_KEY = "bilan-locatif-profil";
 const store = {
   get(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -1268,6 +1281,11 @@ let db = store.get(KEY);
 if (!db || typeof db !== "object" || !db.sims || !Object.keys(db.sims).length) { const id = uid(); db = { cur: id, sims: { [id]: { s: clone(DEFAULT_SIM), updated: Date.now() } } }; }
 if (!db.sims[db.cur]) db.cur = Object.keys(db.sims)[0];
 let S = normaliser(db.sims[db.cur].s);
+// Profil bancaire : commun à toutes les simulations, enregistré à part dans ce navigateur
+const PROFIL_CHAMPS = ["salaire", "salaire2", "loyers", "credits", "epargne"];
+function profilPropre(o) { const p = {}; for (const k of PROFIL_CHAMPS) { const v = o && o[k] != null && o[k] !== "" ? +o[k] : null; p[k] = Number.isFinite(v) ? Math.max(0, v) : null; } return p; }
+let P = profilPropre(store.get(PROFIL_KEY));
+function saveProfil() { store.set(PROFIL_KEY, P); }
 let R = simuler(S), X = R.s;
 function calc() { S = normaliser(S); R = simuler(S); X = R.s; }
 const ui = Object.assign({ section: "bien", ana: "synthese", per: "an", metric: "cf", rend: "netNet", emp: "synthese", fisc: "tableau", ech: "an", ampYear: 1, fiscYear: 1 }, store.get(UI_KEY) || {});
@@ -1360,6 +1378,7 @@ function syncEst() {
   $$("#form [data-tiers]").forEach(el => { el.innerHTML = tiersHTML(el); });
   $$("#form [data-info]").forEach(b => { const k = estKey(b.dataset.info), E = R.est[k]; if (E && E.info) b.dataset.tip = E.info; b.hidden = !E || !E.info || (R.infosIncertaines || []).includes(k); });
   const ai = $("#aide"); if (ai) ai.innerHTML = aideHTML();
+  const cp = $("#capa"); if (cp) cp.innerHTML = capaHTML();
   // Petits chiffres calculés dans les aides des champs
   $$("#form [data-live]").forEach(el => { const k = el.dataset.live; if (k === "prixRetenu") el.innerHTML = prixRetenuTxt(); else el.textContent = k === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
 }
@@ -1423,6 +1442,7 @@ const SECTIONS = [
   { id: "bien", label: "Le bien", icon: "pin" },
   { id: "invest", label: "Investissement", icon: "key" },
   { id: "fin", label: "Financement", icon: "bank" },
+  { id: "banque", label: "Capacité d'emprunt", icon: "wallet" },
   { id: "expl", label: "Exploitation", icon: "door" },
   { id: "charges", label: "Charges", icon: "receipt" },
   { id: "fisc", label: "Fiscalité", icon: "scale" },
@@ -1431,7 +1451,7 @@ const SECTIONS = [
 // Sections dont un chiffre important est estimé : leur résumé dans le rail commence par « ≈ »
 const SEC_EST = id => clesEstimees().some(c => c[2] === id);
 function railSummary(id) {
-  if ((R.manque || []).length && id !== "bien" && id !== "fisc") return "À compléter";
+  if ((R.manque || []).length && id !== "bien" && id !== "fisc" && id !== "banque") return "À compléter";
   return (SEC_EST(id) ? "≈ " : "") + railTexte(id);
 }
 function railTexte(id) {
@@ -1439,6 +1459,7 @@ function railTexte(id) {
     case "bien": return (S.ville.trim() || (S.typeBien === "maison" ? "Maison" : "Appartement")) + " · " + ((R.manque || []).length ? "à compléter" : nf(0).format(X.surface) + " m²");
     case "invest": return eur(R.coutTotal);
     case "fin": return S.pret && R.emprunt > 0 ? eur(R.mensualite) + " / mois" : "Achat comptant";
+    case "banque": return revenusBanque(P) > 0 ? "Jusqu'à " + eur(capaciteEmprunt(P, X.duree, X.taux, X.tauxAss).sans.capital) : "Tes revenus, tes crédits";
     case "expl": return X.location === "courte" ? eur(X.nuitee) + " / nuit · " + pc(X.occupationCD, 0) : eur(X.loyer + X.chargesLoc) + " / mois CC";
     case "charges": return eur(R.Y[0].charges) + " / an";
     case "fisc": return REGIMES[X.regime].court + (X.regime === "sciIs" ? "" : X.tmiMode === "calcul" ? " · TMI calculée" : " · TMI " + X.tmi + " %");
@@ -1505,6 +1526,15 @@ const FORMS = {
         `<div class="fld"><div class="fld-top"><span class="lab">Inclus dans l'emprunt</span></div><div class="chips">${[["travaux", "Travaux"], ["mobilier", "Mobilier"], ["notaire", "Notaire"], ["plans", "Plans d'architecte"], ["agence", "Honoraires d'agence"]].map(([k, t]) => `<label class="chip"><input type="checkbox" data-k="inclus.${k}" id="c-inc-${k}"${S.inclus[k] ? " checked" : ""}><span>${t}</span></label>`).join("")}</div><p class="hint">Ce qui n'est pas inclus se paie comptant.</p></div>`;
     }
     return h + recapBox("fin") + (S.pret ? ctas([["go:emprunt", "Voir le détail du prêt"]]) : "");
+  },
+  banque() {
+    return head("Capacité d'emprunt", "Combien la banque peut te prêter d'après tes revenus. Ces infos sont enregistrées dans ce navigateur pour toutes tes simulations.") +
+      pnum("salaire", "Ton salaire net mensuel", { hint: "Net avant impôt sur le revenu (sur ta fiche de paie). Lisse tes primes régulières sur 12 mois." }) +
+      pnum("salaire2", "Salaire net du co-emprunteur", { hint: "Seulement si tu achètes à deux." }) +
+      pnum("loyers", "Loyers que tu touches déjà", { hint: "D'autres biens déjà loués : la banque en retient environ 70 %." }) +
+      pnum("credits", "Crédits en cours", { hint: "Mensualités de tes autres crédits : voiture, consommation, immobilier." }) +
+      pnum("epargne", "Épargne pour l'apport", { unit: "€", hint: "Sert à calculer ton budget d'achat. L'apport de cette simulation se règle dans Financement." }) +
+      `<div class="recap" id="capa">${capaHTML()}</div>`;
   },
   expl() {
     let h = head("Exploitation", "Ce que le bien encaisse chaque année.") +
@@ -1587,6 +1617,37 @@ const FORMS = {
     return h + recapBox("revente") + ctas([["go:revente", "Simuler la plus-value à la revente", true]]);
   },
 };
+// Champ du profil bancaire (enregistré à part, commun à toutes les simulations)
+function pnum(k, label, o = {}) {
+  return `<div class="fld"><div class="fld-top"><label for="p-${k}">${esc(label)}</label></div><div class="fld-row"><div class="inp"><input id="p-${k}" data-p="${k}" inputmode="decimal" autocomplete="off" value="${P[k] == null ? "" : fmtIn(P[k], 0)}"><span class="u">${esc(o.unit || "€ / mois")}</span></div></div>${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
+}
+// Loyer que la banque prend en compte pour ce bien (avant pondération à 70 %)
+function loyerRetenu() { return X.location === "courte" ? (R.Y[0] ? R.Y[0].revenus / 12 : 0) : (X.loyer || 0); }
+function capaHTML() {
+  if (!(revenusBanque(P) > 0)) return `<div class="rt">Ta capacité d'emprunt</div><p class="hint" style="margin:0">Remplis ton salaire pour voir combien tu peux emprunter.</p>`;
+  const lb = loyerRetenu(), c = capaciteEmprunt(P, X.duree, X.taux, X.tauxAss, lb), frais = X.notaireType === "neuf" ? 0.03 : 0.08;
+  const budget = (c.sans.capital + (P.epargne || 0)) / (1 + frais);
+  let h = `<div class="rt">Ta capacité d'emprunt</div>` +
+    row("Revenus retenus par la banque", eur(c.sans.revenus) + " / mois", P.loyers ? { small: "Loyers déjà perçus comptés à 70 %" } : {}) +
+    row("Mensualité maximale", eur(c.sans.mensualite) + " / mois", { small: "35 % des revenus" + (P.credits ? ", moins tes crédits en cours" : "") }) +
+    row("Tu peux emprunter environ", eur(c.sans.capital), { tot: true, small: `Sur ${plural(X.duree, "an")} à ${pc(X.taux, 2)}, assurance comprise` }) +
+    row("Budget d'achat", eur(budget), { small: `Avec ${eur(P.epargne || 0)} d'apport, frais de notaire (environ ${Math.round(frais * 100)} %) compris` });
+  if (X.duree > HCSF.dureeMax) h += `<p class="hint" style="margin:6px 0 0;color:var(--neg)">Au-delà de 25 ans, le crédit sort des règles du HCSF (27 ans seulement avec un différé, dans le neuf ou avec travaux).</p>`;
+  if (!(R.manque || []).length && R.emprunt > 0) {
+    const te = tauxEndettement(P, R.mensualite, lb), ok = te !== null && te <= HCSF.taux;
+    h += `<div class="rt" style="margin-top:12px">Avec ce bien</div>` +
+      row("Loyer compté par la banque", eur(HCSF.loyers * lb) + " / mois", { small: "70 % du loyer" + (X.location === "courte" ? " (recettes moyennes)" : " hors charges") }) +
+      row("Capacité avec ce loyer", eur(c.avec.capital)) +
+      row("Emprunt de cette simulation", eur(R.emprunt), { small: "Mensualité " + eur(R.mensualite) }) +
+      row("Taux d'endettement", pct(te, 1), { tot: true, cls: ok ? "pos" : "neg", small: ok ? "Sous les 35 % : finançable" : "Au-dessus des 35 % : la banque risque de refuser" });
+  }
+  return h + `<p class="hint" style="margin:10px 0 0">Règle des banques (HCSF, confirmée en septembre 2026) : mensualités jusqu'à 35 % des revenus nets avant impôt, assurance comprise, sur 25 ans au plus. Elles regardent aussi la stabilité de ton contrat (CDI hors période d'essai) et ce qu'il te reste pour vivre.</p>`;
+}
+function ligneEndettement() {
+  if (!(revenusBanque(P) > 0) || !(R.emprunt > 0)) return null;
+  const te = tauxEndettement(P, R.mensualite, loyerRetenu());
+  return te === null ? null : ["Taux d'endettement", pct(te, 1), te <= HCSF.taux ? "pos" : "neg"];
+}
 // Prix retenu après la variation (négociation), affiché sous le champ
 function prixRetenuTxt() {
   if (S.prix == null) return "Remplis d'abord le prix affiché.";
@@ -1616,7 +1677,8 @@ const RECAPS = {
   fin: () => `<div class="rt">Récapitulatif du financement</div>` + row("Prix d'achat", eur(X.prix)) + row("Coûts supplémentaires", eur(R.coutTotal - X.prix), { small: "Notaire, travaux, etc." }) +
     row("Coût total du projet", eur(R.coutTotal)) + (R.fraisBancaires ? row("Frais bancaires", eur(R.fraisBancaires), { small: "Courtage, dossier, garantie" }) : "") +
     row("Montant emprunté", eur(R.emprunt)) + row("Cash nécessaire", eur(R.mise), { small: "Apport et frais non financés" }) +
-    (R.emprunt > 0 ? row("Échéance mensuelle", eur(R.mensualite), { tot: true, small: "Assurance comprise" }) + row("Coût total du crédit", eur(R.coutCredit), { small: "Intérêts, assurance et frais" }) : ""),
+    (R.emprunt > 0 ? row("Échéance mensuelle", eur(R.mensualite), { tot: true, small: "Assurance comprise" }) + row("Coût total du crédit", eur(R.coutCredit), { small: "Intérêts, assurance et frais" }) : "") +
+    (() => { const l = ligneEndettement(); return l ? row(l[0], l[1], { cls: l[2], small: "Avec tes revenus : 35 % maximum (Capacité d'emprunt)" }) : ""; })(),
   expl: () => { const y1 = R.Y[0], ref = R.Y[R.k.annee - 1];
     return `<div class="rt">Récapitulatif</div>` + (X.location === "annee" ? row("Loyer charges comprises", eur(X.loyer + X.chargesLoc) + " / mois") : row("Chiffre d'affaires théorique", eur(X.nuitee * 365 * X.occupationCD / 100) + " / an")) +
       row("Revenu brut année 1", eur(y1.revenus)) + (ref.y !== 1 ? row("Revenu brut année " + ref.y, eur(ref.revenus)) : "") +
@@ -1640,7 +1702,7 @@ function renderRail() {
     <svg class="ic" aria-hidden="true"><use href="#i-${sct.icon}"/></svg><span class="t">${sct.label}</span><span class="m" data-sum="${sct.id}">${esc(railSummary(sct.id))}</span></button>`).join("");
 }
 function renderRailSums() { $$("[data-sum]").forEach(el => { el.textContent = railSummary(el.dataset.sum); }); }
-const MODESW = () => `<div class="modesw" role="group" aria-label="Niveau de détail"><button type="button" data-mode="rapide" aria-pressed="${S.mode === "rapide"}">Estimation rapide<small>Quelques champs, résultat immédiat</small></button><button type="button" data-mode="complet" aria-pressed="${S.mode === "complet"}">Simulation complète<small>7 sections, tous les paramètres</small></button></div>`;
+const MODESW = () => `<div class="modesw" role="group" aria-label="Niveau de détail"><button type="button" data-mode="rapide" aria-pressed="${S.mode === "rapide"}">Estimation rapide<small>Quelques champs, résultat immédiat</small></button><button type="button" data-mode="complet" aria-pressed="${S.mode === "complet"}">Simulation complète<small>8 sections, tous les paramètres</small></button></div>`;
 FORMS.rapide = () => head("Estimation rapide", "La surface, le prix et le loyer suffisent : le reste suit des repères standards.") +
   txt("ville", "Ville", { ph: "Ex. Reims", max: 120 }) +
   num("surface", "Surface habitable", { unit: "m²", step: 1, hint: "Sur l'annonce." }) +
@@ -2012,6 +2074,12 @@ function applySelect(k, v) {
 const form = $("#form");
 form.addEventListener("input", e => {
   const t = e.target;
+  if (t.matches("[data-p]")) { // profil bancaire : enregistré tout de suite, à part des simulations
+    const brut = t.value.trim(), v = brut === "" ? null : parseNum(brut);
+    if (brut !== "" && v === null) return;
+    P[t.dataset.p] = v === null ? null : Math.max(0, v); saveProfil();
+    const cp = $("#capa"); if (cp) cp.innerHTML = capaHTML(); renderRecaps(); renderRailSums(); return;
+  }
   if (t.matches("[data-num]")) {
     if (t.value.trim() === "" && !t.dataset.auto && NUL_UI.has(t.dataset.k)) { setK(S, t.dataset.k, null); update({ from: t }); return; }
     const v = parseNum(t.value); if (v === null) return;
@@ -2032,7 +2100,9 @@ form.addEventListener("change", e => {
   else if (t.matches("input[type=checkbox][data-k]")) { setK(S, t.dataset.k, t.checked); calc(); if (STRUCT.has(t.dataset.k)) renderForm(); update(); }
 });
 form.addEventListener("focusout", e => {
-  const t = e.target; if (!t.matches("[data-num]")) return;
+  const t = e.target;
+  if (t.matches("[data-p]")) { t.value = P[t.dataset.p] == null ? "" : fmtIn(P[t.dataset.p], 0); return; }
+  if (!t.matches("[data-num]")) return;
   // Frais de notaire ou prix de revente effacés : retour au calcul automatique
   if (t.value.trim() === "" && t.dataset.auto === "notaire" && S.notaireMode === "fixe") { S.notaireMode = "auto"; calc(); renderForm(); update(); return; }
   if (t.value.trim() === "" && t.dataset.auto === "revente" && S.reventeMode === "fixe") { S.reventeMode = "auto"; calc(); renderForm(); update(); return; }
@@ -2203,7 +2273,7 @@ dialog.addEventListener("click", e => {
 function openExport() {
   flush();
   openModal(mHead("Exporter mes simulations") + `<p class="hint" style="margin-top:0">Garde ce texte (dans un fichier, un mail…) pour retrouver tes simulations sur un autre appareil avec « Importer ».</p>
-    <textarea class="code" id="exp" readonly>${esc(JSON.stringify({ app: "bilan-locatif", version: 1, sims: Object.values(db.sims).map(x => x.s) }, null, 1))}</textarea>
+    <textarea class="code" id="exp" readonly>${esc(JSON.stringify({ app: "bilan-locatif", version: 1, profil: P, sims: Object.values(db.sims).map(x => x.s) }, null, 1))}</textarea>
     <p class="msg" id="exp-msg" aria-live="polite"></p>
     <div class="ctas"><button type="button" class="btn primary" data-copy>Copier</button>${TOP ? `<button type="button" class="btn" data-dl>Télécharger le fichier</button>` : ""}<button type="button" class="btn" data-back>Retour</button></div>`);
 }
@@ -2219,6 +2289,7 @@ function doImport(text) {
   const msg = $("#imp-msg");
   try {
     const d = JSON.parse(text); const list = Array.isArray(d) ? d : Array.isArray(d.sims) ? d.sims : [d];
+    if (d && d.profil && typeof d.profil === "object") { P = profilPropre(d.profil); saveProfil(); }
     let n = 0, last = null;
     for (const s of list) { if (!s || typeof s !== "object" || !("prix" in s)) continue; const id = uid() + n; db.sims[id] = { s: normaliser(s), updated: Date.now() + n }; last = id; n++; }
     if (!n) throw new Error("vide");
@@ -2324,7 +2395,7 @@ function buildReport() {
     <h2>Le projet en chiffres</h2>
     <div class="rp-blocs">
       ${bloc("L'achat", [X.variationPrix ? ["Prix affiché", eur(X.prixAffiche)] : null, [X.variationPrix ? `Prix négocié (${X.variationPrix > 0 ? "+" : ""}${pc(X.variationPrix, 1)})` : "Prix d'achat", eur(X.prix)], ["Frais de notaire", eur(r.notaire.total)], r.agence ? ["Honoraires d'agence", eur(r.agence)] : null, X.travaux ? ["Travaux", eur(X.travaux)] : null, X.mobilier ? ["Mobilier", eur(X.mobilier)] : null, ["Coût total", eur(r.coutTotal), "tot"]])}
-      ${bloc("Le crédit", r.emprunt > 0 ? [["Montant emprunté", eur(r.emprunt)], ["Apport", eur(X.apport)], ["Durée et taux", `${plural(X.duree, "an")} · ${pc(X.taux, 2)}`], ["Assurance emprunteur", pc(X.tauxAss, 2) + " par an"], ["Coût total du crédit", eur(r.coutCredit)], ["Mensualité", eur(r.mensualite), "tot"]] : [["Achat comptant", eur(r.coutTotal)], ["Mise de départ", eur(r.mise), "tot"]])}
+      ${bloc("Le crédit", r.emprunt > 0 ? [["Montant emprunté", eur(r.emprunt)], ["Apport", eur(X.apport)], ["Durée et taux", `${plural(X.duree, "an")} · ${pc(X.taux, 2)}`], ["Assurance emprunteur", pc(X.tauxAss, 2) + " par an"], ["Coût total du crédit", eur(r.coutCredit)], ligneEndettement(), ["Mensualité", eur(r.mensualite), "tot"]] : [["Achat comptant", eur(r.coutTotal)], ["Mise de départ", eur(r.mise), "tot"]])}
       ${bloc("Une année type (année " + ref.y + ")", [["Revenus encaissés", eur(ref.revenus)], ["Charges", eur(-ref.charges)], ["Crédit et assurance", eur(-ref.credit)], [isS ? "Impôt de la SCI" : "Impôt", eur(-ref.impot)], ["Cash-flow sur l'année", eur(ref.cf), "tot"]])}
     </div>
   </div>
