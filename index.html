@@ -602,6 +602,8 @@ const DEFAULT_SIM = {
   fraisRevente: 0, ira: false, pvFrais: "auto", pvTravaux: "auto", actualisation: 1,
   // Le bien
   ville: "", dept: "", adresse: "", typeBien: "appartement", etat: "bon", dpe: "", surface: 50, note: "",
+  // Profil emprunteur choisi (identifiant ; le profil lui-même est enregistré à part)
+  profil: "",
   // Affichage
   anneeRef: 2
 };
@@ -665,6 +667,7 @@ function normaliser(s0) {
   s.typeBien = s.typeBien === "maison" ? "maison" : "appartement";
   s.etat = ["bon", "rafraichir", "renover", "lourd"].includes(s.etat) ? s.etat : "bon";
   s.dpe = ["A", "B", "C", "D", "E", "F", "G"].includes(s.dpe) ? s.dpe : "";
+  s.profil = typeof s.profil === "string" ? s.profil.slice(0, 40) : "";
   s.dept = typeof s.dept === "string" && /^(\d{2}|2[AB]|97\d)$/.test(s.dept) ? s.dept : "";
   for (const k of nuls) s[k] = null;
   for (const k of nulsCh) s[k] = { mode: s[k].mode, v: null };
@@ -1272,7 +1275,7 @@ const TOP = (() => { try { return window.top === window.self; } catch (e) { retu
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
 /* ---------- Stockage ---------- */
-const KEY = "bilan-locatif-v1", UI_KEY = "bilan-locatif-ui", THEME_KEY = "bilan-locatif-theme", PROFIL_KEY = "bilan-locatif-profil";
+const KEY = "bilan-locatif-v1", UI_KEY = "bilan-locatif-ui", THEME_KEY = "bilan-locatif-theme", PROFILS_KEY = "bilan-locatif-profils", ANCIEN_PROFIL_KEY = "bilan-locatif-profil";
 const store = {
   get(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -1281,11 +1284,36 @@ let db = store.get(KEY);
 if (!db || typeof db !== "object" || !db.sims || !Object.keys(db.sims).length) { const id = uid(); db = { cur: id, sims: { [id]: { s: clone(DEFAULT_SIM), updated: Date.now() } } }; }
 if (!db.sims[db.cur]) db.cur = Object.keys(db.sims)[0];
 let S = normaliser(db.sims[db.cur].s);
-// Profil bancaire : commun à toutes les simulations, enregistré à part dans ce navigateur
-const PROFIL_CHAMPS = ["salaire", "salaire2", "loyers", "credits", "epargne"];
-function profilPropre(o) { const p = {}; for (const k of PROFIL_CHAMPS) { const v = o && o[k] != null && o[k] !== "" ? +o[k] : null; p[k] = Number.isFinite(v) ? Math.max(0, v) : null; } return p; }
-let P = profilPropre(store.get(PROFIL_KEY));
-function saveProfil() { store.set(PROFIL_KEY, P); }
+// Profils emprunteurs nommés (seul, à deux…) : enregistrés à part dans ce navigateur, chaque simulation choisit le sien.
+// Rien n'est envoyé ailleurs : le site public ne contient que le code, jamais ces chiffres.
+const PROFIL_CHAMPS = ["salaire", "salaire2", "loyers", "credits", "apport"], TMIS = [0, 11, 30, 41, 45];
+function profilPropre(o) {
+  o = o || {}; const p = { nom: String(o.nom || "Mon profil").trim().slice(0, 40) || "Mon profil" };
+  for (const k of PROFIL_CHAMPS) { const v = o[k] != null && o[k] !== "" ? +o[k] : null; p[k] = Number.isFinite(v) ? Math.max(0, v) : null; }
+  p.tmi = o.tmi != null && o.tmi !== "" && TMIS.includes(+o.tmi) ? +o.tmi : null;
+  return p;
+}
+let PR = store.get(PROFILS_KEY);
+if (!PR || typeof PR !== "object" || !PR.list || typeof PR.list !== "object") PR = { list: {}, dernier: "" };
+for (const id of Object.keys(PR.list)) PR.list[id] = profilPropre(PR.list[id]);
+if (!PR.list[PR.dernier]) PR.dernier = Object.keys(PR.list)[0] || "";
+{ // ancienne version : un seul profil sans nom, repris sous le nom « Mon profil » pour toutes les simulations
+  const a = store.get(ANCIEN_PROFIL_KEY);
+  if (a && !Object.keys(PR.list).length && ["salaire", "salaire2", "loyers", "credits", "epargne"].some(k => a[k] > 0)) {
+    const id = uid(); PR.list[id] = profilPropre(Object.assign({}, a, { nom: "Mon profil", apport: a.epargne })); PR.dernier = id;
+    for (const x of Object.values(db.sims)) if (!x.s.profil) x.s.profil = id;
+    if (!S.profil) S.profil = id;
+    store.set(KEY, db); store.set(PROFILS_KEY, PR);
+  }
+}
+function saveProfils() { store.set(PROFILS_KEY, PR); }
+const profil = () => PR.list[S.profil] || null;
+// Le profil remplit l'apport et le taux d'imposition de la simulation (modifiables ensuite)
+function appliquerProfil(p, champs) {
+  if (!p) return;
+  if ((!champs || champs.includes("apport")) && p.apport != null && S.pret) S.apport = p.apport;
+  if ((!champs || champs.includes("tmi")) && p.tmi != null) { S.tmiMode = "fixe"; S.tmi = p.tmi; }
+}
 let R = simuler(S), X = R.s;
 function calc() { S = normaliser(S); R = simuler(S); X = R.s; }
 const ui = Object.assign({ section: "bien", ana: "synthese", per: "an", metric: "cf", rend: "netNet", emp: "synthese", fisc: "tableau", ech: "an", ampYear: 1, fiscYear: 1 }, store.get(UI_KEY) || {});
@@ -1442,7 +1470,7 @@ const SECTIONS = [
   { id: "bien", label: "Le bien", icon: "pin" },
   { id: "invest", label: "Investissement", icon: "key" },
   { id: "fin", label: "Financement", icon: "bank" },
-  { id: "banque", label: "Capacité d'emprunt", icon: "wallet" },
+  { id: "banque", label: "Profil emprunteur", icon: "wallet" },
   { id: "expl", label: "Exploitation", icon: "door" },
   { id: "charges", label: "Charges", icon: "receipt" },
   { id: "fisc", label: "Fiscalité", icon: "scale" },
@@ -1459,7 +1487,7 @@ function railTexte(id) {
     case "bien": return (S.ville.trim() || (S.typeBien === "maison" ? "Maison" : "Appartement")) + " · " + ((R.manque || []).length ? "à compléter" : nf(0).format(X.surface) + " m²");
     case "invest": return eur(R.coutTotal);
     case "fin": return S.pret && R.emprunt > 0 ? eur(R.mensualite) + " / mois" : "Achat comptant";
-    case "banque": return revenusBanque(P) > 0 ? "Jusqu'à " + eur(capaciteEmprunt(P, X.duree, X.taux, X.tauxAss).sans.capital) : "Tes revenus, tes crédits";
+    case "banque": { const p = profil(); return !p ? "Choisis un profil" : (p.nom || "Sans nom") + (revenusBanque(p) > 0 ? " · jusqu'à " + eur(capaciteEmprunt(p, X.duree, X.taux, X.tauxAss).sans.capital) : ""); }
     case "expl": return X.location === "courte" ? eur(X.nuitee) + " / nuit · " + pc(X.occupationCD, 0) : eur(X.loyer + X.chargesLoc) + " / mois CC";
     case "charges": return eur(R.Y[0].charges) + " / an";
     case "fisc": return REGIMES[X.regime].court + (X.regime === "sciIs" ? "" : X.tmiMode === "calcul" ? " · TMI calculée" : " · TMI " + X.tmi + " %");
@@ -1528,13 +1556,23 @@ const FORMS = {
     return h + recapBox("fin") + (S.pret ? ctas([["go:emprunt", "Voir le détail du prêt"]]) : "");
   },
   banque() {
-    return head("Capacité d'emprunt", "Combien la banque peut te prêter d'après tes revenus. Ces infos sont enregistrées dans ce navigateur pour toutes tes simulations.") +
+    const p = profil(), ids = Object.keys(PR.list);
+    const choix = `<div class="fld"><div class="fld-top"><label for="s-profil">Profil de cette simulation</label></div>
+      <select class="selbox" id="s-profil" data-profil><option value=""${p ? "" : " selected"}>Aucun profil</option>${ids.map(id => `<option value="${id}"${id === S.profil ? " selected" : ""}>${esc(PR.list[id].nom)}</option>`).join("")}<option value="__nouveau">+ Nouveau profil</option></select>
+      <p class="hint">Un profil par situation (seul, à deux…). Le choisir remplit l'apport et le taux d'imposition de la simulation.</p></div>`;
+    const prive = `<p class="hint" style="margin-top:14px">Tes profils restent dans ce navigateur : rien n'est envoyé sur GitHub, et les visiteurs du site ne voient que le simulateur vide.</p>`;
+    let h = head("Profil emprunteur", "Tes revenus et combien la banque peut te prêter. Le profil est enregistré une fois pour toutes, et sert à toutes les simulations où tu le choisis.") + choix;
+    if (!p) return h + `<p class="hint">${ids.length ? "Choisis un profil dans la liste, ou crée-en un nouveau." : "Crée ton premier profil avec « + Nouveau profil »."}</p>` + prive;
+    h += `<div class="fld"><div class="fld-top"><label for="p-nom">Nom du profil</label></div><input class="txt" id="p-nom" data-pnom type="text" maxlength="40" autocomplete="off" value="${esc(p.nom)}"></div>` +
       pnum("salaire", "Ton salaire net mensuel", { hint: "Net avant impôt sur le revenu (sur ta fiche de paie). Lisse tes primes régulières sur 12 mois." }) +
       pnum("salaire2", "Salaire net du co-emprunteur", { hint: "Seulement si tu achètes à deux." }) +
-      pnum("loyers", "Loyers que tu touches déjà", { hint: "D'autres biens déjà loués : la banque en retient environ 70 %." }) +
+      pnum("loyers", "Loyers que tu touches déjà", { hint: "D'autres biens déjà loués : la banque en retient environ 70\u00a0%." }) +
       pnum("credits", "Crédits en cours", { hint: "Mensualités de tes autres crédits : voiture, consommation, immobilier." }) +
-      pnum("epargne", "Épargne pour l'apport", { unit: "€", hint: "Sert à calculer ton budget d'achat. L'apport de cette simulation se règle dans Financement." }) +
-      `<div class="recap" id="capa">${capaHTML()}</div>`;
+      pnum("apport", "Apport", { unit: "€", hint: "Repris dans la simulation quand elle utilise ce profil (Financement)." }) +
+      `<div class="fld"><div class="fld-top"><label for="p-tmi">Taux marginal d'imposition</label></div><select class="selbox" id="p-tmi" data-ptmi><option value=""${p.tmi == null ? " selected" : ""}>Je ne sais pas</option>${TMIS.map(t => `<option value="${t}"${p.tmi === t ? " selected" : ""}>${t}\u00a0%</option>`).join("")}</select><p class="hint">Ta tranche d'impôt : reprise dans Fiscalité.</p></div>` +
+      `<div class="recap" id="capa">${capaHTML()}</div>` +
+      `<div class="ctas">${ui.supprProfil ? `<button type="button" class="btn danger" data-act="profil-suppr-ok">Confirmer : supprimer « ${esc(p.nom)} »</button><button type="button" class="btn" data-act="profil-suppr-non">Annuler</button>` : `<button type="button" class="btn" data-act="profil-suppr">Supprimer ce profil</button>`}</div>` + prive;
+    return h;
   },
   expl() {
     let h = head("Exploitation", "Ce que le bien encaisse chaque année.") +
@@ -1619,19 +1657,20 @@ const FORMS = {
 };
 // Champ du profil bancaire (enregistré à part, commun à toutes les simulations)
 function pnum(k, label, o = {}) {
-  return `<div class="fld"><div class="fld-top"><label for="p-${k}">${esc(label)}</label></div><div class="fld-row"><div class="inp"><input id="p-${k}" data-p="${k}" inputmode="decimal" autocomplete="off" value="${P[k] == null ? "" : fmtIn(P[k], 0)}"><span class="u">${esc(o.unit || "€ / mois")}</span></div></div>${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
+  return `<div class="fld"><div class="fld-top"><label for="p-${k}">${esc(label)}</label></div><div class="fld-row"><div class="inp"><input id="p-${k}" data-p="${k}" inputmode="decimal" autocomplete="off" value="${profil()[k] == null ? "" : fmtIn(profil()[k], 0)}"><span class="u">${esc(o.unit || "€ / mois")}</span></div></div>${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
 }
 // Loyer que la banque prend en compte pour ce bien (avant pondération à 70 %)
 function loyerRetenu() { return X.location === "courte" ? (R.Y[0] ? R.Y[0].revenus / 12 : 0) : (X.loyer || 0); }
 function capaHTML() {
-  if (!(revenusBanque(P) > 0)) return `<div class="rt">Ta capacité d'emprunt</div><p class="hint" style="margin:0">Remplis ton salaire pour voir combien tu peux emprunter.</p>`;
+  const P = profil();
+  if (!P || !(revenusBanque(P) > 0)) return `<div class="rt">Ta capacité d'emprunt</div><p class="hint" style="margin:0">Remplis ton salaire pour voir combien tu peux emprunter.</p>`;
   const lb = loyerRetenu(), c = capaciteEmprunt(P, X.duree, X.taux, X.tauxAss, lb), frais = X.notaireType === "neuf" ? 0.03 : 0.08;
-  const budget = (c.sans.capital + (P.epargne || 0)) / (1 + frais);
+  const budget = (c.sans.capital + (P.apport || 0)) / (1 + frais);
   let h = `<div class="rt">Ta capacité d'emprunt</div>` +
     row("Revenus retenus par la banque", eur(c.sans.revenus) + " / mois", P.loyers ? { small: "Loyers déjà perçus comptés à 70 %" } : {}) +
     row("Mensualité maximale", eur(c.sans.mensualite) + " / mois", { small: "35 % des revenus" + (P.credits ? ", moins tes crédits en cours" : "") }) +
     row("Tu peux emprunter environ", eur(c.sans.capital), { tot: true, small: `Sur ${plural(X.duree, "an")} à ${pc(X.taux, 2)}, assurance comprise` }) +
-    row("Budget d'achat", eur(budget), { small: `Avec ${eur(P.epargne || 0)} d'apport, frais de notaire (environ ${Math.round(frais * 100)} %) compris` });
+    row("Budget d'achat", eur(budget), { small: `Avec ${eur(P.apport || 0)} d'apport, frais de notaire (environ ${Math.round(frais * 100)} %) compris` });
   if (X.duree > HCSF.dureeMax) h += `<p class="hint" style="margin:6px 0 0;color:var(--neg)">Au-delà de 25 ans, le crédit sort des règles du HCSF (27 ans seulement avec un différé, dans le neuf ou avec travaux).</p>`;
   if (!(R.manque || []).length && R.emprunt > 0) {
     const te = tauxEndettement(P, R.mensualite, lb), ok = te !== null && te <= HCSF.taux;
@@ -1644,7 +1683,8 @@ function capaHTML() {
   return h + `<p class="hint" style="margin:10px 0 0">Règle des banques (HCSF, confirmée en septembre 2026) : mensualités jusqu'à 35 % des revenus nets avant impôt, assurance comprise, sur 25 ans au plus. Elles regardent aussi la stabilité de ton contrat (CDI hors période d'essai) et ce qu'il te reste pour vivre.</p>`;
 }
 function ligneEndettement() {
-  if (!(revenusBanque(P) > 0) || !(R.emprunt > 0)) return null;
+  const P = profil();
+  if (!P || !(revenusBanque(P) > 0) || !(R.emprunt > 0)) return null;
   const te = tauxEndettement(P, R.mensualite, loyerRetenu());
   return te === null ? null : ["Taux d'endettement", pct(te, 1), te <= HCSF.taux ? "pos" : "neg"];
 }
@@ -2074,12 +2114,15 @@ function applySelect(k, v) {
 const form = $("#form");
 form.addEventListener("input", e => {
   const t = e.target;
-  if (t.matches("[data-p]")) { // profil bancaire : enregistré tout de suite, à part des simulations
+  if (t.matches("[data-p]")) { // profil emprunteur : enregistré tout de suite, à part des simulations
+    const p = profil(); if (!p) return;
     const brut = t.value.trim(), v = brut === "" ? null : parseNum(brut);
     if (brut !== "" && v === null) return;
-    P[t.dataset.p] = v === null ? null : Math.max(0, v); saveProfil();
-    const cp = $("#capa"); if (cp) cp.innerHTML = capaHTML(); renderRecaps(); renderRailSums(); return;
+    p[t.dataset.p] = v === null ? null : Math.max(0, v); saveProfils();
+    if (t.dataset.p === "apport") { appliquerProfil(p, ["apport"]); update(); } else { const cp = $("#capa"); if (cp) cp.innerHTML = capaHTML(); renderRecaps(); renderRailSums(); }
+    return;
   }
+  if (t.matches("[data-pnom]")) { const p = profil(); if (!p) return; p.nom = t.value.slice(0, 40); saveProfils(); renderRailSums(); const o = $(`#s-profil option[value="${S.profil}"]`); if (o) o.textContent = p.nom || "Sans nom"; return; }
   if (t.matches("[data-num]")) {
     if (t.value.trim() === "" && !t.dataset.auto && NUL_UI.has(t.dataset.k)) { setK(S, t.dataset.k, null); update({ from: t }); return; }
     const v = parseNum(t.value); if (v === null) return;
@@ -2096,12 +2139,23 @@ form.addEventListener("input", e => {
 });
 form.addEventListener("change", e => {
   const t = e.target;
+  if (t.matches("[data-profil]")) { // choix du profil de la simulation
+    let id = t.value;
+    if (id === "__nouveau") { id = uid(); PR.list[id] = profilPropre({ nom: "Profil " + (Object.keys(PR.list).length + 1) }); }
+    S.profil = id; ui.supprProfil = false;
+    if (id) { PR.dernier = id; appliquerProfil(PR.list[id]); }
+    saveProfils(); calc(); renderForm(); update();
+    if (t.value === "__nouveau") { const n = $("#p-nom"); if (n) { n.focus(); n.select(); } }
+    return;
+  }
+  if (t.matches("[data-ptmi]")) { const p = profil(); if (!p) return; p.tmi = t.value === "" ? null : +t.value; saveProfils(); appliquerProfil(p, ["tmi"]); calc(); update(); return; }
   if (t.matches("select[data-k]")) { applySelect(t.dataset.k, t.value); calc(); renderForm(); update(); }
   else if (t.matches("input[type=checkbox][data-k]")) { setK(S, t.dataset.k, t.checked); calc(); if (STRUCT.has(t.dataset.k)) renderForm(); update(); }
 });
 form.addEventListener("focusout", e => {
   const t = e.target;
-  if (t.matches("[data-p]")) { t.value = P[t.dataset.p] == null ? "" : fmtIn(P[t.dataset.p], 0); return; }
+  if (t.matches("[data-p]")) { const p = profil(); t.value = !p || p[t.dataset.p] == null ? "" : fmtIn(p[t.dataset.p], 0); return; }
+  if (t.matches("[data-pnom]")) { const p = profil(); if (p && !p.nom.trim()) { p.nom = "Mon profil"; t.value = p.nom; saveProfils(); renderForm(); renderRailSums(); } return; }
   if (!t.matches("[data-num]")) return;
   // Frais de notaire ou prix de revente effacés : retour au calcul automatique
   if (t.value.trim() === "" && t.dataset.auto === "notaire" && S.notaireMode === "fixe") { S.notaireMode = "auto"; calc(); renderForm(); update(); return; }
@@ -2153,6 +2207,13 @@ function setMode(m) {
 }
 function act(a) {
   if (a === "notaire") return openNotaire();
+  if (a === "profil-suppr" || a === "profil-suppr-non") { ui.supprProfil = a === "profil-suppr"; return renderForm(); }
+  if (a === "profil-suppr-ok") {
+    const id = S.profil; delete PR.list[id]; ui.supprProfil = false;
+    for (const x of Object.values(db.sims)) if (x.s.profil === id) x.s.profil = "";
+    S.profil = ""; if (PR.dernier === id) PR.dernier = Object.keys(PR.list)[0] || "";
+    saveProfils(); calc(); renderForm(); update(); return;
+  }
   if (a.startsWith("mode:")) return setMode(a.slice(5));
   if (a.startsWith("go:")) { ui.ana = a.slice(3); renderTabs(); renderAna(true); save(); if (innerWidth < 1180) $("#tabs").scrollIntoView({ behavior: "smooth", block: "start" }); }
 }
@@ -2273,7 +2334,7 @@ dialog.addEventListener("click", e => {
 function openExport() {
   flush();
   openModal(mHead("Exporter mes simulations") + `<p class="hint" style="margin-top:0">Garde ce texte (dans un fichier, un mail…) pour retrouver tes simulations sur un autre appareil avec « Importer ».</p>
-    <textarea class="code" id="exp" readonly>${esc(JSON.stringify({ app: "bilan-locatif", version: 1, profil: P, sims: Object.values(db.sims).map(x => x.s) }, null, 1))}</textarea>
+    <textarea class="code" id="exp" readonly>${esc(JSON.stringify({ app: "bilan-locatif", version: 1, profils: PR.list, sims: Object.values(db.sims).map(x => x.s) }, null, 1))}</textarea>
     <p class="msg" id="exp-msg" aria-live="polite"></p>
     <div class="ctas"><button type="button" class="btn primary" data-copy>Copier</button>${TOP ? `<button type="button" class="btn" data-dl>Télécharger le fichier</button>` : ""}<button type="button" class="btn" data-back>Retour</button></div>`);
 }
@@ -2289,7 +2350,7 @@ function doImport(text) {
   const msg = $("#imp-msg");
   try {
     const d = JSON.parse(text); const list = Array.isArray(d) ? d : Array.isArray(d.sims) ? d.sims : [d];
-    if (d && d.profil && typeof d.profil === "object") { P = profilPropre(d.profil); saveProfil(); }
+    if (d && d.profils && typeof d.profils === "object") { for (const [id, p] of Object.entries(d.profils)) PR.list[String(id).slice(0, 40)] = profilPropre(p); if (!PR.list[PR.dernier]) PR.dernier = Object.keys(PR.list)[0] || ""; saveProfils(); }
     let n = 0, last = null;
     for (const s of list) { if (!s || typeof s !== "object" || !("prix" in s)) continue; const id = uid() + n; db.sims[id] = { s: normaliser(s), updated: Date.now() + n }; last = id; n++; }
     if (!n) throw new Error("vide");
@@ -2298,7 +2359,7 @@ function doImport(text) {
   } catch (err) { msg.className = "msg err"; msg.textContent = "Ce texte n'est pas un export de Bilan Locatif. Vérifie que tu as tout copié, du premier { au dernier }."; }
 }
 function switchTo(id) { flush(); db.cur = id; S = normaliser(db.sims[id].s); store.set(KEY, db); fullRender(); }
-function newSim() { flush(); const id = uid(); const s = clone(NOUVELLE_SIM); db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); ui.section = "bien"; ui.ana = "synthese"; fullRender(); $("#form").scrollTop = 0; }
+function newSim() { flush(); const id = uid(); const s = clone(NOUVELLE_SIM); if (PR.list[PR.dernier]) s.profil = PR.dernier; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); appliquerProfil(profil()); db.sims[id].s = S; store.set(KEY, db); ui.section = "bien"; ui.ana = "synthese"; fullRender(); $("#form").scrollTop = 0; }
 $("#btn-sims").addEventListener("click", openSims);
 $("#btn-new").addEventListener("click", newSim);
 $("#btn-dup").addEventListener("click", () => { flush(); const id = uid(); const s = clone(S); s.name = (S.name || "Simulation") + " (copie)"; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); fullRender(); });
