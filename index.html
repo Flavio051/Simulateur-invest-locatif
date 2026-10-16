@@ -724,14 +724,15 @@ function estimer(s, variante = 0) {
     info: `Calculé sur ton prix de ${_e(x.prix)} : les frais (notaire, agence, frais de dossier) font ${_e(fraisPerso)}, soit ${pcF} % du prix ; 20 % du prix font ${_e(p20)}. Les banques demandent souvent un apport qui couvre au moins les frais.` };
   fill("apport", 0);
   const emp = Math.max(0, finance - x.apport);
+  est.tauxAss.info = `Calculée sur le capital emprunté au départ (${_e(emp)}) : ${String(x.tauxAss).replace(".", ",")} % par an, soit ${_e(emp * x.tauxAss / 1200)} par mois, fixe sur toute la durée du prêt. Un contrat pris hors de la banque (délégation) est souvent moins cher.`;
   const pct1 = _arr(0.01 * emp, 100);
-  est.courtage = { v: 0, t: pct1 < 1500 ? tiers([0, pct1, 1500], ["Sans courtier", "1 % du prêt", "Forfait"]) : tiers([0, 1500, pct1], ["Sans courtier", "Forfait", "1 % du prêt"]) }; fill("courtage", 0);
+  est.courtage = { v: 0, info: "Seulement si tu passes par un courtier : souvent un forfait de 1 000 à 2 000 €, ou 1 % du prêt.", t: pct1 < 1500 ? tiers([0, pct1, 1500], ["Sans courtier", "1 % du prêt", "Forfait"]) : tiers([0, 1500, pct1], ["Sans courtier", "Forfait", "1 % du prêt"]) }; fill("courtage", 0);
   const cau = s.cautionMode === "pct" ? [0.8, 1.2, 2] : [_arr(0.008 * emp, 50), _arr(0.012 * emp, 50), _arr(0.02 * emp, 50)];
   est.caution = { v: cau[1], t: tiers(cau, ["Caution, bon dossier", "Caution courante", "Hypothèque"]),
     info: `Calculée sur le montant emprunté : ${_e(emp)}. Caution d'un organisme (type Crédit Logement) : environ 0,8 à 1,2 % du prêt, dont une partie est restituée à la fin ; hypothèque : environ 2 %.` };
   fill("caution", cau[1]);
   const difM = x.travauxMois > 0 ? x.travauxMois : 6;
-  est.differeMois = { v: difM, t: null }; fill("differeMois", difM);
+  est.differeMois = { v: difM, t: null, info: "Par défaut, la durée des travaux, sinon 6 mois." }; fill("differeMois", difM);
 
   // Charges de copropriété (utiles aussi pour les charges refacturées)
   const coproM2 = maison ? [0, 0, 0] : [15, 25, 40].map(v => v * L.zone);
@@ -746,13 +747,13 @@ function estimer(s, variante = 0) {
   est.chargesLoc = { v: clEst, t: maison ? null : tiers([_arr(coproEff * 0.35 / 12, 5), clEst, _arr(coproEff * 0.65 / 12, 5)], ["Peu de services", "Courantes", "Chauffage collectif"]),
     info: maison ? "Maison : en général seule la taxe d'ordures ménagères est refacturée." : "Part des charges de copropriété refacturée au locataire : environ la moitié, davantage avec chauffage collectif ou ascenseur." };
   fill("chargesLoc", clEst);
-  est.occupation = { v: 96, t: tiers([92, 96, 100], ["1 mois vide par an", "Courant", "Toujours loué"]) }; fill("occupation", 96);
+  est.occupation = { v: 96, t: tiers([92, 96, 100], ["1 mois vide par an", "Courant", "Toujours loué"]), info: "96 % : environ deux semaines sans locataire par an, le temps de relouer entre deux baux." }; fill("occupation", 96);
   const evL = passoire ? 0 : 1;
   est.evolLoyer = { v: evL, t: tiers([0, 1, 2], ["Gelé", "IRL modéré", "IRL soutenu"]), info: passoire ? "Logement classé F ou G : le loyer ne peut plus être augmenté." : "Révision annuelle selon l'indice de référence des loyers." };
   fill("evolLoyer", evL);
-  est.occupationCD = { v: 60, t: tiers([45, 60, 75], ["Basse", "Courante", "Très demandé"]) }; fill("occupationCD", 60);
-  est.commission = { v: 15, t: null }; fill("commission", 15);
-  est.conciergerie = { v: 20, t: tiers([0, 20, 25], ["Toi-même", "Conciergerie", "Premium"]) }; fill("conciergerie", 20);
+  est.occupationCD = { v: 60, t: tiers([45, 60, 75], ["Basse", "Courante", "Très demandé"]), info: "Part des nuits louées sur l'année : 60 % est courant, davantage dans une zone très touristique." }; fill("occupationCD", 60);
+  est.commission = { v: 15, t: null, info: "Commission des plateformes (Airbnb, Booking) côté hôte : environ 15 % du chiffre d'affaires." }; fill("commission", 15);
+  est.conciergerie = { v: 20, t: tiers([0, 20, 25], ["Toi-même", "Conciergerie", "Premium"]), info: "Ménage, accueil et linge confiés à une conciergerie : 20 à 25 % du chiffre d'affaires. 0 % si tu t'en occupes." }; fill("conciergerie", 20);
   const cour = [2, 3, 4].map(v => _arr(v * S, 10));
   est.courantes = { v: cour[1], t: tiers(cour, ["Économe", "Courant", "Confort"]), info: "Énergie, internet, abonnements, consommables." }; fill("courantes", cour[1]);
 
@@ -880,8 +881,12 @@ function tri(flux) {
 function simuler(s0) {
   const s0n = normaliser(s0), EST = estimer(s0n), s = EST.s, LIEU = EST.lieu;
   // Tant qu'un chiffre clé manque, les repères qui en dépendent ne veulent rien dire : on les repère en recalculant avec l'autre jeu de secours
-  let incertains = [];
-  if (EST.manque.length) { const E2 = estimer(s0n, 1); incertains = Object.keys(EST.est).filter(k => JSON.stringify(EST.est[k]) !== JSON.stringify(E2.est[k])); }
+  let incertains = [], infosIncertaines = [];
+  if (EST.manque.length) {
+    const E2 = estimer(s0n, 1), dif = (k, f) => JSON.stringify(f(EST.est[k])) !== JSON.stringify(f(E2.est[k]));
+    incertains = Object.keys(EST.est).filter(k => dif(k, e => [e.v, e.t]));        // valeur ou repères
+    infosIncertaines = Object.keys(EST.est).filter(k => dif(k, e => e.info || "")); // texte de l'infobulle
+  }
   const W = [];
   const warn = (k, txt, niveau = "attention") => { if (!W.some(w => w.k === k)) W.push({ k, txt, niveau }); };
   const reg = s.regime, meuble = REGIMES[reg].meuble !== false, isSCI = reg === "sciIs";
@@ -1145,7 +1150,7 @@ function simuler(s0) {
   if (s.location === "courte" && s.tourisme === "nonClasse") warn("lm", "Meublé de tourisme non classé : abattement micro-BIC de 30 % seulement, plafond 15 000 €. Les communes peuvent limiter la location à 90 jours par an pour une résidence principale.", "info");
 
   return { s, notaire, agence, fraisAcq, coutTotal, finance, emprunt, caution, fraisBancaires, mise, H, rows, credit, mensualite, totInterets, totAssurance,
-    coutCredit: totInterets + totAssurance + fraisBancaires, Y, rv, parAnnee, k, warnings: W, revente, est: EST.est, auto: EST.auto, manque: EST.manque, incertains, lieu: LIEU };
+    coutCredit: totInterets + totAssurance + fraisBancaires, Y, rv, parAnnee, k, warnings: W, revente, est: EST.est, auto: EST.auto, manque: EST.manque, incertains, infosIncertaines, lieu: LIEU };
 }
 
 // Compare les régimes possibles à loyer identique
@@ -1272,8 +1277,10 @@ function num(k, label, o = {}) {
   const E = !auto && R.est ? R.est[estKey(k)] : null;
   const mode = o.mode ? `<select class="mode" id="m-${id}" data-k="${o.mode.k}" aria-label="Mode de saisie : ${esc(label)}">${o.mode.opts.map(([val, t]) => `<option value="${val}"${String(o.mode.value != null ? o.mode.value : getK(S, o.mode.k)) === val ? " selected" : ""}>${esc(t)}</option>`).join("")}</select>` : "";
   const tip = o.tip ? ` <button type="button" class="tip" data-tip="${esc(o.tip)}" aria-label="Aide">i</button>` : "";
+  // Infobulle « comment c'est estimé » à côté du titre, pour les champs sans repères cliquables (ceux-là l'ont sur la ligne des repères)
+  const infoE = E && E.info && !REPERES.has(estKey(k)) ? ` <button type="button" class="tip" data-info="${k}" data-tip="${esc(E.info)}" aria-label="Comment c'est estimé"${(R.infosIncertaines || []).includes(estKey(k)) ? " hidden" : ""}>i</button>` : "";
   return `<div class="fld">
-    <div class="fld-top"><label for="f-${id}">${esc(label)}${tip}</label>${mode}</div>
+    <div class="fld-top"><label for="f-${id}">${esc(label)}${tip}${infoE}</label>${mode}</div>
     <div class="fld-row">
       <div class="inp${auto ? " auto" : ""}${estime ? " est" : ""}${req ? " req" : ""}"><input id="f-${id}" data-k="${k}" data-num data-dec="${dec}"${o.autoKey ? ` data-auto="${o.autoKey}"` : ""} inputmode="decimal" autocomplete="off" value="${estime ? "" : fmtIn(raw, dec)}" placeholder="${estime && !flou ? fmtIn(getK(X, k), dec) : ""}"${E && REPERES.has(estKey(k)) ? ` aria-describedby="r-${id}"` : ""}><span class="tag"><span class="t-est" title="Repère standard : tape ton chiffre pour le remplacer">estimé</span><span class="t-req" title="Chiffre à chercher toi-même">à remplir</span></span><span class="u">${esc(o.unit || "")}</span></div>
       <div class="step" role="group" aria-label="Ajuster"><button type="button" data-step="${-(o.step || 1)}" data-for="f-${id}" aria-label="Diminuer ${esc(label)}">−</button><button type="button" data-step="${o.step || 1}" data-for="f-${id}" aria-label="Augmenter ${esc(label)}">+</button></div>
@@ -1287,7 +1294,7 @@ function tiersHTML(el) {
   const k = el.dataset.tiers, E = R.est[estKey(k)], dec = +el.dataset.dec || 0, u = el.dataset.u;
   const raw = getK(S, k), eff = getK(X, k), tol = dec ? 0.005 : 0.5;
   const info = E && E.info ? `<button type="button" class="tip" data-tip="${esc(E.info)}" aria-label="D'où vient l'estimation">i</button>` : "";
-  if ((R.incertains || []).includes(estKey(k))) return ""; // repères calculés après la surface, le prix ou le loyer
+  if ((R.incertains || []).includes(estKey(k)) || (R.infosIncertaines || []).includes(estKey(k))) return ""; // repères calculés après la surface, le prix ou le loyer
   if (!E || !E.t) return info ? `<span class="tl">Repère${info}</span>` : "";
   return `<span class="tl">Repères${info}</span>` + E.t.map(([lab, v]) => `<button type="button" class="tier${raw == null && Math.abs(eff - v) < tol ? " used" : ""}" data-setk="${k}" data-v="${v}" aria-pressed="${raw != null && Math.abs(raw - v) < tol}"><small>${esc(lab)}</small><b>${fmtChip(v, dec, u)}</b></button>`).join("");
 }
@@ -1302,6 +1309,7 @@ function syncEst() {
     w.classList.toggle("est", raw == null && !req); w.classList.toggle("req", req);
   });
   $$("#form [data-tiers]").forEach(el => { el.innerHTML = tiersHTML(el); });
+  $$("#form [data-info]").forEach(b => { const k = estKey(b.dataset.info), E = R.est[k]; if (E && E.info) b.dataset.tip = E.info; b.hidden = !E || !E.info || (R.infosIncertaines || []).includes(k); });
   const ai = $("#aide"); if (ai) ai.innerHTML = aideHTML();
   // Petits chiffres calculés dans les aides des champs
   $$("#form [data-live]").forEach(el => { el.textContent = el.dataset.live === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
