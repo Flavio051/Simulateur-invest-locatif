@@ -1291,6 +1291,7 @@ function profilPropre(o) {
   o = o || {}; const p = { nom: String(o.nom || "Mon profil").trim().slice(0, 40) || "Mon profil" };
   for (const k of PROFIL_CHAMPS) { const v = o[k] != null && o[k] !== "" ? +o[k] : null; p[k] = Number.isFinite(v) ? Math.max(0, v) : null; }
   p.tmi = o.tmi != null && o.tmi !== "" && TMIS.includes(+o.tmi) ? +o.tmi : null;
+  p.periode = o.periode === "an" ? "an" : "mois"; // salaires saisis par mois ou par an (toujours enregistrés par mois)
   return p;
 }
 let PR = store.get(PROFILS_KEY);
@@ -1408,7 +1409,7 @@ function syncEst() {
   const ai = $("#aide"); if (ai) ai.innerHTML = aideHTML();
   const cp = $("#capa"); if (cp) cp.innerHTML = capaHTML();
   // Petits chiffres calculés dans les aides des champs
-  $$("#form [data-live]").forEach(el => { const k = el.dataset.live; if (k === "prixRetenu") el.innerHTML = prixRetenuTxt(); else el.textContent = k === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
+  $$("#form [data-live]").forEach(el => { const k = el.dataset.live; if (k === "prixRetenu") el.innerHTML = prixRetenuTxt(); else if (k.startsWith("sal-")) el.innerHTML = salaireMoisTxt(k.slice(4)); else el.textContent = k === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
 }
 // Bandeau au-dessus des hypothèses : ce qu'il manque, sinon les chiffres importants qui viennent d'un repère standard
 const REQ_LAB = { surface: "Surface", prix: "Prix", loyer: "Loyer", nuitee: "Prix par nuit" };
@@ -1564,8 +1565,8 @@ const FORMS = {
     let h = head("Profil emprunteur", "Tes revenus et combien la banque peut te prêter. Le profil est enregistré une fois pour toutes, et sert à toutes les simulations où tu le choisis.") + choix;
     if (!p) return h + `<p class="hint">${ids.length ? "Choisis un profil dans la liste, ou crée-en un nouveau." : "Crée ton premier profil avec « + Nouveau profil »."}</p>` + prive;
     h += `<div class="fld"><div class="fld-top"><label for="p-nom">Nom du profil</label></div><input class="txt" id="p-nom" data-pnom type="text" maxlength="40" autocomplete="off" value="${esc(p.nom)}"></div>` +
-      pnum("salaire", "Ton salaire net mensuel", { hint: "Net avant impôt sur le revenu (sur ta fiche de paie). Lisse tes primes régulières sur 12 mois." }) +
-      pnum("salaire2", "Salaire net du co-emprunteur", { hint: "Seulement si tu achètes à deux." }) +
+      pnum("salaire", "Ton salaire net", { periode: true, hint: (p.periode === "an" ? "Net avant impôt sur l'année, 13e mois et primes régulières compris (le cumul net de ta fiche de paie de décembre)." : "Net avant impôt sur le revenu, sur ta fiche de paie. Primes régulières et 13e mois : divise-les par 12 et ajoute-les.") + `<span data-live="sal-salaire">${salaireMoisTxt("salaire")}</span>` }) +
+      pnum("salaire2", "Salaire net du co-emprunteur", { hint: "Seulement si tu achètes à deux, dans la même unité." + `<span data-live="sal-salaire2">${salaireMoisTxt("salaire2")}</span>` }) +
       pnum("loyers", "Loyers que tu touches déjà", { hint: "D'autres biens déjà loués : la banque en retient environ 70\u00a0%." }) +
       pnum("credits", "Crédits en cours", { hint: "Mensualités de tes autres crédits : voiture, consommation, immobilier." }) +
       pnum("apport", "Apport", { unit: "€", hint: "Repris dans la simulation quand elle utilise ce profil (Financement)." }) +
@@ -1656,9 +1657,16 @@ const FORMS = {
   },
 };
 // Champ du profil bancaire (enregistré à part, commun à toutes les simulations)
+const SALAIRES = ["salaire", "salaire2"];
+const parAn = k => SALAIRES.includes(k) && profil() && profil().periode === "an";
+const pAffiche = k => { const v = profil()[k]; return v == null ? "" : fmtIn(parAn(k) ? v * 12 : v, 0); };
 function pnum(k, label, o = {}) {
-  return `<div class="fld"><div class="fld-top"><label for="p-${k}">${esc(label)}</label></div><div class="fld-row"><div class="inp"><input id="p-${k}" data-p="${k}" inputmode="decimal" autocomplete="off" value="${profil()[k] == null ? "" : fmtIn(profil()[k], 0)}"><span class="u">${esc(o.unit || "€ / mois")}</span></div></div>${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
+  const mode = o.periode ? `<select class="mode" id="m-periode" data-pperiode aria-label="Salaire par mois ou par an"><option value="mois"${parAn(k) ? "" : " selected"}>Par mois</option><option value="an"${parAn(k) ? " selected" : ""}>Par an</option></select>` : "";
+  const unite = SALAIRES.includes(k) ? (parAn(k) ? "€ / an" : "€ / mois") : (o.unit || "€ / mois");
+  return `<div class="fld"><div class="fld-top"><label for="p-${k}">${esc(label)}</label>${mode}</div><div class="fld-row"><div class="inp"><input id="p-${k}" data-p="${k}" inputmode="decimal" autocomplete="off" value="${pAffiche(k)}"><span class="u">${unite}</span></div></div>${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
 }
+// Sous les salaires saisis à l'année : l'équivalent mensuel retenu par la banque
+function salaireMoisTxt(k) { const p = profil(); return p && p.periode === "an" && p[k] != null ? ` Soit <b>${eur(p[k])} par mois</b> pour la banque.` : ""; }
 // Loyer que la banque prend en compte pour ce bien (avant pondération à 70 %)
 function loyerRetenu() { return X.location === "courte" ? (R.Y[0] ? R.Y[0].revenus / 12 : 0) : (X.loyer || 0); }
 function capaHTML() {
@@ -2118,7 +2126,8 @@ form.addEventListener("input", e => {
     const p = profil(); if (!p) return;
     const brut = t.value.trim(), v = brut === "" ? null : parseNum(brut);
     if (brut !== "" && v === null) return;
-    p[t.dataset.p] = v === null ? null : Math.max(0, v); saveProfils();
+    p[t.dataset.p] = v === null ? null : Math.max(0, parAn(t.dataset.p) ? v / 12 : v); saveProfils();
+    const sl = $(`[data-live="sal-${t.dataset.p}"]`); if (sl) sl.innerHTML = salaireMoisTxt(t.dataset.p);
     if (t.dataset.p === "apport") { appliquerProfil(p, ["apport"]); update(); } else { const cp = $("#capa"); if (cp) cp.innerHTML = capaHTML(); renderRecaps(); renderRailSums(); }
     return;
   }
@@ -2148,13 +2157,14 @@ form.addEventListener("change", e => {
     if (t.value === "__nouveau") { const n = $("#p-nom"); if (n) { n.focus(); n.select(); } }
     return;
   }
+  if (t.matches("[data-pperiode]")) { const p = profil(); if (!p) return; p.periode = t.value === "an" ? "an" : "mois"; saveProfils(); renderForm(); return; }
   if (t.matches("[data-ptmi]")) { const p = profil(); if (!p) return; p.tmi = t.value === "" ? null : +t.value; saveProfils(); appliquerProfil(p, ["tmi"]); calc(); update(); return; }
   if (t.matches("select[data-k]")) { applySelect(t.dataset.k, t.value); calc(); renderForm(); update(); }
   else if (t.matches("input[type=checkbox][data-k]")) { setK(S, t.dataset.k, t.checked); calc(); if (STRUCT.has(t.dataset.k)) renderForm(); update(); }
 });
 form.addEventListener("focusout", e => {
   const t = e.target;
-  if (t.matches("[data-p]")) { const p = profil(); t.value = !p || p[t.dataset.p] == null ? "" : fmtIn(p[t.dataset.p], 0); return; }
+  if (t.matches("[data-p]")) { t.value = profil() ? pAffiche(t.dataset.p) : ""; return; }
   if (t.matches("[data-pnom]")) { const p = profil(); if (p && !p.nom.trim()) { p.nom = "Mon profil"; t.value = p.nom; saveProfils(); renderForm(); renderRailSums(); } return; }
   if (!t.matches("[data-num]")) return;
   // Frais de notaire ou prix de revente effacés : retour au calcul automatique
