@@ -2606,9 +2606,16 @@ function buildDossier() {
 function buildBilan() {
   const haut = `<div class="rp-top"><span>Bilan Locatif · investissement locatif expliqué</span><span>${rpDate()}</span></div><h1>${esc(X.name)}</h1>`;
   if ((R.manque || []).length) return rpIncomplet(haut);
-  const r = R, x = X, rv = r.rv, N = rv.N, ref = r.Y[r.k.annee - 1], cfm = ref.cf / 12, pret = r.emprunt > 0;
+  const r = R, x = X, rv = r.rv, N = rv.N, ref = r.Y[r.k.annee - 1], pret = r.emprunt > 0;
   const sous = [x.ville || x.adresse, typeBienTxt(), nf(1).format(x.surface) + " m²", x.dpe ? "DPE " + x.dpe : "", locTxt()].filter(Boolean).map(esc).join(" · ");
-  const verdict = cfm >= 5 ? `Ce bien te rapporte <em class="pos">${eur(cfm)} par mois</em> après impôt en année ${ref.y}.` : cfm > -5 ? `Ce bien s'autofinance : environ ${eur(cfm)} par mois après impôt en année ${ref.y}.` : `Ce bien te coûte <em class="neg">${eur(-cfm)} par mois</em> de ta poche en année ${ref.y}.`;
+  // Pour des proches, on parle du résultat de l'opération et de l'effort d'épargne moyen, pas du cash-flow d'une année isolée
+  const moy = r.Y.slice(0, N).reduce((a, o) => a + o.cf, 0) / (N * 12), capMois = pret ? Math.max(0, r.emprunt - rv.crd) / (N * 12) : 0;
+  const verdict = rv.enrichissement >= 0 ? `En ${plural(N, "an")}, ce bien t'enrichit de <em class="pos">${eur(rv.enrichissement)}</em>.` : `En ${plural(N, "an")}, ce bien te fait perdre <em class="neg">${eur(-rv.enrichissement)}</em>.`;
+  const gagne = rv.enrichissement >= 0, pasCompense = gagne ? "" : " Mais la revente ne compense pas ce que tu as mis au départ.";
+  const effortTxt = moy < -5
+    ? gagne ? `Pour y arriver, tu y mets en moyenne <b>${eur(-moy)} par mois</b> : c'est ton effort d'épargne.${capMois > 0 ? ` Ce n'est pas de l'argent perdu : dans le même temps, ton crédit baisse de ${eur(capMois)} par mois, et ce capital te revient à la revente.` : ""}`
+      : `Tu y ajoutes en moyenne <b>${eur(-moy)} par mois</b>.${capMois > 0 ? ` Ton crédit baisse de ${eur(capMois)} par mois, mais à la revente tu ne récupères pas tout ce que tu as mis.` : " À la revente, tu ne récupères pas tout ce que tu as mis."}`
+    : (moy > 5 ? `Tu n'as rien à ajouter chaque mois : une fois tout payé, il te verse en moyenne <b>${eur(moy)} par mois</b>.` : "Il s'autofinance : les loyers paient le crédit, les charges et l'impôt.") + pasCompense;
   const m = mises(r), sc = scenarios(S);
   const NH = Math.max(N, Math.min(r.H, 25)), cfs = r.Y.slice(0, NH).map(o => o.cf / 12);
   const lvl = { critique: "À régler", attention: "Attention", info: "À savoir" };
@@ -2625,7 +2632,7 @@ function buildBilan() {
     ["Taux d'endettement", "La part de tes revenus qui part en crédits. Les banques s'arrêtent à 35 %."]
   ];
   return haut + `<p class="rp-sous">${sous}</p>${x.note ? `<p class="rp-note">${esc(x.note)}</p>` : ""}
-  <div class="rp-verdict"><p class="big">${verdict}</p><p>${pret ? `Le crédit de ${eur(r.emprunt)} se rembourse en ${plural(x.duree, "an")}. ` : ""}Revendu après ${plural(N, "an")}, il t'${rv.enrichissement >= 0 ? "enrichit" : "appauvrit"} de <b>${eur(Math.abs(rv.enrichissement))}</b>.</p></div>
+  <div class="rp-verdict"><p class="big">${verdict}</p><p>${effortTxt}</p>${pret ? `<p>Le crédit de ${eur(r.emprunt)} sera entièrement remboursé en ${plural(x.duree, "an")} ; le bien est revendu après ${plural(N, "an")} dans cette simulation.</p>` : ""}</div>
   <h2>L'opération en clair, sur ${plural(N, "an")}</h2>
   <div class="rp-encl">
     <div><span>Ce que tu mets</span><b>${eur(m.mets)}</b><small>La mise de départ, plus les mois où tu complètes de ta poche.</small></div>
@@ -2633,7 +2640,7 @@ function buildBilan() {
     <div><span>Ce que tu gagnes</span><b class="${rv.enrichissement < 0 ? "neg" : "pos"}">${signe(rv.enrichissement)}</b><small>La différence : ton enrichissement${rv.tri !== null ? `, soit ${pct(rv.tri, 1)} par an (TRI)` : ""}.</small></div>
   </div>
   <div class="rp-tuiles q4">
-    ${rpTuile("Chaque mois", eur(cfm), cfm < 0 ? "Ce que tu ajoutes, tout compris" : "Ce qui te reste, tout compris", cfm < -0.5 ? "neg" : cfm > 0.5 ? "pos" : "")}
+    ${moy < -0.5 ? rpTuile(gagne ? "Effort d'épargne" : "Ajouté chaque mois", eur(-moy) + " / mois", `En moyenne sur ${plural(N, "an")}, tout compris`) : rpTuile("Revenu du bien", eur(moy) + " / mois", `En moyenne sur ${plural(N, "an")}, tout payé`, moy > 0.5 ? "pos" : "")}
     ${rpTuile("Rendement net", pct(r.k.net, 1), grade(r.k.net).t + " (charges payées)")}
     ${rpTuile("Le jour de l'achat", eur(r.mise), "Ta mise de départ")}
     ${rpTuile("Mensualité", pret ? eur(r.mensualite) : "—", pret ? `${plural(x.duree, "an")}, assurance comprise` : "Achat sans crédit")}
