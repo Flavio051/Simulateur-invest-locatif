@@ -343,6 +343,11 @@ table.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
 .sims{display:grid;gap:8px;margin:6px 0 14px}
 .simrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .simrow.cur{border-color:var(--accent);background:var(--accent-soft)}
+.rapports{display:grid;gap:10px;margin:6px 0 4px}
+.rap{display:grid;gap:3px;text-align:left;border:1px solid var(--line-strong);border-radius:12px;background:var(--surface);padding:14px 16px;cursor:pointer;color:var(--ink);font:inherit}
+.rap b{font-family:var(--f-display);font-size:16px}
+.rap span{color:var(--muted);font-size:13.5px;line-height:1.45}
+.rap:hover{border-color:var(--accent);background:var(--accent-soft)}
 .simrow .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .simrow .d{font-size:12px;color:var(--muted)}
 .simrow .a{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
@@ -426,7 +431,8 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
   #report .rp-flux-l b{font-variant-numeric:tabular-nums}
   #report .rp-flux-b{display:flex;gap:2px;height:20pt;border-radius:5pt;overflow:hidden}
   #report .rp-flux-b div{display:flex;align-items:center;justify-content:center;font-size:8pt;font-weight:700;min-width:0;white-space:nowrap;overflow:hidden}
-  #report table{width:100%;border-collapse:collapse;font-size:9pt;margin:2pt 0 18pt;font-variant-numeric:tabular-nums}
+  #report table{width:100%;border-collapse:collapse;font-size:9pt;margin:2pt 0 18pt;font-variant-numeric:tabular-nums;break-inside:avoid}
+  #report .rp-2col>div,#report .rp-tuiles,#report .rp-encl,#report .rp-alerte{break-inside:avoid}
   #report th{font-size:7.5pt;font-weight:700;color:#7a8799;text-transform:uppercase;letter-spacing:.04em;text-align:right;padding:4pt 6pt;border-bottom:1px solid #c2cbd6}
   #report td{text-align:right;padding:4pt 6pt;border-bottom:1px solid #e8edf2}
   #report th:first-child,#report td:first-child{text-align:left}
@@ -437,6 +443,25 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
   #report .rp-alerte.critique{border-color:#c23f39}
   #report .rp-alerte.attention{border-color:#a8650a}
   #report .rp-pied{margin-top:20pt;padding-top:7pt;border-top:1px solid #dbe1e8;font-size:7.5pt;color:#7a8799}
+  #report .rp-tuiles.q4{grid-template-columns:repeat(4,1fr)}
+  #report .rp-reg td:first-child{text-align:left}
+  #report .rp-reg tr.sel td{font-weight:700;background:#f2f5f8}
+  #report .rp-lead{font-size:10pt;line-height:1.55;margin:0 0 12pt;max-width:170mm}
+  #report h2{break-after:avoid}
+  #report .rp-encl{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid #dbe1e8;border-radius:8pt;margin:0 0 12pt;overflow:hidden}
+  #report .rp-encl>div{padding:9pt 11pt;border-left:1px solid #dbe1e8}
+  #report .rp-encl>div:first-child{border-left:0}
+  #report .rp-encl span{display:block;font-size:7.5pt;font-weight:700;color:#7a8799;text-transform:uppercase;letter-spacing:.05em}
+  #report .rp-encl b{display:block;font-family:var(--f-display);font-size:15pt;margin:2pt 0}
+  #report .rp-encl small{display:block;font-size:8pt;color:#4f5d71;line-height:1.4}
+  #report .rp-sc td:nth-child(2){text-align:left;color:#4f5d71;font-size:8.5pt}
+  #report .rp-sc th:nth-child(2){text-align:left}
+  #report .rp-gloss{display:grid;grid-template-columns:38mm 1fr;gap:5pt 12pt;margin:0}
+  #report .rp-gloss dt{font-weight:700}
+  #report .rp-gloss dd{margin:0;color:#4f5d71}
+  #report .rp-check{list-style:none;padding:0;columns:2;column-gap:16pt}
+  #report .rp-check li{break-inside:avoid;padding-left:14pt;position:relative;margin:0 0 4pt}
+  #report .rp-check li::before{content:"";position:absolute;left:0;top:2pt;width:8pt;height:8pt;border:1px solid #7a8799;border-radius:2pt}
 }
 </style>
 
@@ -466,7 +491,7 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
       <button type="button" class="btn" id="btn-sims"><svg><use href="#i-list"/></svg>Mes simulations</button>
       <button type="button" class="btn" id="btn-new"><svg><use href="#i-plus"/></svg>Nouvelle</button>
       <button type="button" class="btn" id="btn-dup"><svg><use href="#i-copy"/></svg>Dupliquer</button>
-      <button type="button" class="btn" id="btn-print" hidden><svg><use href="#i-print"/></svg>Imprimer le rapport</button>
+      <button type="button" class="btn" id="btn-print" hidden><svg><use href="#i-print"/></svg>Imprimer un rapport</button>
     </div>
   </header>
 
@@ -602,6 +627,10 @@ const DEFAULT_SIM = {
   fraisRevente: 0, ira: false, pvFrais: "auto", pvTravaux: "auto", actualisation: 1,
   // Le bien
   ville: "", dept: "", adresse: "", typeBien: "appartement", etat: "bon", dpe: "", surface: 50, note: "",
+  // D'où vient le loyer retenu (annonces comparables, attestation d'agence) : repris dans le dossier pour la banque
+  justifLoyer: "",
+  // Le quartier et la demande locative (transports, employeurs, étudiants, ventes récentes) : repris dans le dossier pour la banque
+  marche: "",
   // Profil emprunteur choisi (identifiant ; le profil lui-même est enregistré à part)
   profil: "",
   // Affichage
@@ -668,6 +697,8 @@ function normaliser(s0) {
   s.etat = ["bon", "rafraichir", "renover", "lourd"].includes(s.etat) ? s.etat : "bon";
   s.dpe = ["A", "B", "C", "D", "E", "F", "G"].includes(s.dpe) ? s.dpe : "";
   s.profil = typeof s.profil === "string" ? s.profil.slice(0, 40) : "";
+  s.justifLoyer = typeof s.justifLoyer === "string" ? s.justifLoyer.slice(0, 400) : "";
+  s.marche = typeof s.marche === "string" ? s.marche.slice(0, 600) : "";
   s.dept = typeof s.dept === "string" && /^(\d{2}|2[AB]|97\d)$/.test(s.dept) ? s.dept : "";
   for (const k of nuls) s[k] = null;
   for (const k of nulsCh) s[k] = { mode: s[k].mode, v: null };
@@ -1218,6 +1249,35 @@ function capaciteEmprunt(p, duree, taux, tauxAss, loyerBien = 0) {
 }
 function tauxEndettement(p, mensualiteBien, loyerBien = 0) { const r = revenusBanque(p, loyerBien); return r > 0 ? ((p.credits || 0) + mensualiteBien) / r : null; }
 
+// Résistance du projet (stress test) : le scénario prévu, puis un prudent et un difficile.
+// Repères des guides de financement : 1 à 2 mois de vacance par an, un point de taux en plus, des charges qui dérapent.
+const SCENARIOS = [
+  { id: "base", label: "Prévu", desc: "Les hypothèses de la simulation" },
+  { id: "prudent", label: "Prudent", desc: "Loyer −5 %, un mois de vacance de plus par an", loyer: 0.95, mois: 1, charges: 1, taux: 0 },
+  { id: "difficile", label: "Difficile", desc: "Loyer −10 %, deux mois de vacance de plus, charges +15 %, taux du crédit +1 point", loyer: 0.9, mois: 2, charges: 1.15, taux: 1 }
+];
+// Les estimations de la simulation de départ restent figées : seules les variables du scénario bougent
+function figer(x) { const f = {}; for (const c of CHARGES) f[c] = { mode: x[c].mode, v: x[c].v }; for (const k of ["cfe", "courantes", "chargesLoc", "occupation", "occupationCD", "loyer", "nuitee", "taux"]) f[k] = x[k]; return f; }
+function scenarios(s0) {
+  const s0n = normaliser(s0), base = simuler(s0n), x = base.s, fixe = figer(x), m = 100 / 12;
+  return SCENARIOS.map(sc => {
+    if (sc.id === "base") return Object.assign({ r: base }, sc);
+    const p = Object.assign({}, fixe, { loyer: x.loyer * sc.loyer, nuitee: x.nuitee * sc.loyer, occupation: Math.max(0, x.occupation - sc.mois * m), occupationCD: Math.max(0, x.occupationCD - sc.mois * m),
+      cfe: x.cfe * sc.charges, courantes: x.courantes * sc.charges, taux: x.taux + (x.pret ? sc.taux : 0) });
+    for (const c of CHARGES) p[c] = { mode: x[c].mode, v: x[c].v * sc.charges };
+    return Object.assign({ r: simuler(Object.assign({}, s0n, p)) }, sc);
+  });
+}
+// Taux d'occupation minimum pour que le bien ne coûte rien chaque mois (cash-flow après impôt de l'année de référence ≥ 0)
+function seuilOccupation(s0) {
+  const s0n = normaliser(s0), base = simuler(s0n), x = base.s, k = x.location === "courte" ? "occupationCD" : "occupation", yr = Math.min(base.H, x.anneeRef) - 1, fixe = figer(x);
+  const cf = o => simuler(Object.assign({}, s0n, fixe, { [k]: o })).Y[yr].cf;
+  if (cf(100) < 0) return null;
+  if (cf(0) >= 0) return 0;
+  let lo = 0, hi = 100; for (let i = 0; i < 28; i++) { const mid = (lo + hi) / 2; if (cf(mid) >= 0) hi = mid; else lo = mid; }
+  return hi;
+}
+
 // Compare les régimes possibles à loyer identique
 function comparerRegimes(s0) {
   const s = normaliser(s0);
@@ -1286,12 +1346,13 @@ if (!db.sims[db.cur]) db.cur = Object.keys(db.sims)[0];
 let S = normaliser(db.sims[db.cur].s);
 // Profils emprunteurs nommés (seul, à deux…) : enregistrés à part dans ce navigateur, chaque simulation choisit le sien.
 // Rien n'est envoyé ailleurs : le site public ne contient que le code, jamais ces chiffres.
-const PROFIL_CHAMPS = ["salaire", "salaire2", "loyers", "credits", "apport"], TMIS = [0, 11, 30, 41, 45];
+const PROFIL_CHAMPS = ["salaire", "salaire2", "loyers", "credits", "apport", "epargne"], TMIS = [0, 11, 30, 41, 45];
 function profilPropre(o) {
   o = o || {}; const p = { nom: String(o.nom || "Mon profil").trim().slice(0, 40) || "Mon profil" };
   for (const k of PROFIL_CHAMPS) { const v = o[k] != null && o[k] !== "" ? +o[k] : null; p[k] = Number.isFinite(v) ? Math.max(0, v) : null; }
   p.tmi = o.tmi != null && o.tmi !== "" && TMIS.includes(+o.tmi) ? +o.tmi : null;
   p.periode = o.periode === "an" ? "an" : "mois"; // salaires saisis par mois ou par an (toujours enregistrés par mois)
+  p.situation = typeof o.situation === "string" ? o.situation.slice(0, 160) : ""; // pour le dossier de la banque
   return p;
 }
 let PR = store.get(PROFILS_KEY);
@@ -1515,6 +1576,8 @@ const FORMS = {
       num("variationPrix", "Variation du prix", { id: "variationPrix-b", unit: "%", step: 1, dec: 1, hint: `<span data-live="prixRetenu">${prixRetenuTxt()}</span>` }) +
       (courte ? num("nuitee", "Prix moyen par nuit", { id: "nuitee-b", unit: "€", step: 5, hint: "D'après des annonces comparables sur Airbnb ou Booking." })
         : num("loyer", "Loyer hors charges", { id: "loyer-b", unit: "€ / mois", step: 10, hint: "Ta recherche dans les annonces de location du quartier : voir ci-dessous." })) +
+      txt("marche", "Le quartier et la demande locative", { area: true, hint: "Transports, employeurs, écoles ou facs proches, délai pour louer, prix des ventes récentes (explorateur DVF). Repris dans le dossier pour la banque." }) +
+      txt("justifLoyer", "D'où vient ce loyer ?", { max: 400, ph: "Ex. : 3 annonces comparables à 1 000–1 190 €, attestation de l'agence X", hint: "Repris dans le dossier pour la banque, qui demande de justifier le loyer." }) +
       sel("etatSel", "État du bien", [["neuf", "Neuf (VEFA)"], ["bon", "Ancien, bon état"], ["rafraichir", "Ancien, à rafraîchir"], ["renover", "Ancien, à rénover"], ["lourd", "Ancien, rénovation lourde"]],
         "Il règle les travaux estimés et les frais de notaire (droits réduits dans le neuf).", { value: S.notaireType === "neuf" ? "neuf" : S.etat, id: "etat" }) +
       sel("dpe", "Diagnostic énergétique (DPE)", [["", "Je ne sais pas"], ["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"], ["E", "E"], ["F", "F"], ["G", "G"]],
@@ -1570,6 +1633,8 @@ const FORMS = {
       pnum("loyers", "Loyers que tu touches déjà", { hint: "D'autres biens déjà loués : la banque en retient environ 70\u00a0%." }) +
       pnum("credits", "Crédits en cours", { hint: "Mensualités de tes autres crédits : voiture, consommation, immobilier." }) +
       pnum("apport", "Apport", { unit: "€", hint: "Repris dans la simulation quand elle utilise ce profil (Financement)." }) +
+      pnum("epargne", "Épargne totale", { unit: "€", hint: "Toute ton épargne disponible, apport compris. Le dossier pour la banque montre ce qu'il t'en reste après l'achat." }) +
+      `<div class="fld"><div class="fld-top"><label for="p-situation">Situation professionnelle</label></div><input class="txt" id="p-situation" data-psit type="text" maxlength="160" autocomplete="off" placeholder="Ex. : CDI de commercial depuis 2027, hors période d'essai" value="${esc(p.situation)}"><p class="hint">Reprise dans le dossier pour la banque.</p></div>` +
       `<div class="fld"><div class="fld-top"><label for="p-tmi">Taux marginal d'imposition</label></div><select class="selbox" id="p-tmi" data-ptmi><option value=""${p.tmi == null ? " selected" : ""}>Je ne sais pas</option>${TMIS.map(t => `<option value="${t}"${p.tmi === t ? " selected" : ""}>${t}\u00a0%</option>`).join("")}</select><p class="hint">Ta tranche d'impôt : reprise dans Fiscalité.</p></div>` +
       `<div class="recap" id="capa">${capaHTML()}</div>` +
       `<div class="ctas">${ui.supprProfil ? `<button type="button" class="btn danger" data-act="profil-suppr-ok">Confirmer : supprimer « ${esc(p.nom)} »</button><button type="button" class="btn" data-act="profil-suppr-non">Annuler</button>` : `<button type="button" class="btn" data-act="profil-suppr">Supprimer ce profil</button>`}</div>` + prive;
@@ -2131,6 +2196,7 @@ form.addEventListener("input", e => {
     if (t.dataset.p === "apport") { appliquerProfil(p, ["apport"]); update(); } else { const cp = $("#capa"); if (cp) cp.innerHTML = capaHTML(); renderRecaps(); renderRailSums(); }
     return;
   }
+  if (t.matches("[data-psit]")) { const p = profil(); if (!p) return; p.situation = t.value.slice(0, 160); saveProfils(); return; }
   if (t.matches("[data-pnom]")) { const p = profil(); if (!p) return; p.nom = t.value.slice(0, 40); saveProfils(); renderRailSums(); const o = $(`#s-profil option[value="${S.profil}"]`); if (o) o.textContent = p.nom || "Sans nom"; return; }
   if (t.matches("[data-num]")) {
     if (t.value.trim() === "" && !t.dataset.auto && NUL_UI.has(t.dataset.k)) { setK(S, t.dataset.k, null); update({ from: t }); return; }
@@ -2340,6 +2406,7 @@ dialog.addEventListener("click", e => {
   else if (b.hasAttribute("data-dl")) { const blob = new Blob([$("#exp").value], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "bilan-locatif-simulations.json"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
   else if (b.hasAttribute("data-doimport")) doImport($("#imp").value);
   else if (b.hasAttribute("data-back")) openSims();
+  else if (b.dataset.rapport) { const t = b.dataset.rapport; closeModal(); setTimeout(() => imprimer(t), 50); }
 });
 function openExport() {
   flush();
@@ -2398,7 +2465,7 @@ function rpCashflow(vals, ref, rev) {
   return `<svg viewBox="0 0 ${W} ${H}" class="rp-svg" role="img" aria-label="Cash-flow mensuel après impôt par année">${g}</svg>`;
 }
 // Valeur du bien et capital restant dû selon l'année de revente
-function rpPatrimoine(pa, rev) {
+function rpPatrimoine(pa, rev, formel) { // formel : vocabulaire du dossier pour la banque
   const W = 680, H = 220, L = 54, Rm = 128, T = 14, B = 24, pw = W - L - Rm, ph = H - T - B, n = pa.length;
   const t = graduations(0, Math.max(...pa.map(p => Math.max(p.prix, p.crd)))), hi = t[t.length - 1];
   const x = i => L + pw * (n === 1 ? 0.5 : i / (n - 1)), y = v => T + ph * (hi - v) / hi;
@@ -2409,10 +2476,10 @@ function rpPatrimoine(pa, rev) {
   g += `<polyline points="${pts(p => p.crd).join(" ")}" fill="none" stroke="${RP.crd}" stroke-width="2" stroke-linejoin="round"/><polyline points="${pts(p => p.prix).join(" ")}" fill="none" stroke="${RP.valeur}" stroke-width="2" stroke-linejoin="round"/>`;
   const last = pa[n - 1]; let y1 = y(last.prix), y2 = y(last.crd); if (Math.abs(y1 - y2) < 26) { const m = (y1 + y2) / 2; y1 = m - 13; y2 = m + 13; }
   g += `<text x="${L + pw + 8}" y="${(y1 - 1).toFixed(1)}" class="lb">Valeur du bien</text><text x="${L + pw + 8}" y="${(y1 + 11).toFixed(1)}" class="vl">${kE(last.prix)}</text>`;
-  g += `<text x="${L + pw + 8}" y="${(y2 - 1).toFixed(1)}" class="lb">Reste à rembourser</text><text x="${L + pw + 8}" y="${(y2 + 11).toFixed(1)}" class="vl">${kE(last.crd)}</text>`;
+  g += `<text x="${L + pw + 8}" y="${(y2 - 1).toFixed(1)}" class="lb">${formel ? "Capital restant dû" : "Reste à rembourser"}</text><text x="${L + pw + 8}" y="${(y2 + 11).toFixed(1)}" class="vl">${kE(last.crd)}</text>`;
   const ir = pa.findIndex(p => p.N === rev);
   if (ir >= 0) { const p = pa[ir], xr = x(ir); g += `<line x1="${xr.toFixed(1)}" x2="${xr.toFixed(1)}" y1="${y(p.prix).toFixed(1)}" y2="${y(p.crd).toFixed(1)}" stroke="${RP.ink}" stroke-width="1.2"/><circle cx="${xr.toFixed(1)}" cy="${y(p.prix).toFixed(1)}" r="4" fill="${RP.valeur}" stroke="#fff" stroke-width="2"/><circle cx="${xr.toFixed(1)}" cy="${y(p.crd).toFixed(1)}" r="4" fill="${RP.crd}" stroke="#fff" stroke-width="2"/>` +
-    `<text x="${(xr + 7).toFixed(1)}" y="${((y(p.prix) + y(p.crd)) / 2 + 4).toFixed(1)}" class="vl">${kE(p.prix - p.crd)} à toi</text>`; }
+    `<text x="${(xr + 7).toFixed(1)}" y="${((y(p.prix) + y(p.crd)) / 2 + 4).toFixed(1)}" class="vl">${kE(p.prix - p.crd)} ${formel ? "de valeur nette" : "à toi"}</text>`; }
   return `<svg viewBox="0 0 ${W} ${H}" class="rp-svg" role="img" aria-label="Valeur du bien et capital restant dû">${g}</svg>`;
 }
 // Où va l'argent chaque mois : ce qui entre face à ce qui sort
@@ -2427,61 +2494,186 @@ function rpFlux(o) {
   return `<div class="rp-flux">${barre("Ce qui entre", entrees)}${barre("Ce qui sort", sorties)}</div><div class="rp-leg">${leg}</div>`;
 }
 const minInitiale = t => /^.[a-zà-ÿ]/.test(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t; // « Assurance PNO » → « assurance PNO », « CFE » reste « CFE »
-function buildReport() {
-  const date = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-  const haut = `<div class="rp-top"><span>Bilan Locatif · rapport de simulation</span><span>${date}</span></div><h1>${esc(X.name)}</h1>`;
-  if ((R.manque || []).length) return haut + `<p class="rp-sous">Simulation incomplète : remplis ${R.manque.map(k => REQ_LAB[k].toLowerCase()).join(", ")} pour obtenir le rapport.</p>`;
-  const r = R, rv = r.rv, N = rv.N, ref = r.Y[r.k.annee - 1], cfm = ref.cf / 12, isS = X.regime === "sciIs";
-  const sous = [X.ville || X.adresse, X.typeBien === "maison" ? "Maison" : "Appartement", nf(1).format(X.surface) + " m²", X.dpe ? "DPE " + X.dpe : "", X.location === "courte" ? "Location courte durée" : REGIMES[X.regime].label].filter(Boolean).map(esc).join(" · ");
-  const verdict = cfm >= 5 ? `Ce bien te rapporte <em class="pos">${eur(cfm)} par mois</em> après impôt en année ${ref.y}.` : cfm > -5 ? `Ce bien s'autofinance : environ ${eur(cfm)} par mois après impôt en année ${ref.y}.` : `Ce bien te coûte <em class="neg">${eur(-cfm)} par mois</em> de ta poche en année ${ref.y}.`;
-  const tuile = (l, v, sub, cls) => `<div class="rp-t"><span>${l}</span><b class="${cls || ""}">${v}</b>${sub ? `<small>${sub}</small>` : ""}</div>`;
-  const bloc = (titre, rows) => `<div><h3>${titre}</h3>${rows.filter(Boolean).map(([l, v, cls]) => `<div class="rp-r${cls === "tot" ? " tot" : ""}"><span>${l}</span><b class="${cls && cls !== "tot" ? cls : ""}">${v}</b></div>`).join("")}</div>`;
-  const NH = Math.max(N, Math.min(r.H, 25)), cfs = r.Y.slice(0, NH).map(o => o.cf / 12);
-  const annees = [...new Set([1, 2, 3, 5, 10, 15, 20, N].filter(a => a <= N))].sort((a, b) => a - b);
-  const lvl = { critique: "À régler", attention: "Attention", info: "À savoir" };
-  const alertes = r.warnings.slice().sort((a, b) => ["critique", "attention", "info"].indexOf(a.niveau) - ["critique", "attention", "info"].indexOf(b.niveau)).slice(0, 5);
-  const cles = clesEstimees();
-  const hyp = [
-    `Régime : ${esc(REGIMES[X.regime].label)}${isS ? "" : X.tmiMode === "calcul" ? ", impôt au barème 2026 selon tes revenus" : `, taux marginal ${X.tmi} %`}.`,
-    X.location === "courte" ? `Occupation ${pc(X.occupationCD, 0)} des nuits, prix par nuit ${eur(X.nuitee)}.` : `Occupation ${pc(X.occupation, 0)}, loyer révisé de ${pc(X.evolLoyer, 1)} par an.`,
-    `Charges réévaluées de ${pc(X.evolCharges, 1)} par an.`,
-    `Bien revalorisé de ${pc(X.revalo, 1)} par an, revendu après ${plural(N, "an")}.`,
-    cles.length ? `Repères standards utilisés pour : ${cles.map(c => minInitiale(c[1])).join(", ")}.` : ""
+// Morceaux communs aux deux rapports
+const rpDate = () => new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+const rpTuile = (l, v, sub, cls) => `<div class="rp-t"><span>${l}</span><b class="${cls || ""}">${v}</b>${sub ? `<small>${sub}</small>` : ""}</div>`;
+const rpBloc = (titre, rows) => `<div><h3>${titre}</h3>${rows.filter(Boolean).map(([l, v, cls]) => `<div class="rp-r${cls === "tot" ? " tot" : ""}"><span>${l}</span><b class="${cls && cls !== "tot" ? cls : ""}">${v}</b></div>`).join("")}</div>`;
+const rpPied = t => `<p class="rp-pied">${t}</p>`;
+function rpIncomplet(haut) { return haut + `<p class="rp-sous">Simulation incomplète : remplis ${R.manque.map(k => REQ_LAB[k].toLowerCase()).join(", ")} pour obtenir le rapport.</p>`; }
+const typeBienTxt = () => X.typeBien === "maison" ? "Maison" : "Appartement";
+const locTxt = () => X.location === "courte" ? "location meublée de courte durée" : REGIMES[X.regime].meuble === false ? "location nue" : "location meublée";
+const loyerMois = () => X.location === "courte" ? R.Y[0].revenus / 12 : X.loyer;
+const signe = v => (Math.round(v) > 0 ? "+" : "") + eur(v);
+// Ce que tu mets et ce que tu récupères jusqu'à la revente (leur différence est l'enrichissement)
+function mises(r) {
+  const rv = r.rv;
+  if (X.regime === "sciIs") return { mets: rv.flux.reduce((a, f) => a + Math.max(0, -f), 0), recup: rv.flux.reduce((a, f) => a + Math.max(0, f), 0) };
+  const cfs = r.Y.slice(0, rv.N).map(o => o.cf);
+  return { mets: r.mise + cfs.reduce((a, c) => a + Math.max(0, -c), 0), recup: cfs.reduce((a, c) => a + Math.max(0, c), 0) + rv.net };
+}
+
+/* Dossier pour la banque : prouver que le projet est cohérent et que tu peux rembourser.
+   Ordre inspiré des guides de financement : synthèse d'une page, plan de financement, emprunteur, le bien et son loyer,
+   prévisionnel sur 10 ans, résistance du projet (scénarios), risques et parades, sortie, pièces à joindre. */
+function buildDossier() {
+  const haut = `<div class="rp-top"><span>Dossier de financement · investissement locatif</span><span>${rpDate()}</span></div>`;
+  if ((R.manque || []).length) return rpIncomplet(haut + `<h1>${esc(X.name)}</h1>`);
+  const r = R, x = X, p = profil(), rv = r.rv, N = rv.N, ref = r.Y[r.k.annee - 1], pret = r.emprunt > 0;
+  const lm = loyerMois(), courte = x.location === "courte";
+  const titre = `Acquisition ${x.typeBien === "maison" ? "d'une maison" : "d'un appartement"} de ${nf(1).format(x.surface)} m²${x.ville ? " · " + esc(x.ville) : ""}`;
+  const revP = p ? revenusBanque(p) : 0, profilOk = p && revP > 0;
+  const teAvant = profilOk ? (p.credits || 0) / revP : null, teApres = profilOk ? tauxEndettement(p, pret ? r.mensualite : 0, lm) : null;
+  const rav = profilOk ? revenusBanque(p, lm) - (p.credits || 0) - (pret ? r.mensualite : 0) : null, couple = p && p.salaire2 > 0;
+  const restant = p && p.epargne != null ? p.epargne - r.mise : null;
+  const sc = scenarios(S), seuil = seuilOccupation(S);
+  const bref = `Achat ${x.typeBien === "maison" ? "d'une maison" : "d'un appartement"} de ${nf(1).format(x.surface)} m²${x.ville ? " à " + esc(x.ville) : ""}${x.dpe ? " (DPE " + x.dpe + ")" : ""}, destiné à la ${locTxt()} pour ${eur(lm)} par mois${courte ? " de recettes en moyenne" : " hors charges"}. ` +
+    `Coût total de l'opération : <b>${eur(r.coutTotal + r.fraisBancaires)}</b>, financé ${pret ? `par un prêt de <b>${eur(r.emprunt)}</b> sur ${plural(x.duree, "an")} et un apport de <b>${eur(r.mise)}</b>` : "sans crédit"}. ` +
+    (pret ? (ref.cf >= 0 ? `Les loyers couvrent toutes les dépenses, crédit compris : le bien dégage ${eur(ref.cf / 12)} par mois après impôt (année ${ref.y}).` : `Les loyers nets de charges couvrent ${pct(r.k.couverture, 0)} de la mensualité ; l'emprunteur complète ${eur(-ref.cf / 12)} par mois (année ${ref.y}), une épargne qui finance son patrimoine.`) : "");
+  const emplois = [[x.variationPrix ? `Prix d'achat (affiché ${eur(x.prixAffiche)}, ${x.variationPrix > 0 ? "+" : ""}${pc(x.variationPrix, 1)})` : "Prix d'achat", eur(x.prix)], ["Frais de notaire", eur(r.notaire.total)], r.agence ? ["Honoraires d'agence", eur(r.agence)] : null,
+    x.travaux ? ["Travaux", eur(x.travaux)] : null, x.mobilier ? ["Mobilier", eur(x.mobilier)] : null, x.plans ? ["Plans d'architecte", eur(x.plans)] : null,
+    r.fraisBancaires ? ["Frais bancaires (dossier, garantie, courtage)", eur(r.fraisBancaires)] : null, ["Total des besoins", eur(r.coutTotal + r.fraisBancaires), "tot"]];
+  const ressources = [pret ? [`Prêt immobilier (${plural(x.duree, "an")}, ${pc(x.taux, 2)} hors assurance)`, eur(r.emprunt)] : null, ["Apport personnel", eur(r.mise)], ["Total des ressources", eur(r.emprunt + r.mise), "tot"]];
+  const emprunteur = p ? [["Emprunteur", esc(p.nom)], p.salaire ? ["Revenu net mensuel", eur(p.salaire)] : null, p.salaire2 ? ["Co-emprunteur", eur(p.salaire2)] : null,
+    p.loyers ? ["Loyers déjà perçus", eur(p.loyers) + " / mois"] : null, ["Crédits en cours", p.credits ? eur(p.credits) + " / mois" : "Aucun"], p.epargne != null ? ["Épargne totale", eur(p.epargne)] : null] : [];
+  const indic = profilOk ? [["Endettement avant", pct(teAvant, 1)], ["Endettement après", pct(teApres, 1), teApres <= HCSF.taux ? "pos" : "neg"],
+    ["Reste à vivre", eur(rav) + " / mois"], ["Apport", pct(r.mise / (r.coutTotal + r.fraisBancaires), 0) + " du projet"], restant != null ? ["Épargne restante", eur(restant)] : null, restant != null && pret && r.mensualite > 0 ? ["Soit", nf(1).format(restant / r.mensualite) + " mensualités"] : null] : [];
+  const regimes = comparerRegimes(S).filter(o => !o.critique);
+  const loyerRows = courte ? [["Prix moyen par nuit", eur(x.nuitee)], ["Taux d'occupation retenu", pc(x.occupationCD, 0) + " des nuits"], ["Recettes moyennes", eur(lm) + " / mois"]]
+    : [["Loyer hors charges", eur(x.loyer) + " / mois"], x.chargesLoc ? ["Charges refacturées au locataire", eur(x.chargesLoc) + " / mois"] : null, ["Taux d'occupation retenu", pc(x.occupation, 0) + ` (environ ${nf(0).format((100 - x.occupation) / 100 * 52)} semaines vides par an)`], ["Révision annuelle du loyer", pc(x.evolLoyer, 1)]];
+  const gestion = (x.gerance.v > 0 ? "Gestion confiée à une agence" : "Gestion en direct par le propriétaire") + (x.gli.v > 0 ? ", avec assurance loyers impayés" : "");
+  const annees = Array.from({ length: Math.min(10, r.H) }, (_, i) => i + 1);
+  const risques = [
+    ["Vacance locative", seuil === null ? `Même loué toute l'année, le bien demande un effort de ${eur(-ref.cf / 12)} par mois : il est budgété dans le prévisionnel.` : seuil === 0 ? "Le bien couvre ses dépenses même inoccupé." : `Le bien couvre toutes ses dépenses dès ${pc(Math.ceil(seuil), 0)} d'occupation ; ${pc(x.location === "courte" ? x.occupationCD : x.occupation, 0)} sont retenus.`],
+    ["Loyers impayés", x.gli.v > 0 ? "Assurance loyers impayés prévue dans les charges." : "Garant du locataire ou garantie Visale ; assurance loyers impayés possible (environ 2,5 à 3,5 % des loyers)."],
+    ["Travaux imprévus", `Provision de ${eur(x.autres.mode === "an" ? x.autres.v : x.autres.mode === "mois" ? x.autres.v * 12 : x.autres.mode === "trim" ? x.autres.v * 4 : r.Y[0].revenus * x.autres.v / 100)} par an dans les charges${restant != null ? `, épargne restante de ${eur(restant)}` : ""}.`],
+    ["Hausse des charges et de la taxe foncière", `Charges réévaluées de ${pc(x.evolCharges, 1)} par an dans le prévisionnel, contre ${pc(x.evolLoyer, 1)} pour le loyer.`],
+    x.dpe && "EFG".includes(x.dpe) ? ["Performance énergétique", `DPE ${x.dpe} : ${x.dpe === "G" ? "location interdite sans travaux" : x.dpe === "F" ? "location interdite à partir de 2028, loyer gelé" : "location interdite à partir de 2034"} ; travaux à prévoir.`] : null,
+    r.lieu && r.lieu.encadrement && !courte ? ["Encadrement des loyers", "Commune soumise à l'encadrement : le loyer retenu doit rester sous le loyer de référence majoré."] : null
   ].filter(Boolean);
-  return haut + `<p class="rp-sous">${sous}</p>${X.adresse && X.ville ? `<p class="rp-sous">${esc(X.adresse)}</p>` : ""}${X.note ? `<p class="rp-note">${esc(X.note)}</p>` : ""}
-  <div class="rp-verdict"><p class="big">${verdict}</p><p>Revendu après ${plural(N, "an")} à ${eur(rv.prix)}, il t'${rv.enrichissement >= 0 ? "enrichit" : "appauvrit"} de <b>${eur(Math.abs(rv.enrichissement))}</b>${rv.tri !== null ? ` (TRI ${pct(rv.tri, 1)})` : ""}.</p>${r.k.couverture !== null ? `<p>Les revenus nets de charges couvrent ${pct(r.k.couverture, 0)} de la mensualité du crédit.</p>` : ""}</div>
-  <div class="rp-tuiles">
-    ${tuile("Cash-flow après impôt", eur(cfm) + " / mois", "Année " + ref.y, cfm < -0.5 ? "neg" : cfm > 0.5 ? "pos" : "")}
-    ${tuile("Rendement net de charges", pct(r.k.net, 1), "Brut " + pct(r.k.brut, 1) + " · " + grade(r.k.net).t)}
-    ${tuile("Mise de départ", eur(r.mise), "Apport et frais non financés")}
-    ${tuile("Mensualité du crédit", r.emprunt > 0 ? eur(r.mensualite) : "—", r.emprunt > 0 ? `Sur ${plural(X.duree, "an")} à ${pc(X.taux, 2)}` : "Achat sans crédit")}
-    ${tuile("Coût total du projet", eur(r.coutTotal), "Dont notaire " + eur(r.notaire.total))}
-    ${tuile("Enrichissement à " + N + " ans", eur(rv.enrichissement), rv.tri !== null ? "TRI " + pct(rv.tri, 1) : "", rv.enrichissement < 0 ? "neg" : "")}
+  const pieces = ["Pièce d'identité et justificatif de domicile", "Trois derniers bulletins de salaire et contrat de travail", "Deux derniers avis d'imposition", "Trois derniers relevés de tous les comptes", "Justificatif de l'apport (relevés d'épargne)",
+    "Compromis de vente", courte ? "Étude des recettes : annonces comparables, autorisation de la mairie si nécessaire" : "Deux attestations de valeur locative d'agences différentes, ou le bail en cours", x.travaux ? "Devis des travaux" : null, "Diagnostics du bien, dont le DPE",
+    p && p.credits ? "Tableaux d'amortissement des crédits en cours" : null, p && p.loyers ? "Baux et avis de taxe foncière des biens déjà loués" : null].filter(Boolean);
+  return haut + `<h1>${titre}</h1><p class="rp-sous">Investissement locatif · ${locTxt()} (${esc(REGIMES[x.regime].label)}) · détention prévue ${plural(N, "an")}</p>
+  <div class="rp-tuiles q4">
+    ${rpTuile("Financement demandé", pret ? eur(r.emprunt) : "Aucun", pret ? `Sur ${plural(x.duree, "an")} à ${pc(x.taux, 2)}` : "Achat comptant")}
+    ${rpTuile("Mensualité", pret ? eur(r.mensualite) : "—", pret ? "Assurance comprise" : "")}
+    ${rpTuile("Endettement après projet", teApres !== null ? pct(teApres, 1) : "—", teApres !== null ? "35 % maximum (HCSF)" : "Profil emprunteur à remplir", teApres !== null ? (teApres <= HCSF.taux ? "pos" : "neg") : "")}
+    ${rpTuile(courte ? "Recettes mensuelles" : "Loyer mensuel", eur(lm), courte ? "Moyenne sur l'année" : "Hors charges · 70 % retenus : " + eur(HCSF.loyers * lm))}
   </div>
-  <figure><figcaption>Ton cash-flow chaque mois, année après année</figcaption><p class="rp-sub">Après impôt. Vert : le bien te verse de l'argent. Rouge : tu complètes de ta poche.</p>${rpCashflow(cfs, r.k.annee, N)}</figure>
+  <h2>1. Le projet en bref</h2><p class="rp-lead">${bref}</p>
+  <h2>2. Plan de financement</h2><div class="rp-2col">${rpBloc("Besoins", emplois)}${rpBloc("Ressources", ressources)}</div>
+  <h2>3. L'emprunteur</h2>${p && p.situation ? `<p class="rp-lead" style="margin-bottom:8pt">${esc(p.situation)}</p>` : ""}${p ? `<div class="rp-2col">${rpBloc("Revenus et engagements", emprunteur)}${profilOk ? rpBloc("Indicateurs bancaires", indic) : `<div><h3>Indicateurs bancaires</h3><p class="rp-note">Renseigne tes revenus dans le profil emprunteur pour les calculer.</p></div>`}</div>
+    ${profilOk ? `<p class="rp-note">Revenus nets avant impôt. Calcul selon les règles du HCSF : mensualités jusqu'à 35 % des revenus, assurance comprise, loyers comptés à 70 %. Reste à vivre : revenus retenus moins tous les crédits ; repère courant ${couple ? "d'environ 1 200 € pour un couple" : "de 700 à 800 € pour une personne seule"}. Apport conseillé : au moins 10 % du projet.</p>` : ""}`
+    : `<p class="rp-note">Choisis un profil emprunteur dans l'appli pour présenter tes revenus, ton endettement et ton épargne.</p>`}
   <div class="rp-p2">
-    <figure><figcaption>Ce que tu possèdes vraiment</figcaption><p class="rp-sub">Valeur du bien face au crédit qu'il reste à rembourser, selon l'année de revente. La zone bleue, c'est ta part.</p>
-    <div class="rp-leg"><span><i style="background:${RP.valeur}"></i>Valeur du bien (+${pc(X.revalo, 1)} par an)</span><span><i style="background:${RP.crd}"></i>Reste à rembourser</span></div>${rpPatrimoine(r.parAnnee, N)}</figure>
-    <figure><figcaption>Où va l'argent chaque mois (année ${ref.y})</figcaption><p class="rp-sub">Le capital remboursé n'est pas perdu : c'est de l'épargne qui te revient à la revente.</p>${rpFlux(ref)}</figure>
-    <h2>Le projet en chiffres</h2>
-    <div class="rp-blocs">
-      ${bloc("L'achat", [X.variationPrix ? ["Prix affiché", eur(X.prixAffiche)] : null, [X.variationPrix ? `Prix négocié (${X.variationPrix > 0 ? "+" : ""}${pc(X.variationPrix, 1)})` : "Prix d'achat", eur(X.prix)], ["Frais de notaire", eur(r.notaire.total)], r.agence ? ["Honoraires d'agence", eur(r.agence)] : null, X.travaux ? ["Travaux", eur(X.travaux)] : null, X.mobilier ? ["Mobilier", eur(X.mobilier)] : null, ["Coût total", eur(r.coutTotal), "tot"]])}
-      ${bloc("Le crédit", r.emprunt > 0 ? [["Montant emprunté", eur(r.emprunt)], ["Apport", eur(X.apport)], ["Durée et taux", `${plural(X.duree, "an")} · ${pc(X.taux, 2)}`], ["Assurance emprunteur", pc(X.tauxAss, 2) + " par an"], ["Coût total du crédit", eur(r.coutCredit)], ligneEndettement(), ["Mensualité", eur(r.mensualite), "tot"]] : [["Achat comptant", eur(r.coutTotal)], ["Mise de départ", eur(r.mise), "tot"]])}
-      ${bloc("Une année type (année " + ref.y + ")", [["Revenus encaissés", eur(ref.revenus)], ["Charges", eur(-ref.charges)], ["Crédit et assurance", eur(-ref.credit)], [isS ? "Impôt de la SCI" : "Impôt", eur(-ref.impot)], ["Cash-flow sur l'année", eur(ref.cf), "tot"]])}
+    <h2>4. Le bien et sa location</h2>
+    <div class="rp-2col">${rpBloc("Le bien", [x.adresse ? ["Adresse", esc(x.adresse)] : x.ville ? ["Commune", esc(x.ville)] : null, ["Type et surface", `${typeBienTxt()} de ${nf(1).format(x.surface)} m²`], ["État", { neuf: "Neuf", bon: "Ancien, bon état", rafraichir: "Ancien, à rafraîchir", renover: "Ancien, à rénover", lourd: "Ancien, rénovation lourde" }[x.notaireType === "neuf" ? "neuf" : x.etat]], x.dpe ? ["DPE", x.dpe] : null, ["Prix au m²", eur(x.prix / x.surface)]])}
+      ${rpBloc("La location", loyerRows.concat([["Gestion", gestion]]))}</div>
+    ${x.note ? `<p class="rp-note"><b>Description :</b> ${esc(x.note)}</p>` : ""}
+    ${x.marche ? `<p class="rp-note"><b>Le marché local :</b> ${esc(x.marche)}</p>` : ""}
+    <p class="rp-note"><b>Justification du loyer :</b> ${x.justifLoyer ? esc(x.justifLoyer) : "voir les attestations de valeur locative jointes."}</p>
+    <h2>5. Rentabilité</h2>
+    <div class="rp-tuiles">
+      ${rpTuile("Rendement brut", pct(r.k.brut, 1), "Loyers ÷ coût total")}
+      ${rpTuile("Rendement net de charges", pct(r.k.net, 1), "Charges, vacance et taxe foncière déduites")}
+      ${rpTuile("Rendement net après impôt", pct(r.k.netNet, 1), esc(REGIMES[x.regime].court))}
+      ${rpTuile("Cash-flow avant impôt", eur(ref.cfAvant / 12) + " / mois", "Année " + ref.y, ref.cfAvant < -0.5 ? "neg" : "pos")}
+      ${rpTuile("Cash-flow après impôt", eur(ref.cf / 12) + " / mois", "Année " + ref.y, ref.cf < -0.5 ? "neg" : "pos")}
+      ${rpTuile("Seuil d'occupation", seuil === null ? "Non atteint" : pc(Math.ceil(seuil), 0), seuil === null ? "Effort mensuel même loué à 100 %" : "Occupation minimum pour que le bien ne coûte rien")}
     </div>
+    ${regimes.length > 1 ? `<h3 style="margin-top:4pt">Comparaison des régimes fiscaux possibles, à loyer identique</h3><table class="rp-reg"><thead><tr><th>Régime</th><th>Impôt année 1</th><th>Cash-flow moyen / mois</th><th>Enrichissement à ${N} ans</th></tr></thead><tbody>${regimes.map(o => `<tr${o.regime === x.regime ? ' class="sel"' : ""}><td>${esc(o.label)}${o.regime === x.regime ? " (retenu)" : ""}</td><td>${eur(o.impotAn1)}</td><td>${eur(o.cfMoyenMois)}</td><td>${eur(o.enrichissement)}</td></tr>`).join("")}</tbody></table>` : ""}
+    <h2>6. Prévisionnel sur ${annees.length} ans</h2>
+    <table><thead><tr><th>Année</th><th>Loyers encaissés</th><th>Charges</th><th>Crédit</th><th>Impôt</th><th>Cash-flow annuel</th><th>Capital restant dû</th></tr></thead><tbody>${annees.map(a => { const o = r.Y[a - 1]; return `<tr><td>${a}</td><td>${eur(o.revenus)}</td><td>${eur(-o.charges)}</td><td>${eur(-o.credit)}</td><td>${eur(-o.impot)}</td><td class="${o.cf < 0 ? "neg" : "pos"}">${eur(o.cf)}</td><td>${eur(o.crd)}</td></tr>`; }).join("")}</tbody></table>
   </div>
   <div class="rp-p2">
-    <figure><figcaption>Année par année</figcaption>
-      <table><thead><tr><th>Année</th><th>Revenus</th><th>Charges</th><th>Crédit</th><th>Impôt</th><th>Cash-flow / mois</th><th>Reste à rembourser</th></tr></thead><tbody>${annees.map(a => { const o = r.Y[a - 1]; return `<tr><td>${a}</td><td>${eur(o.revenus)}</td><td>${eur(-o.charges)}</td><td>${eur(-o.credit)}</td><td>${eur(-o.impot)}</td><td class="${o.cf < 0 ? "neg" : "pos"}">${eur(o.cf / 12)}</td><td>${eur(o.crd)}</td></tr>`; }).join("")}</tbody></table></figure>
-    <div class="rp-2col">
-      ${bloc("À la revente (après " + plural(N, "an") + ")", [["Prix de revente", eur(rv.prix)], rv.frais ? ["Frais de revente", eur(-rv.frais)] : null, ["Crédit restant à rembourser", eur(-rv.crd)], rv.ira ? ["Indemnités de remboursement", eur(-rv.ira)] : null, ["Impôt sur la plus-value", eur(-rv.pv.impot)], ["Ce qui te revient", eur(rv.net)], ["Enrichissement total", eur(rv.enrichissement), "tot"]])}
-      <div><h3>Hypothèses</h3><ul>${hyp.map(h => `<li>${h}</li>`).join("")}</ul></div>
-    </div>
-    ${alertes.length ? `<div style="margin-top:16pt;break-inside:avoid"><h3>Points d'attention</h3>${alertes.map(w => `<p class="rp-alerte ${w.niveau}"><b>${lvl[w.niveau]}</b> · ${esc(w.txt)}</p>`).join("")}</div>` : ""}
-    <p class="rp-pied">Simulation fondée sur les règles fiscales 2026 et sur les chiffres saisis. Elle ne remplace ni un notaire, ni un expert-comptable, ni un conseiller financier.</p>
+    <h2>7. Résistance du projet</h2>
+    <p class="rp-note" style="margin-bottom:6pt">Les mêmes chiffres, avec des hypothèses volontairement défavorables.</p>
+    <table class="rp-sc"><thead><tr><th>Scénario</th><th>Hypothèses</th><th>Cash-flow / mois</th>${profilOk ? "<th>Endettement</th>" : ""}<th>Enrichissement à ${N} ans</th></tr></thead><tbody>${sc.map(o => { const rr = o.r, y = rr.Y[r.k.annee - 1], te = profilOk ? tauxEndettement(p, rr.emprunt > 0 ? rr.mensualite : 0, rr.s.location === "courte" ? rr.Y[0].revenus / 12 : rr.s.loyer) : null;
+      return `<tr><td><b>${o.label}</b></td><td>${o.desc}</td><td class="${y.cf < 0 ? "neg" : "pos"}">${eur(y.cf / 12)}</td>${profilOk ? `<td class="${te <= HCSF.taux ? "pos" : "neg"}">${pct(te, 1)}</td>` : ""}<td>${eur(rr.rv.enrichissement)}</td></tr>`; }).join("")}</tbody></table>
+    ${pret ? `<p class="rp-note">Réserve de précaution conseillée : environ 6 mensualités, soit ${eur(6 * r.mensualite)}${restant != null ? ` ; épargne restante après l'achat : ${eur(restant)}` : ""}.</p>` : ""}
+    <h2>8. Risques et parades</h2>
+    ${risques.map(([t, d]) => `<p class="rp-alerte"><b>${t}</b> · ${d}</p>`).join("")}
+    <h2>9. Sortie</h2>
+    <figure style="margin-bottom:6pt"><div class="rp-leg"><span><i style="background:${RP.valeur}"></i>Valeur du bien (+${pc(x.revalo, 1)} par an)</span><span><i style="background:${RP.crd}"></i>Capital restant dû</span></div>${rpPatrimoine(r.parAnnee, N, true)}</figure>
+    <p class="rp-lead">Revente prévue après ${plural(N, "an")} à ${eur(rv.prix)} (revalorisation de ${pc(x.revalo, 1)} par an). Après remboursement du capital restant (${eur(rv.crd)})${rv.frais ? ", frais de revente" : ""} et impôt sur la plus-value (${eur(rv.pv.impot)}), il revient <b>${eur(rv.net)}</b> à l'emprunteur.${pret ? ` En gardant le bien, le crédit est entièrement remboursé au bout de ${plural(x.duree, "an")}.` : ""}</p>
+    <h2>10. Pièces à joindre</h2>
+    <ul class="rp-check">${pieces.map(t => `<li>${t}</li>`).join("")}</ul>
+    ${rpPied("Document établi par l'emprunteur à partir de ses hypothèses, avec Bilan Locatif. Règles fiscales 2026 ; chiffres indicatifs, à confirmer par l'offre de prêt et le notaire.")}
   </div>`;
 }
-if (TOP) { const pb = $("#btn-print"); pb.hidden = false; pb.addEventListener("click", () => { $("#report").innerHTML = buildReport(); window.print(); }); addEventListener("beforeprint", () => { $("#report").innerHTML = buildReport(); }); }
+
+/* Bilan à partager : pour soi et ses proches. Une idée par bloc, chaque chiffre expliqué en mots simples. */
+function buildBilan() {
+  const haut = `<div class="rp-top"><span>Bilan Locatif · investissement locatif expliqué</span><span>${rpDate()}</span></div><h1>${esc(X.name)}</h1>`;
+  if ((R.manque || []).length) return rpIncomplet(haut);
+  const r = R, x = X, rv = r.rv, N = rv.N, ref = r.Y[r.k.annee - 1], cfm = ref.cf / 12, pret = r.emprunt > 0;
+  const sous = [x.ville || x.adresse, typeBienTxt(), nf(1).format(x.surface) + " m²", x.dpe ? "DPE " + x.dpe : "", locTxt()].filter(Boolean).map(esc).join(" · ");
+  const verdict = cfm >= 5 ? `Ce bien te rapporte <em class="pos">${eur(cfm)} par mois</em> après impôt en année ${ref.y}.` : cfm > -5 ? `Ce bien s'autofinance : environ ${eur(cfm)} par mois après impôt en année ${ref.y}.` : `Ce bien te coûte <em class="neg">${eur(-cfm)} par mois</em> de ta poche en année ${ref.y}.`;
+  const m = mises(r), sc = scenarios(S);
+  const NH = Math.max(N, Math.min(r.H, 25)), cfs = r.Y.slice(0, NH).map(o => o.cf / 12);
+  const lvl = { critique: "À régler", attention: "Attention", info: "À savoir" };
+  const alertes = r.warnings.slice().sort((a, b) => ["critique", "attention", "info"].indexOf(a.niveau) - ["critique", "attention", "info"].indexOf(b.niveau)).slice(0, 4);
+  const cles = clesEstimees();
+  const mots = [
+    ["Cash-flow", "Ce qui reste chaque mois une fois tout payé : crédit, charges, impôt. Négatif : tu complètes de ta poche."],
+    ["Rendement brut", "Les loyers d'une année divisés par le coût total du projet. Pratique pour comparer, mais il oublie les charges."],
+    ["Rendement net de charges", "Le même calcul, charges, vacance et taxe foncière déduites. Repères : moins de 3 % pari sur la plus-value, 3 à 5 % correct, 5 à 7 % bon."],
+    ["Mise de départ", "L'argent qui sort de ta poche le jour de l'achat : apport et frais non financés par le crédit."],
+    ["Capital remboursé", "La part de la mensualité qui rembourse l'emprunt. Ce n'est pas perdu : à la revente, ce capital te revient."],
+    ["Enrichissement", "Tout ce que tu récupères (loyers nets et revente) moins tout ce que tu as mis. C'est le vrai résultat de l'opération."],
+    ["TRI", "Le rendement annuel de ton argent sur toute la durée, comme le taux d'un livret qui donnerait le même résultat."],
+    ["Taux d'endettement", "La part de tes revenus qui part en crédits. Les banques s'arrêtent à 35 %."]
+  ];
+  return haut + `<p class="rp-sous">${sous}</p>${x.note ? `<p class="rp-note">${esc(x.note)}</p>` : ""}
+  <div class="rp-verdict"><p class="big">${verdict}</p><p>${pret ? `Le crédit de ${eur(r.emprunt)} se rembourse en ${plural(x.duree, "an")}. ` : ""}Revendu après ${plural(N, "an")}, il t'${rv.enrichissement >= 0 ? "enrichit" : "appauvrit"} de <b>${eur(Math.abs(rv.enrichissement))}</b>.</p></div>
+  <h2>L'opération en clair, sur ${plural(N, "an")}</h2>
+  <div class="rp-encl">
+    <div><span>Ce que tu mets</span><b>${eur(m.mets)}</b><small>La mise de départ, plus les mois où tu complètes de ta poche.</small></div>
+    <div><span>Ce que tu récupères</span><b>${eur(m.recup)}</b><small>Les mois où le bien te verse de l'argent, plus ce qui te revient à la revente.</small></div>
+    <div><span>Ce que tu gagnes</span><b class="${rv.enrichissement < 0 ? "neg" : "pos"}">${signe(rv.enrichissement)}</b><small>La différence : ton enrichissement${rv.tri !== null ? `, soit ${pct(rv.tri, 1)} par an (TRI)` : ""}.</small></div>
+  </div>
+  <div class="rp-tuiles q4">
+    ${rpTuile("Chaque mois", eur(cfm), cfm < 0 ? "Ce que tu ajoutes, tout compris" : "Ce qui te reste, tout compris", cfm < -0.5 ? "neg" : cfm > 0.5 ? "pos" : "")}
+    ${rpTuile("Rendement net", pct(r.k.net, 1), grade(r.k.net).t + " (charges payées)")}
+    ${rpTuile("Le jour de l'achat", eur(r.mise), "Ta mise de départ")}
+    ${rpTuile("Mensualité", pret ? eur(r.mensualite) : "—", pret ? `${plural(x.duree, "an")}, assurance comprise` : "Achat sans crédit")}
+  </div>
+  <figure><figcaption>Ton cash-flow chaque mois, année après année</figcaption><p class="rp-sub">Rouge : tu complètes de ta poche. Vert : le bien te verse de l'argent, en général une fois le crédit remboursé.</p>${rpCashflow(cfs, r.k.annee, N)}</figure>
+  <div class="rp-p2">
+    <figure><figcaption>Ce que tu possèdes vraiment</figcaption><p class="rp-sub">Chaque mois, le crédit baisse et le bien prend (un peu) de valeur. L'écart entre les deux, la zone bleue, c'est ta part.</p>
+      <div class="rp-leg"><span><i style="background:${RP.valeur}"></i>Valeur du bien (+${pc(x.revalo, 1)} par an)</span><span><i style="background:${RP.crd}"></i>Reste à rembourser</span></div>${rpPatrimoine(r.parAnnee, N)}</figure>
+    <figure><figcaption>Où va l'argent chaque mois (année ${ref.y})</figcaption><p class="rp-sub">En haut ce qui entre, en bas ce qui sort. Le capital remboursé, en vert, est de l'épargne qui te revient à la revente.</p>${rpFlux(ref)}</figure>
+    <h2>Et si ça se passe moins bien ?</h2>
+    <table class="rp-sc"><thead><tr><th>Scénario</th><th>Ce qui change</th><th>Chaque mois</th><th>Gain après ${plural(N, "an")}</th></tr></thead><tbody>${sc.map(o => { const y = o.r.Y[r.k.annee - 1];
+      return `<tr><td><b>${o.label}</b></td><td>${o.desc}</td><td class="${y.cf < 0 ? "neg" : "pos"}">${eur(y.cf / 12)}</td><td class="${o.r.rv.enrichissement < 0 ? "neg" : ""}">${signe(o.r.rv.enrichissement)}</td></tr>`; }).join("")}</tbody></table>
+  </div>
+  <div class="rp-p2">
+    <h2>Les mots à connaître</h2>
+    <dl class="rp-gloss">${mots.map(([t, d]) => `<dt>${t}</dt><dd>${d}</dd>`).join("")}</dl>
+    <div class="rp-2col" style="margin-top:14pt">
+      ${rpBloc("À la revente (après " + plural(N, "an") + ")", [["Prix de revente", eur(rv.prix)], rv.frais ? ["Frais de revente", eur(-rv.frais)] : null, ["Crédit restant à rembourser", eur(-rv.crd)], ["Impôt sur la plus-value", eur(-rv.pv.impot)], ["Ce qui te revient", eur(rv.net), "tot"]])}
+      <div><h3>Les hypothèses</h3><ul>
+        <li>${x.location === "courte" ? `Loué ${pc(x.occupationCD, 0)} des nuits à ${eur(x.nuitee)} la nuit.` : `Loué ${eur(x.loyer)} par mois hors charges, ${pc(x.occupation, 0)} du temps ; loyer révisé de ${pc(x.evolLoyer, 1)} par an.`}</li>
+        <li>Charges réévaluées de ${pc(x.evolCharges, 1)} par an ; bien revalorisé de ${pc(x.revalo, 1)} par an.</li>
+        <li>Impôt : ${esc(REGIMES[x.regime].label)}${x.regime === "sciIs" ? "" : x.tmiMode === "calcul" ? ", barème 2026" : `, tranche à ${x.tmi} %`}.</li>
+        ${cles.length ? `<li>Chiffres encore estimés : ${cles.map(c => minInitiale(c[1])).join(", ")}.</li>` : ""}
+      </ul></div>
+    </div>
+    ${alertes.length ? `<div style="margin-top:14pt;break-inside:avoid"><h3>Points d'attention</h3>${alertes.map(w => `<p class="rp-alerte ${w.niveau}"><b>${lvl[w.niveau]}</b> · ${esc(w.txt)}</p>`).join("")}</div>` : ""}
+    ${rpPied("Simulation fondée sur les règles fiscales 2026 et sur les chiffres saisis. Elle ne remplace ni un notaire, ni un expert-comptable, ni un conseiller financier.")}
+  </div>`;
+}
+// Deux documents pour deux publics : la banque (financement) et toi ou tes proches (pédagogie)
+const RAPPORTS = { banque: () => buildDossier(), perso: () => buildBilan() };
+function imprimer(type) { ui.rapport = type; save(); $("#report").innerHTML = RAPPORTS[type](); window.print(); }
+function choisirRapport() {
+  openModal(mHead("Imprimer un rapport") + `<p class="hint" style="margin-top:0">Deux documents, deux publics. Dans la fenêtre d'impression, choisis « Enregistrer au format PDF » pour garder le fichier.</p>
+    <div class="rapports">
+      <button type="button" class="rap" data-rapport="banque"><b>Dossier pour la banque</b><span>Plan de financement, ton endettement, le prévisionnel sur 10 ans, la résistance du projet et les pièces à joindre.</span></button>
+      <button type="button" class="rap" data-rapport="perso"><b>Bilan à partager</b><span>Simple et pédagogique, pour toi et tes proches : ce que tu mets, ce que tu récupères, les mots expliqués.</span></button>
+    </div>`);
+}
+if (TOP) { const pb = $("#btn-print"); pb.hidden = false; pb.addEventListener("click", choisirRapport); addEventListener("beforeprint", () => { $("#report").innerHTML = RAPPORTS[ui.rapport === "banque" ? "banque" : "perso"](); }); }
 
 /* ---------- Thème sombre ---------- */
 const tbtn = $("#theme-toggle");
