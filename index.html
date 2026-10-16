@@ -381,18 +381,62 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 @media print{
-  body{background:#fff;color:#000}
+  :root{color-scheme:light!important}
+  html,body{background:#fff!important;color:#000}
   .app,.modal,#tt,.theme-toggle{display:none!important}
-  #report{display:block!important;font:11pt/1.45 var(--f-body);color:#000}
-  #report h1{font-family:var(--f-display);font-size:20pt;margin:0 0 4pt}
-  #report h2{font-family:var(--f-display);font-size:13pt;margin:16pt 0 6pt;border-bottom:1px solid #999;padding-bottom:3pt;break-after:avoid}
-  #report table{width:100%;border-collapse:collapse;font-size:9pt;margin:4pt 0 8pt}
-  #report th,#report td{border-bottom:1px solid #ccc;padding:3pt 5pt;text-align:right}
+  @page{size:A4;margin:13mm 14mm 15mm}
+  #report{display:block!important;font:9.5pt/1.5 var(--f-body);color:#142030;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #report p{margin:0}
+  #report em{font-style:normal}
+  #report .pos{color:#1d8653}
+  #report .neg{color:#c23f39}
+  #report .rp-top{display:flex;justify-content:space-between;gap:12pt;font-size:7.5pt;font-weight:600;color:#7a8799;letter-spacing:.08em;text-transform:uppercase;border-bottom:2pt solid #245d8c;padding-bottom:5pt;margin-bottom:14pt}
+  #report h1{font-family:var(--f-display);font-size:21pt;line-height:1.15;letter-spacing:-.01em;margin:0 0 3pt}
+  #report .rp-sous{color:#4f5d71;font-size:10pt}
+  #report .rp-note{margin-top:6pt;color:#4f5d71;font-size:9pt;max-width:150mm}
+  #report .rp-verdict{margin:14pt 0 12pt;padding:12pt 14pt;border-radius:8pt;background:#f2f5f8}
+  #report .rp-verdict .big{font-family:var(--f-display);font-size:15pt;font-weight:700;line-height:1.3;margin-bottom:5pt}
+  #report .rp-verdict p+p{color:#4f5d71;margin-top:2pt}
+  #report .rp-tuiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7pt;margin-bottom:18pt}
+  #report .rp-t{border:1px solid #dbe1e8;border-radius:7pt;padding:7pt 10pt}
+  #report .rp-t span{display:block;font-size:7.5pt;font-weight:600;color:#7a8799;text-transform:uppercase;letter-spacing:.05em}
+  #report .rp-t b{display:block;font-family:var(--f-display);font-size:14pt;line-height:1.25;margin-top:2pt}
+  #report .rp-t small{display:block;font-size:8pt;color:#4f5d71}
+  #report figure{margin:0 0 16pt;break-inside:avoid}
+  #report figcaption{font-family:var(--f-display);font-weight:700;font-size:11pt}
+  #report .rp-sub{font-size:8.5pt;color:#4f5d71;margin:1pt 0 5pt}
+  #report .rp-svg{display:block;width:100%;height:auto}
+  #report .rp-svg text{font-family:var(--f-body)}
+  #report .rp-svg .ax{font-size:10px;fill:#7a8799}
+  #report .rp-svg .lb{font-size:10px;fill:#4f5d71}
+  #report .rp-svg .vl{font-size:11px;font-weight:700;fill:#142030}
+  #report .rp-leg{display:flex;flex-wrap:wrap;gap:3pt 14pt;font-size:8.5pt;color:#4f5d71;margin:2pt 0 4pt}
+  #report .rp-leg i{display:inline-block;width:8pt;height:8pt;border-radius:2pt;margin-right:4pt;vertical-align:-1pt}
+  #report .rp-p2{break-before:page}
+  #report h2{font-family:var(--f-display);font-size:11pt;margin:6pt 0 8pt}
+  #report .rp-blocs{display:grid;grid-template-columns:repeat(3,1fr);gap:16pt;margin-bottom:8pt}
+  #report h3{font-size:7.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#7a8799;margin:0 0 4pt}
+  #report .rp-r{display:flex;justify-content:space-between;align-items:baseline;gap:8pt;padding:3.5pt 0;border-bottom:1px solid #e8edf2}
+  #report .rp-r span{color:#4f5d71}
+  #report .rp-r b{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+  #report .rp-r.tot{border-bottom:0;border-top:1px solid #c2cbd6;margin-top:2pt}
+  #report .rp-r.tot span{color:#142030;font-weight:600}
+  #report .rp-flux{margin-bottom:6pt}
+  #report .rp-flux-l{display:flex;justify-content:space-between;font-size:9pt;margin:7pt 0 3pt}
+  #report .rp-flux-l b{font-variant-numeric:tabular-nums}
+  #report .rp-flux-b{display:flex;gap:2px;height:20pt;border-radius:5pt;overflow:hidden}
+  #report .rp-flux-b div{display:flex;align-items:center;justify-content:center;font-size:8pt;font-weight:700;min-width:0;white-space:nowrap;overflow:hidden}
+  #report table{width:100%;border-collapse:collapse;font-size:9pt;margin:2pt 0 18pt;font-variant-numeric:tabular-nums}
+  #report th{font-size:7.5pt;font-weight:700;color:#7a8799;text-transform:uppercase;letter-spacing:.04em;text-align:right;padding:4pt 6pt;border-bottom:1px solid #c2cbd6}
+  #report td{text-align:right;padding:4pt 6pt;border-bottom:1px solid #e8edf2}
   #report th:first-child,#report td:first-child{text-align:left}
-  #report .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:6pt}
-  #report .kp div{border:1px solid #bbb;border-radius:6pt;padding:6pt}
-  #report .kp b{display:block;font-size:13pt}
-  #report .muted{color:#555;font-size:9pt}
+  #report .rp-2col{display:grid;grid-template-columns:1fr 1fr;gap:18pt;break-inside:avoid}
+  #report ul{margin:0;padding-left:12pt;color:#4f5d71}
+  #report li{margin:2pt 0}
+  #report .rp-alerte{padding:4pt 0 4pt 8pt;border-left:2.5pt solid #c2cbd6;margin-bottom:5pt;color:#4f5d71}
+  #report .rp-alerte.critique{border-color:#c23f39}
+  #report .rp-alerte.attention{border-color:#a8650a}
+  #report .rp-pied{margin-top:20pt;padding-top:7pt;border-top:1px solid #dbe1e8;font-size:7.5pt;color:#7a8799}
 }
 </style>
 
@@ -1113,7 +1157,7 @@ function simuler(s0) {
   }
   const rv = revente(s.detention);
   const parAnnee = [];
-  for (let k = 1; k <= H; k++) { const x = k === s.detention ? rv : revente(k); parAnnee.push({ N: k, enrichissement: x.enrichissement, tri: x.tri, net: x.net, impotPV: x.pv.impot }); }
+  for (let k = 1; k <= H; k++) { const x = k === s.detention ? rv : revente(k); parAnnee.push({ N: k, enrichissement: x.enrichissement, tri: x.tri, net: x.net, impotPV: x.pv.impot, prix: x.prix, crd: x.crd }); }
 
   // 5. Indicateurs de l'année de référence
   const ref = Y[Math.min(H, s.anneeRef) - 1];
@@ -2189,15 +2233,111 @@ $("#btn-new").addEventListener("click", newSim);
 $("#btn-dup").addEventListener("click", () => { flush(); const id = uid(); const s = clone(S); s.name = (S.name || "Simulation") + " (copie)"; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); fullRender(); });
 
 /* ---------- Rapport imprimable (hors aperçu intégré) ---------- */
+// Couleurs fixes : le rapport s'imprime toujours sur fond blanc, quel que soit le thème de l'écran
+const RP = { ink: "#142030", muted: "#4f5d71", faint: "#7a8799", grid: "#e8edf2", base: "#9aa5b4", pos: "#1d8653", neg: "#c23f39", valeur: "#2a78d6", crd: "#eb6834", aire: "rgba(42,120,214,.10)",
+  loyers: "#8a5cd6", charges: "#eda100", interets: "#2a78d6", capital: "#1baf7a", impot: "#e87ba4" };
+function pasRond(span, n) { const raw = span / n, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
+function graduations(lo, hi, n = 4) { if (hi - lo < 1e-9) hi = lo + 1; const st = pasRond(hi - lo, n), a = Math.floor(lo / st + 1e-9) * st, b = Math.ceil(hi / st - 1e-9) * st, t = []; for (let v = a; v <= b + st / 2; v += st) t.push(Math.round(v * 1e6) / 1e6); return t; }
+const kE = v => { const a = Math.abs(v), sg = v < -0.5 ? MINUS : ""; return a >= 1000 ? sg + nf(a >= 100000 ? 0 : 1).format(a / 1000) + " k€" : sg + nf(0).format(Math.round(a)) + " €"; };
+// Barre aux coins arrondis côté valeur, plate sur l'axe zéro
+function barPath(x, w, y0, y1, r) {
+  const h = Math.abs(y1 - y0); if (h < 0.5) return ""; r = Math.min(r, w / 2, h); const d = y1 < y0 ? 1 : -1;
+  return `M${x},${y0}V${y1 + d * r}Q${x},${y1} ${x + r},${y1}H${x + w - r}Q${x + w},${y1} ${x + w},${y1 + d * r}V${y0}Z`;
+}
+// Cash-flow mensuel après impôt, année par année
+function rpCashflow(vals, ref, rev) {
+  const W = 680, H = 210, L = 54, Rm = 10, T = 22, B = 24, pw = W - L - Rm, ph = H - T - B, n = vals.length;
+  const t = graduations(Math.min(0, ...vals), Math.max(0, ...vals)), lo = t[0], hi = t[t.length - 1];
+  const y = v => T + ph * (hi - v) / (hi - lo), band = pw / n, bw = Math.min(15, band * 0.64);
+  let g = t.map(v => `<line x1="${L}" x2="${W - Rm}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" stroke="${v === 0 ? RP.base : RP.grid}"/><text x="${L - 8}" y="${(y(v) + 3.5).toFixed(1)}" text-anchor="end" class="ax">${kE(v)}</text>`).join("");
+  vals.forEach((v, i) => { g += `<path d="${barPath(L + band * i + (band - bw) / 2, bw, y(0), y(v), 3)}" fill="${v >= 0 ? RP.pos : RP.neg}"/>`; if (i === 0 || (i + 1) % 5 === 0) g += `<text x="${(L + band * i + band / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" class="ax">${i + 1}</text>`; });
+  if (rev >= 1 && rev < n) { const xr = L + band * rev, droite = xr > W - 130; g += `<line x1="${xr.toFixed(1)}" x2="${xr.toFixed(1)}" y1="${T - 10}" y2="${T + ph}" stroke="${RP.muted}" stroke-dasharray="3 3"/><text x="${(xr + (droite ? -5 : 5)).toFixed(1)}" y="${T - 12}" text-anchor="${droite ? "end" : "start"}" class="lb">Revente prévue (an ${rev})</text>`; }
+  const vr = vals[ref - 1]; if (vr != null) g += `<text x="${(L + band * (ref - 1) + band / 2).toFixed(1)}" y="${(vr >= 0 ? y(vr) - 6 : y(vr) + 14).toFixed(1)}" text-anchor="middle" class="vl">${eur(vr)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="rp-svg" role="img" aria-label="Cash-flow mensuel après impôt par année">${g}</svg>`;
+}
+// Valeur du bien et capital restant dû selon l'année de revente
+function rpPatrimoine(pa, rev) {
+  const W = 680, H = 220, L = 54, Rm = 128, T = 14, B = 24, pw = W - L - Rm, ph = H - T - B, n = pa.length;
+  const t = graduations(0, Math.max(...pa.map(p => Math.max(p.prix, p.crd)))), hi = t[t.length - 1];
+  const x = i => L + pw * (n === 1 ? 0.5 : i / (n - 1)), y = v => T + ph * (hi - v) / hi;
+  const pts = f => pa.map((p, i) => `${x(i).toFixed(1)},${y(f(p)).toFixed(1)}`);
+  let g = t.map(v => `<line x1="${L}" x2="${L + pw}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" stroke="${v === 0 ? RP.base : RP.grid}"/><text x="${L - 8}" y="${(y(v) + 3.5).toFixed(1)}" text-anchor="end" class="ax">${kE(v)}</text>`).join("");
+  pa.forEach((p, i) => { if (i === 0 || p.N % 5 === 0) g += `<text x="${x(i).toFixed(1)}" y="${H - 6}" text-anchor="middle" class="ax">${p.N}</text>`; });
+  g += `<polygon points="${pts(p => p.prix).concat(pts(p => p.crd).reverse()).join(" ")}" fill="${RP.aire}"/>`;
+  g += `<polyline points="${pts(p => p.crd).join(" ")}" fill="none" stroke="${RP.crd}" stroke-width="2" stroke-linejoin="round"/><polyline points="${pts(p => p.prix).join(" ")}" fill="none" stroke="${RP.valeur}" stroke-width="2" stroke-linejoin="round"/>`;
+  const last = pa[n - 1]; let y1 = y(last.prix), y2 = y(last.crd); if (Math.abs(y1 - y2) < 26) { const m = (y1 + y2) / 2; y1 = m - 13; y2 = m + 13; }
+  g += `<text x="${L + pw + 8}" y="${(y1 - 1).toFixed(1)}" class="lb">Valeur du bien</text><text x="${L + pw + 8}" y="${(y1 + 11).toFixed(1)}" class="vl">${kE(last.prix)}</text>`;
+  g += `<text x="${L + pw + 8}" y="${(y2 - 1).toFixed(1)}" class="lb">Reste à rembourser</text><text x="${L + pw + 8}" y="${(y2 + 11).toFixed(1)}" class="vl">${kE(last.crd)}</text>`;
+  const ir = pa.findIndex(p => p.N === rev);
+  if (ir >= 0) { const p = pa[ir], xr = x(ir); g += `<line x1="${xr.toFixed(1)}" x2="${xr.toFixed(1)}" y1="${y(p.prix).toFixed(1)}" y2="${y(p.crd).toFixed(1)}" stroke="${RP.ink}" stroke-width="1.2"/><circle cx="${xr.toFixed(1)}" cy="${y(p.prix).toFixed(1)}" r="4" fill="${RP.valeur}" stroke="#fff" stroke-width="2"/><circle cx="${xr.toFixed(1)}" cy="${y(p.crd).toFixed(1)}" r="4" fill="${RP.crd}" stroke="#fff" stroke-width="2"/>` +
+    `<text x="${(xr + 7).toFixed(1)}" y="${((y(p.prix) + y(p.crd)) / 2 + 4).toFixed(1)}" class="vl">${kE(p.prix - p.crd)} à toi</text>`; }
+  return `<svg viewBox="0 0 ${W} ${H}" class="rp-svg" role="img" aria-label="Valeur du bien et capital restant dû">${g}</svg>`;
+}
+// Où va l'argent chaque mois : ce qui entre face à ce qui sort
+function rpFlux(o) {
+  const m = v => Math.max(0, v) / 12, cap = Math.max(0, Math.min(o.capital || 0, o.credit));
+  const entrees = [["Loyers et charges encaissés", m(o.revenus), RP.loyers, "#fff"]], sorties = [["Charges", m(o.charges), RP.charges, RP.ink], ["Intérêts et assurance", m(o.credit - cap), RP.interets, "#fff"], ["Capital remboursé", m(cap), RP.capital, RP.ink], ["Impôt", m(o.impot), RP.impot, RP.ink]];
+  if (o.impot < 0) entrees.push(["Baisse d'impôt", m(-o.impot), RP.pos, "#fff"]);
+  if (o.cf < 0) entrees.push(["De ta poche", m(-o.cf), RP.neg, "#fff"]); else sorties.push(["Il te reste", m(o.cf), RP.pos, "#fff"]);
+  const som = l => l.reduce((a, s) => a + s[1], 0), tot = Math.max(som(entrees), som(sorties)) || 1;
+  const barre = (titre, l) => `<div class="rp-flux-l"><span>${titre}</span><b>${eur(som(l))} / mois</b></div><div class="rp-flux-b">${l.filter(s => s[1] >= 0.5).map(([lab, v, c, tc]) => { const w = v / tot * 100; return `<div style="width:${w.toFixed(2)}%;background:${c};color:${tc}">${w >= 11 ? eur(v) : ""}</div>`; }).join("")}</div>`;
+  const leg = entrees.concat(sorties).filter(s => s[1] >= 0.5).map(([lab, v, c]) => `<span><i style="background:${c}"></i>${lab} : ${eur(v)}</span>`).join("");
+  return `<div class="rp-flux">${barre("Ce qui entre", entrees)}${barre("Ce qui sort", sorties)}</div><div class="rp-leg">${leg}</div>`;
+}
+const minInitiale = t => /^.[a-zà-ÿ]/.test(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t; // « Assurance PNO » → « assurance PNO », « CFE » reste « CFE »
 function buildReport() {
-  if ((R.manque || []).length) return `<h1>${esc(X.name)}</h1><p>Simulation incomplète : remplis ${R.manque.map(k => REQ_LAB[k].toLowerCase()).join(", ")} pour obtenir le rapport.</p>`;
-  const r = R, rv = r.rv, N = rv.N, t = (head, rows) => `<table><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(x => `<tr>${x.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
-  return `<h1>${esc(X.name)}</h1><p class="muted">${[X.adresse ? esc(X.adresse) : "", X.ville ? esc(X.ville) : "", X.surface ? nf(0).format(X.surface) + " m²" : "", new Date().toLocaleDateString("fr-FR"), "Bilan Locatif"].filter(Boolean).join(" · ")}</p>${X.note ? `<p>${esc(X.note)}</p>` : ""}
-  <div class="kp"><div>Cash-flow année ${r.k.annee}<b>${eur(r.k.cf / 12)} / mois</b></div><div>Rendement brut / net<b>${pct(r.k.brut)} / ${pct(r.k.net)}</b></div><div>Enrichissement à ${N} ans<b>${eur(rv.enrichissement)}</b></div><div>Mise de départ<b>${eur(r.mise)}</b></div><div>Mensualité<b>${r.emprunt ? eur(r.mensualite) : "—"}</b></div><div>TRI<b>${rv.tri === null ? "—" : pct(rv.tri, 1)}</b></div></div>
-  ${clesEstimees().length ? `<p class="muted">Repères standards utilisés pour : ${clesEstimees().map(c => c[1].toLowerCase()).join(", ")}.</p>` : ""}<h2>Hypothèses</h2>${t(["Poste", "Valeur"], [["Prix d'achat", eur(X.prix) + (X.variationPrix ? ` (affiché ${eur(X.prixAffiche)}, ${X.variationPrix > 0 ? "+" : ""}${pc(X.variationPrix, 1)})` : "")], ["Frais de notaire", eur(r.notaire.total)], ["Travaux, mobilier, plans", eur(X.travaux + X.mobilier + X.plans)], ["Coût total du projet", eur(r.coutTotal)], ["Emprunt", r.emprunt ? `${eur(r.emprunt)} à ${nf(2).format(X.taux)} % sur ${X.duree} ans` : "Aucun"], [X.location === "annee" ? "Loyer" : "Prix par nuit", X.location === "annee" ? `${eur(X.loyer)} HC + ${eur(X.chargesLoc)} de charges, occupation ${X.occupation} %` : `${eur(X.nuitee)}, occupation ${X.occupationCD} %`], ["Charges année 1", eur(r.Y[0].charges)], ["Régime fiscal", REGIMES[X.regime].label + (X.regime === "sciIs" ? "" : X.tmiMode === "calcul" ? " (barème du foyer)" : `, TMI ${X.tmi} %`)], ["Revente", `${N} ans, ${eur(rv.prix)}`]])}
-  <h2>Trésorerie</h2>${t(["Année", "Revenus", "Charges", "Crédit", "Impôt", "Cash-flow", "Restant dû"], r.Y.slice(0, Math.max(N, 1)).map(o => [o.y, eur(o.revenus), eur(-o.charges), eur(-o.credit), eur(-o.impot), eur(o.cf), eur(o.crd)]))}
-  <h2>Revente et plus-value</h2>${t(["Poste", "Montant"], rv.pv.lignes.map(([l, v, ty]) => [esc(l), ty === "pct" ? pc(v) : ty === "int" ? v : eur(v)]).concat([["Capital restant dû", eur(-rv.crd)], ["Produit net de la revente", eur(rv.net)], ["Enrichissement", eur(rv.enrichissement)], ["VAN (" + pc(X.actualisation) + ")", eur(rv.van)]]))}
-  <p class="muted">Estimation fondée sur les règles fiscales 2026. Elle ne remplace ni un notaire ni un expert-comptable.</p>`;
+  const date = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  const haut = `<div class="rp-top"><span>Bilan Locatif · rapport de simulation</span><span>${date}</span></div><h1>${esc(X.name)}</h1>`;
+  if ((R.manque || []).length) return haut + `<p class="rp-sous">Simulation incomplète : remplis ${R.manque.map(k => REQ_LAB[k].toLowerCase()).join(", ")} pour obtenir le rapport.</p>`;
+  const r = R, rv = r.rv, N = rv.N, ref = r.Y[r.k.annee - 1], cfm = ref.cf / 12, isS = X.regime === "sciIs";
+  const sous = [X.ville || X.adresse, X.typeBien === "maison" ? "Maison" : "Appartement", nf(1).format(X.surface) + " m²", X.dpe ? "DPE " + X.dpe : "", X.location === "courte" ? "Location courte durée" : REGIMES[X.regime].label].filter(Boolean).map(esc).join(" · ");
+  const verdict = cfm >= 5 ? `Ce bien te rapporte <em class="pos">${eur(cfm)} par mois</em> après impôt en année ${ref.y}.` : cfm > -5 ? `Ce bien s'autofinance : environ ${eur(cfm)} par mois après impôt en année ${ref.y}.` : `Ce bien te coûte <em class="neg">${eur(-cfm)} par mois</em> de ta poche en année ${ref.y}.`;
+  const tuile = (l, v, sub, cls) => `<div class="rp-t"><span>${l}</span><b class="${cls || ""}">${v}</b>${sub ? `<small>${sub}</small>` : ""}</div>`;
+  const bloc = (titre, rows) => `<div><h3>${titre}</h3>${rows.filter(Boolean).map(([l, v, cls]) => `<div class="rp-r${cls === "tot" ? " tot" : ""}"><span>${l}</span><b class="${cls && cls !== "tot" ? cls : ""}">${v}</b></div>`).join("")}</div>`;
+  const NH = Math.max(N, Math.min(r.H, 25)), cfs = r.Y.slice(0, NH).map(o => o.cf / 12);
+  const annees = [...new Set([1, 2, 3, 5, 10, 15, 20, N].filter(a => a <= N))].sort((a, b) => a - b);
+  const lvl = { critique: "À régler", attention: "Attention", info: "À savoir" };
+  const alertes = r.warnings.slice().sort((a, b) => ["critique", "attention", "info"].indexOf(a.niveau) - ["critique", "attention", "info"].indexOf(b.niveau)).slice(0, 5);
+  const cles = clesEstimees();
+  const hyp = [
+    `Régime : ${esc(REGIMES[X.regime].label)}${isS ? "" : X.tmiMode === "calcul" ? ", impôt au barème 2026 selon tes revenus" : `, taux marginal ${X.tmi} %`}.`,
+    X.location === "courte" ? `Occupation ${pc(X.occupationCD, 0)} des nuits, prix par nuit ${eur(X.nuitee)}.` : `Occupation ${pc(X.occupation, 0)}, loyer révisé de ${pc(X.evolLoyer, 1)} par an.`,
+    `Charges réévaluées de ${pc(X.evolCharges, 1)} par an.`,
+    `Bien revalorisé de ${pc(X.revalo, 1)} par an, revendu après ${plural(N, "an")}.`,
+    cles.length ? `Repères standards utilisés pour : ${cles.map(c => minInitiale(c[1])).join(", ")}.` : ""
+  ].filter(Boolean);
+  return haut + `<p class="rp-sous">${sous}</p>${X.adresse && X.ville ? `<p class="rp-sous">${esc(X.adresse)}</p>` : ""}${X.note ? `<p class="rp-note">${esc(X.note)}</p>` : ""}
+  <div class="rp-verdict"><p class="big">${verdict}</p><p>Revendu après ${plural(N, "an")} à ${eur(rv.prix)}, il t'${rv.enrichissement >= 0 ? "enrichit" : "appauvrit"} de <b>${eur(Math.abs(rv.enrichissement))}</b>${rv.tri !== null ? ` (TRI ${pct(rv.tri, 1)})` : ""}.</p>${r.k.couverture !== null ? `<p>Les revenus nets de charges couvrent ${pct(r.k.couverture, 0)} de la mensualité du crédit.</p>` : ""}</div>
+  <div class="rp-tuiles">
+    ${tuile("Cash-flow après impôt", eur(cfm) + " / mois", "Année " + ref.y, cfm < -0.5 ? "neg" : cfm > 0.5 ? "pos" : "")}
+    ${tuile("Rendement net de charges", pct(r.k.net, 1), "Brut " + pct(r.k.brut, 1) + " · " + grade(r.k.net).t)}
+    ${tuile("Mise de départ", eur(r.mise), "Apport et frais non financés")}
+    ${tuile("Mensualité du crédit", r.emprunt > 0 ? eur(r.mensualite) : "—", r.emprunt > 0 ? `Sur ${plural(X.duree, "an")} à ${pc(X.taux, 2)}` : "Achat sans crédit")}
+    ${tuile("Coût total du projet", eur(r.coutTotal), "Dont notaire " + eur(r.notaire.total))}
+    ${tuile("Enrichissement à " + N + " ans", eur(rv.enrichissement), rv.tri !== null ? "TRI " + pct(rv.tri, 1) : "", rv.enrichissement < 0 ? "neg" : "")}
+  </div>
+  <figure><figcaption>Ton cash-flow chaque mois, année après année</figcaption><p class="rp-sub">Après impôt. Vert : le bien te verse de l'argent. Rouge : tu complètes de ta poche.</p>${rpCashflow(cfs, r.k.annee, N)}</figure>
+  <div class="rp-p2">
+    <figure><figcaption>Ce que tu possèdes vraiment</figcaption><p class="rp-sub">Valeur du bien face au crédit qu'il reste à rembourser, selon l'année de revente. La zone bleue, c'est ta part.</p>
+    <div class="rp-leg"><span><i style="background:${RP.valeur}"></i>Valeur du bien (+${pc(X.revalo, 1)} par an)</span><span><i style="background:${RP.crd}"></i>Reste à rembourser</span></div>${rpPatrimoine(r.parAnnee, N)}</figure>
+    <figure><figcaption>Où va l'argent chaque mois (année ${ref.y})</figcaption><p class="rp-sub">Le capital remboursé n'est pas perdu : c'est de l'épargne qui te revient à la revente.</p>${rpFlux(ref)}</figure>
+    <h2>Le projet en chiffres</h2>
+    <div class="rp-blocs">
+      ${bloc("L'achat", [X.variationPrix ? ["Prix affiché", eur(X.prixAffiche)] : null, [X.variationPrix ? `Prix négocié (${X.variationPrix > 0 ? "+" : ""}${pc(X.variationPrix, 1)})` : "Prix d'achat", eur(X.prix)], ["Frais de notaire", eur(r.notaire.total)], r.agence ? ["Honoraires d'agence", eur(r.agence)] : null, X.travaux ? ["Travaux", eur(X.travaux)] : null, X.mobilier ? ["Mobilier", eur(X.mobilier)] : null, ["Coût total", eur(r.coutTotal), "tot"]])}
+      ${bloc("Le crédit", r.emprunt > 0 ? [["Montant emprunté", eur(r.emprunt)], ["Apport", eur(X.apport)], ["Durée et taux", `${plural(X.duree, "an")} · ${pc(X.taux, 2)}`], ["Assurance emprunteur", pc(X.tauxAss, 2) + " par an"], ["Coût total du crédit", eur(r.coutCredit)], ["Mensualité", eur(r.mensualite), "tot"]] : [["Achat comptant", eur(r.coutTotal)], ["Mise de départ", eur(r.mise), "tot"]])}
+      ${bloc("Une année type (année " + ref.y + ")", [["Revenus encaissés", eur(ref.revenus)], ["Charges", eur(-ref.charges)], ["Crédit et assurance", eur(-ref.credit)], [isS ? "Impôt de la SCI" : "Impôt", eur(-ref.impot)], ["Cash-flow sur l'année", eur(ref.cf), "tot"]])}
+    </div>
+  </div>
+  <div class="rp-p2">
+    <figure><figcaption>Année par année</figcaption>
+      <table><thead><tr><th>Année</th><th>Revenus</th><th>Charges</th><th>Crédit</th><th>Impôt</th><th>Cash-flow / mois</th><th>Reste à rembourser</th></tr></thead><tbody>${annees.map(a => { const o = r.Y[a - 1]; return `<tr><td>${a}</td><td>${eur(o.revenus)}</td><td>${eur(-o.charges)}</td><td>${eur(-o.credit)}</td><td>${eur(-o.impot)}</td><td class="${o.cf < 0 ? "neg" : "pos"}">${eur(o.cf / 12)}</td><td>${eur(o.crd)}</td></tr>`; }).join("")}</tbody></table></figure>
+    <div class="rp-2col">
+      ${bloc("À la revente (après " + plural(N, "an") + ")", [["Prix de revente", eur(rv.prix)], rv.frais ? ["Frais de revente", eur(-rv.frais)] : null, ["Crédit restant à rembourser", eur(-rv.crd)], rv.ira ? ["Indemnités de remboursement", eur(-rv.ira)] : null, ["Impôt sur la plus-value", eur(-rv.pv.impot)], ["Ce qui te revient", eur(rv.net)], ["Enrichissement total", eur(rv.enrichissement), "tot"]])}
+      <div><h3>Hypothèses</h3><ul>${hyp.map(h => `<li>${h}</li>`).join("")}</ul></div>
+    </div>
+    ${alertes.length ? `<div style="margin-top:16pt;break-inside:avoid"><h3>Points d'attention</h3>${alertes.map(w => `<p class="rp-alerte ${w.niveau}"><b>${lvl[w.niveau]}</b> · ${esc(w.txt)}</p>`).join("")}</div>` : ""}
+    <p class="rp-pied">Simulation fondée sur les règles fiscales 2026 et sur les chiffres saisis. Elle ne remplace ni un notaire, ni un expert-comptable, ni un conseiller financier.</p>
+  </div>`;
 }
 if (TOP) { const pb = $("#btn-print"); pb.hidden = false; pb.addEventListener("click", () => { $("#report").innerHTML = buildReport(); window.print(); }); addEventListener("beforeprint", () => { $("#report").innerHTML = buildReport(); }); }
 
