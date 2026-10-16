@@ -536,7 +536,7 @@ const DEFISC = {
 const DEFAULT_SIM = {
   name: "Exemple · appartement 50 m²", mode: "complet",
   // Investissement
-  prix: 100000, notaireMode: "auto", notaireType: "ancien", dmto: "5", debours: 1000, notaireFixe: 0,
+  prix: 100000, variationPrix: 0, notaireMode: "auto", notaireType: "ancien", dmto: "5", debours: 1000, notaireFixe: 0,
   agenceMode: "fixe", agence: 0, travaux: 0, travauxMois: 0, mobilier: 0, plans: 0,
   // Financement
   pret: true, apport: 0, duree: 20, taux: 3.3, tauxAss: 0.3, courtage: 0, dossier: 0, cautionMode: "fixe", caution: 0,
@@ -589,6 +589,7 @@ function normaliser(s0) {
   const nulsCh = s0 ? CHARGES.filter(k => s0[k] && typeof s0[k] === "object" && _vide(s0[k].v)) : [];
   for (const k of ["prix", "debours", "notaireFixe", "agence", "travaux", "mobilier", "plans", "apport", "courtage", "dossier", "caution",
     "loyer", "chargesLoc", "nuitee", "courantes", "cfe", "revenusFoyer", "reventeFixe", "valeurTravaux", "surface"]) s[k] = _pos(s[k], d[k]);
+  s.variationPrix = _clamp(_n(s.variationPrix, 0), -50, 50); // négociation (négatif) ou surcote, en % du prix affiché
   s.travauxMois = Math.round(_clamp(_n(s.travauxMois, 0), 0, 60));
   s.duree = Math.round(_clamp(_n(s.duree, 20), 1, 35));
   s.taux = _clamp(_n(s.taux, 3.3), 0, 20); s.tauxAss = _clamp(_n(s.tauxAss, 0.3), 0, 5);
@@ -688,6 +689,10 @@ function estimer(s, variante = 0) {
   for (const k of requis(s)) if (x[k] == null) { manque.push(k); x[k] = k === "surface" ? sec.surface[maison ? 1 : 0] : sec[k]; }
   if (x.loyer == null) x.loyer = 0;
   if (x.nuitee == null) x.nuitee = 0;
+  // Prix retenu = prix affiché ± variation (négociation) : c'est lui qui sert aux frais de notaire, au crédit et à la revente
+  x.prixAffiche = x.prix; x.prix = Math.round(x.prix * (1 + (x.variationPrix || 0) / 100));
+  est.variationPrix = { v: 0, t: tiers([-10, -5, 0], ["Belle négociation", "Négociation courante", "Prix affiché"]),
+    info: x.variationPrix ? `${_e(x.prixAffiche)} affichés, ${String(x.variationPrix).replace(".", ",")} % : tu paies ${_e(x.prix)}. Les frais de notaire et le crédit suivent le prix retenu.` : "Écart entre le prix affiché et le prix que tu paies vraiment. Une négociation de quelques % est courante, davantage si le bien est en vente depuis longtemps ou a des défauts (DPE, travaux, litige en copropriété)." };
   const S = Math.max(9, x.surface);
 
   // Investissement
@@ -1172,7 +1177,7 @@ function leviers(s0) {
     const x = simuler(Object.assign({}, s0n, patch));
     out.push({ id, label, note, patch, dCf: (x.Y[yr].cf - base.Y[yr].cf) / 12, dEnrich: x.rv.enrichissement - base.rv.enrichissement, dMise: x.mise - base.mise });
   };
-  add("prix", "Négocier le prix de 5 %", { prix: Math.round(s.prix * 0.95), notaireFixe: s.notaireMode === "fixe" ? Math.round(s.notaireFixe * 0.95) : s.notaireFixe,
+  add("prix", "Négocier le prix de 5 %", { variationPrix: Math.round(((1 + s.variationPrix / 100) * 0.95 - 1) * 10000) / 100, notaireFixe: s.notaireMode === "fixe" ? Math.round(s.notaireFixe * 0.95) : s.notaireFixe,
     valeurTravauxMode: "defini", valeurTravaux: s.valeurTravauxMode === "defini" && s.valeurTravaux > 0 ? s.valeurTravaux : s.prix }, "Le bien garde sa valeur de marché ; les frais de notaire baissent avec le prix.");
   if (s.location === "annee") add("loyer", "Louer 5 % plus cher", { loyer: Math.round(s.loyer * 1.05) }, "Rafraîchissement, ameublement, annonce soignée.");
   else add("loyer", "Augmenter le prix par nuit de 5 %", { nuitee: Math.round(s.nuitee * 105) / 100 }, "Photos, équipements, avis.");
@@ -1260,7 +1265,7 @@ const REG_TXT = {
 let fid = 0;
 const NUL_UI = new Set([...NULLABLES, ...CHARGES.map(c => c + ".v")]);
 // Repères cliquables sous le champ : seulement là où ils aident vraiment (calcul détaillé dans le « i ») ; ailleurs, juste la valeur en gris
-const REPERES = new Set(["mobilier", "apport", "dossier", "caution", "copro", "gli", "pno", "autres"]);
+const REPERES = new Set(["variationPrix", "mobilier", "apport", "dossier", "caution", "copro", "gli", "pno", "autres"]);
 const estKey = k => k.replace(/\.v$/, "");
 const vide = k => getK(S, k) == null;
 // Unité courte pour les repères : « 625 € », « 3,40 % », « 45 m² », « 20 ans »
@@ -1312,7 +1317,7 @@ function syncEst() {
   $$("#form [data-info]").forEach(b => { const k = estKey(b.dataset.info), E = R.est[k]; if (E && E.info) b.dataset.tip = E.info; b.hidden = !E || !E.info || (R.infosIncertaines || []).includes(k); });
   const ai = $("#aide"); if (ai) ai.innerHTML = aideHTML();
   // Petits chiffres calculés dans les aides des champs
-  $$("#form [data-live]").forEach(el => { el.textContent = el.dataset.live === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
+  $$("#form [data-live]").forEach(el => { const k = el.dataset.live; if (k === "prixRetenu") el.innerHTML = prixRetenuTxt(); else el.textContent = k === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
 }
 // Bandeau au-dessus des hypothèses : ce qu'il manque, sinon les chiffres importants qui viennent d'un repère standard
 const REQ_LAB = { surface: "Surface", prix: "Prix", loyer: "Loyer", nuitee: "Prix par nuit" };
@@ -1412,7 +1417,8 @@ const FORMS = {
       txt("adresse", "Adresse", { ph: "N°, rue, code postal et ville", hint: "Le code postal sert à repérer l'encadrement des loyers et l'outre-mer." }) +
       `<div class="fld"><div class="fld-top"><span class="lab">Type de bien</span></div><div class="seg2" role="group" aria-label="Type de bien"><button type="button" data-type="appartement" aria-pressed="${S.typeBien === "appartement"}">Appartement</button><button type="button" data-type="maison" aria-pressed="${S.typeBien === "maison"}">Maison</button></div></div>` +
       num("surface", "Surface habitable", { unit: "m²", step: 1, hint: "Sur l'annonce (surface loi Carrez en copropriété)." }) +
-      num("prix", "Prix d'achat", { id: "prix-b", unit: "€", step: 1000, hint: "Le prix de l'annonce, hors frais de notaire." }) +
+      num("prix", "Prix d'achat", { id: "prix-b", unit: "€", step: 1000, hint: "Le prix affiché sur l'annonce, hors frais de notaire." }) +
+      num("variationPrix", "Variation du prix", { id: "variationPrix-b", unit: "%", step: 1, dec: 1, hint: `<span data-live="prixRetenu">${prixRetenuTxt()}</span>` }) +
       (courte ? num("nuitee", "Prix moyen par nuit", { id: "nuitee-b", unit: "€", step: 5, hint: "D'après des annonces comparables sur Airbnb ou Booking." })
         : num("loyer", "Loyer hors charges", { id: "loyer-b", unit: "€ / mois", step: 10, hint: "Ta recherche dans les annonces de location du quartier : voir ci-dessous." })) +
       sel("etatSel", "État du bien", [["neuf", "Neuf (VEFA)"], ["bon", "Ancien, bon état"], ["rafraichir", "Ancien, à rafraîchir"], ["renover", "Ancien, à rénover"], ["lourd", "Ancien, rénovation lourde"]],
@@ -1425,7 +1431,8 @@ const FORMS = {
   invest() {
     const autoN = S.notaireMode === "auto";
     return head("Investissement", "Le prix et tout ce que tu paies pour acheter et équiper le bien.") +
-      num("prix", "Prix d'achat", { unit: "€", step: 1000, hint: "Le prix de l'annonce, hors frais de notaire." }) +
+      num("prix", "Prix d'achat", { unit: "€", step: 1000, hint: "Le prix affiché sur l'annonce, hors frais de notaire." }) +
+      num("variationPrix", "Variation du prix", { unit: "%", step: 1, dec: 1, hint: `<span data-live="prixRetenu">${prixRetenuTxt()}</span>` }) +
       num("notaireFixe", "Frais de notaire", { id: "notaire", unit: "€", step: 100, auto: autoN ? R.notaire.total : null, autoKey: "notaire",
         mode: { k: "notaireSel", value: autoN ? "auto-" + S.notaireType : "fixe", opts: [["auto-ancien", "Calcul auto (bien ancien)"], ["auto-neuf", "Calcul auto (neuf, VEFA)"], ["fixe", "Montant fixé"]] },
         hint: autoN ? `${S.notaireType === "neuf" ? "Droits réduits du neuf" : "Droits de mutation à " + (S.dmto === "4.5" ? "5,81 %" : "6,32 %")}, émoluments du notaire et débours. <button type="button" class="lnk" data-act="notaire">Voir le détail</button>` : "Montant indiqué par ton notaire. Repasse en calcul auto pour l'estimer." }) +
@@ -1536,6 +1543,13 @@ const FORMS = {
     return h + recapBox("revente") + ctas([["go:revente", "Simuler la plus-value à la revente", true]]);
   },
 };
+// Prix retenu après la variation (négociation), affiché sous le champ
+function prixRetenuTxt() {
+  if (S.prix == null) return "Remplis d'abord le prix affiché.";
+  if (!S.variationPrix) return "Négatif pour une négociation : −5 % = 5 % sous le prix affiché.";
+  const d = X.prix - S.prix;
+  return `Prix retenu : <b>${eur(X.prix)}</b>, soit ${d > 0 ? "+" : ""}${eur(d)} par rapport au prix affiché.`;
+}
 // Encadré « Où trouver les bons chiffres » de la section Le bien : des liens vers les sources, toujours à jour, plutôt que des chiffres recopiés
 function aideHTML() {
   const L = R.lieu || {}, courte = X.location === "courte", flags = [];
@@ -1553,7 +1567,7 @@ function aideHTML() {
 
 function row(label, val, o = {}) { return `<div class="row${o.tot ? " tot" : ""}"><span>${esc(label)}${o.small ? `<small>${o.small}</small>` : ""}</span><b class="${o.cls || ""}">${val}</b></div>`; }
 const RECAPS = {
-  invest: () => `<div class="rt">Récapitulatif</div>` + row("Prix d'achat", eur(X.prix)) + row("Frais de notaire", eur(R.notaire.total)) + (R.agence ? row("Honoraires d'agence", eur(R.agence)) : "") +
+  invest: () => `<div class="rt">Récapitulatif</div>` + (X.variationPrix ? row("Prix affiché", eur(X.prixAffiche)) + row("Variation", (X.variationPrix > 0 ? "+" : "") + pc(X.variationPrix, 1)) : "") + row(X.variationPrix ? "Prix retenu" : "Prix d'achat", eur(X.prix)) + row("Frais de notaire", eur(R.notaire.total)) + (R.agence ? row("Honoraires d'agence", eur(R.agence)) : "") +
     (X.travaux + X.mobilier + X.plans ? row("Travaux, mobilier, plans", eur(X.travaux + X.mobilier + X.plans)) : "") + row("Coût total du projet", eur(R.coutTotal), { tot: true, small: "Hors frais liés au prêt" }),
   fin: () => `<div class="rt">Récapitulatif du financement</div>` + row("Prix d'achat", eur(X.prix)) + row("Coûts supplémentaires", eur(R.coutTotal - X.prix), { small: "Notaire, travaux, etc." }) +
     row("Coût total du projet", eur(R.coutTotal)) + (R.fraisBancaires ? row("Frais bancaires", eur(R.fraisBancaires), { small: "Courtage, dossier, garantie" }) : "") +
@@ -1989,7 +2003,7 @@ function stepField(b) {
   if (inp.dataset.auto === "notaire" && S.notaireMode === "auto") { cur = R.notaire.total; S.notaireMode = "fixe"; const m = $("#m-notaire"); if (m) m.value = "fixe"; inp.closest(".inp").classList.remove("auto"); }
   if (inp.dataset.auto === "revente" && S.reventeMode === "auto") { cur = R.rv.prix; S.reventeMode = "fixe"; const m = $("#m-revente"); if (m) m.value = "fixe"; inp.closest(".inp").classList.remove("auto"); }
   let v = Math.round(((+cur || 0) + st) / Math.abs(st)) * Math.abs(st);
-  const neg = /evol|revalo|actualisation/.test(k);
+  const neg = /evol|revalo|actualisation|variation/.test(k);
   if (!neg) v = Math.max(0, v);
   v = +v.toFixed(Math.max(dec, 2));
   setK(S, k, v); inp.value = fmtIn(v, dec);
@@ -2180,7 +2194,7 @@ function buildReport() {
   const r = R, rv = r.rv, N = rv.N, t = (head, rows) => `<table><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(x => `<tr>${x.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
   return `<h1>${esc(X.name)}</h1><p class="muted">${[X.adresse ? esc(X.adresse) : "", X.ville ? esc(X.ville) : "", X.surface ? nf(0).format(X.surface) + " m²" : "", new Date().toLocaleDateString("fr-FR"), "Bilan Locatif"].filter(Boolean).join(" · ")}</p>${X.note ? `<p>${esc(X.note)}</p>` : ""}
   <div class="kp"><div>Cash-flow année ${r.k.annee}<b>${eur(r.k.cf / 12)} / mois</b></div><div>Rendement brut / net<b>${pct(r.k.brut)} / ${pct(r.k.net)}</b></div><div>Enrichissement à ${N} ans<b>${eur(rv.enrichissement)}</b></div><div>Mise de départ<b>${eur(r.mise)}</b></div><div>Mensualité<b>${r.emprunt ? eur(r.mensualite) : "—"}</b></div><div>TRI<b>${rv.tri === null ? "—" : pct(rv.tri, 1)}</b></div></div>
-  ${clesEstimees().length ? `<p class="muted">Repères standards utilisés pour : ${clesEstimees().map(c => c[1].toLowerCase()).join(", ")}.</p>` : ""}<h2>Hypothèses</h2>${t(["Poste", "Valeur"], [["Prix d'achat", eur(X.prix)], ["Frais de notaire", eur(r.notaire.total)], ["Travaux, mobilier, plans", eur(X.travaux + X.mobilier + X.plans)], ["Coût total du projet", eur(r.coutTotal)], ["Emprunt", r.emprunt ? `${eur(r.emprunt)} à ${nf(2).format(X.taux)} % sur ${X.duree} ans` : "Aucun"], [X.location === "annee" ? "Loyer" : "Prix par nuit", X.location === "annee" ? `${eur(X.loyer)} HC + ${eur(X.chargesLoc)} de charges, occupation ${X.occupation} %` : `${eur(X.nuitee)}, occupation ${X.occupationCD} %`], ["Charges année 1", eur(r.Y[0].charges)], ["Régime fiscal", REGIMES[X.regime].label + (X.regime === "sciIs" ? "" : X.tmiMode === "calcul" ? " (barème du foyer)" : `, TMI ${X.tmi} %`)], ["Revente", `${N} ans, ${eur(rv.prix)}`]])}
+  ${clesEstimees().length ? `<p class="muted">Repères standards utilisés pour : ${clesEstimees().map(c => c[1].toLowerCase()).join(", ")}.</p>` : ""}<h2>Hypothèses</h2>${t(["Poste", "Valeur"], [["Prix d'achat", eur(X.prix) + (X.variationPrix ? ` (affiché ${eur(X.prixAffiche)}, ${X.variationPrix > 0 ? "+" : ""}${pc(X.variationPrix, 1)})` : "")], ["Frais de notaire", eur(r.notaire.total)], ["Travaux, mobilier, plans", eur(X.travaux + X.mobilier + X.plans)], ["Coût total du projet", eur(r.coutTotal)], ["Emprunt", r.emprunt ? `${eur(r.emprunt)} à ${nf(2).format(X.taux)} % sur ${X.duree} ans` : "Aucun"], [X.location === "annee" ? "Loyer" : "Prix par nuit", X.location === "annee" ? `${eur(X.loyer)} HC + ${eur(X.chargesLoc)} de charges, occupation ${X.occupation} %` : `${eur(X.nuitee)}, occupation ${X.occupationCD} %`], ["Charges année 1", eur(r.Y[0].charges)], ["Régime fiscal", REGIMES[X.regime].label + (X.regime === "sciIs" ? "" : X.tmiMode === "calcul" ? " (barème du foyer)" : `, TMI ${X.tmi} %`)], ["Revente", `${N} ans, ${eur(rv.prix)}`]])}
   <h2>Trésorerie</h2>${t(["Année", "Revenus", "Charges", "Crédit", "Impôt", "Cash-flow", "Restant dû"], r.Y.slice(0, Math.max(N, 1)).map(o => [o.y, eur(o.revenus), eur(-o.charges), eur(-o.credit), eur(-o.impot), eur(o.cf), eur(o.crd)]))}
   <h2>Revente et plus-value</h2>${t(["Poste", "Montant"], rv.pv.lignes.map(([l, v, ty]) => [esc(l), ty === "pct" ? pc(v) : ty === "int" ? v : eur(v)]).concat([["Capital restant dû", eur(-rv.crd)], ["Produit net de la revente", eur(rv.net)], ["Enrichissement", eur(rv.enrichissement)], ["VAN (" + pc(X.actualisation) + ")", eur(rv.van)]]))}
   <p class="muted">Estimation fondée sur les règles fiscales 2026. Elle ne remplace ni un notaire ni un expert-comptable.</p>`;
