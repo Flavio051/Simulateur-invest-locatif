@@ -384,11 +384,258 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
   .kpi-v{font-size:22px}
   .simname input{font-size:17px}
 }
+/* ===== Téléphone : une vraie appli (rien de ce qui suit ne s'applique au-dessus de 760 px de large) =====
+   Deux écrans, « Mon projet » (la saisie) et « Résultats », reliés par une barre d'onglets en bas.
+   Pendant la saisie, une barre collante montre le résultat en direct. Champs en 16 px (pas de zoom sur iPhone), cibles de 44 px. */
+.m-live,.m-nav,.m-menu,.m-secnav,.m-plus,.m-hello{display:none}
+@media (max-width:760px), (max-height:500px) and (max-width:1000px) and (pointer:coarse){
+  :root{--nav-h:64px}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:84px;scroll-padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 16px)}
+  body{-webkit-tap-highlight-color:transparent;font-size:15px}
+  button,select,input,label,a,summary{touch-action:manipulation}
+  .app{padding-block:2px calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 24px)}
+  .theme-toggle,.top .actions{display:none!important}
+
+  /* En-tête : logo, nom de la simulation, menu */
+  .top{flex-wrap:nowrap;gap:6px;padding-block:8px 10px}
+  .brand{font-size:0;gap:0;flex:none}
+  .brand svg{width:30px;height:30px}
+  .simname{flex:1 1 auto}
+  .simname input{font-size:17px;padding:8px 8px}
+  .simname svg{display:none}
+  .m-menu{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+  .m-menu svg{width:22px;height:22px}
+
+  /* Les deux écrans */
+  body[data-vue="saisie"] .band,body[data-vue="saisie"] .estbar,body[data-vue="saisie"] .ana,body[data-vue="saisie"] .foot{display:none!important}
+  body[data-vue="resultats"] .hyp,body[data-vue="resultats"] .m-live{display:none!important}
+  body.m-manque .band,body.m-manque .estbar{display:none!important}
+  .bench{gap:12px}
+  .card{border-radius:16px}
+
+  .m-hello{display:grid;gap:12px;margin:0 0 12px;padding:14px 16px;border-radius:16px;background:var(--accent-soft);border:1px solid var(--accent);font-size:15px;line-height:1.45}
+  .m-hello p{margin:0}
+  .m-hello-a{display:flex;gap:10px}
+  .m-hello-a .btn{flex:1}
+  body[data-vue="resultats"] .m-hello{display:none!important}
+  /* Résultat en direct pendant la saisie */
+  .m-live{display:flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:25;width:100%;align-items:center;gap:14px;margin:0 0 12px;padding:9px 12px 9px 14px;min-height:56px;border:0;border-radius:14px;background:var(--band);color:var(--band-ink);text-align:left;cursor:pointer;box-shadow:0 8px 22px rgba(10,20,35,.2)}
+  .m-live .ml{display:flex;flex-direction:column;min-width:0;gap:1px}
+  .m-live small{font-size:12px;line-height:1.25;color:var(--band-muted);font-weight:600;white-space:nowrap}
+  .m-live.pulse{animation:m-pulse .5s ease-out}
+  .m-live b{font-size:18px;line-height:1.2;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .m-live b.neg{color:var(--band-neg)} .m-live b.pos{color:var(--band-pos)}
+  .m-live .go{margin-left:auto;display:flex;align-items:center;gap:1px;font-size:13px;font-weight:700;white-space:nowrap;color:var(--band-ink)}
+  .m-live .go svg{width:18px;height:18px}
+  .m-live.manque{background:var(--warn-soft);color:var(--ink);box-shadow:0 6px 18px rgba(10,20,35,.1);border:1px dashed var(--warn)}
+  .m-live.manque small{color:var(--muted)}
+  .m-live.manque b{color:var(--warn)}
+  .m-live.manque .go{color:var(--ink);white-space:normal;text-align:right;font-size:12.5px;line-height:1.3}
+
+  /* Sections de la simulation complète : pastilles qui défilent */
+  .hyp{grid-template-columns:1fr}
+  .rail{flex-direction:row;gap:6px;overflow-x:auto;padding:12px;border-right:0;border-bottom:1px solid var(--line);border-radius:16px 16px 0 0;background:var(--surface);scrollbar-width:none;scroll-padding-inline:12px}
+  .rail::-webkit-scrollbar{display:none}
+  .rail-h,.rail .m{display:none}
+  .rail button{flex:none;display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:8px 14px 8px 12px;border:1px solid var(--line-strong);border-radius:999px;background:var(--surface);box-shadow:none}
+  .rail .ic{width:18px;height:18px}
+  .rail .t{font-size:14px}
+  .rail button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);box-shadow:none}
+  .rail button[aria-selected="true"] .ic,.rail button[aria-selected="true"] .t{color:var(--on-accent)}
+
+  /* Formulaire : lisible et facile à toucher */
+  .form{padding:16px 16px 6px}
+  .form h2{font-size:23px}
+  .form .lead{font-size:14px;line-height:1.5;margin-bottom:12px}
+  .form h3{font-size:12.5px}
+  .fld{padding-block:13px}
+  .fld-top{row-gap:2px}
+  .fld-top label,.fld-top .lab{font-size:15.5px}
+  .mode{font-size:16px;padding-block:6px}
+  .fld-row{gap:8px;margin-top:8px}
+  .inp{border-radius:12px}
+  .inp input{font-size:16px;padding:11px 12px;min-height:48px}
+  .inp .u{font-size:14px}
+  .inp .tag{font-size:12px;letter-spacing:.03em}
+  .tiers .tl{font-size:12.5px}
+  .recap .row span small{font-size:12.5px}
+  .pill,.tbl .badge{font-size:12px}
+  .tip{font-size:12px}
+  .scale-lg{font-size:12px}
+  textarea.code{font-size:16px}
+  .step{border-radius:12px}
+  .step button{width:48px;height:48px;font-size:22px}
+  .txt,.selbox{font-size:16px;padding:12px;border-radius:12px;min-height:48px}
+  .selbox{padding-right:34px}
+  textarea.txt{min-height:100px}
+  .hint{font-size:13.5px;line-height:1.5}
+  .tiers{gap:8px;margin-top:9px}
+  .tier{padding:7px 12px 8px;border-radius:11px}
+  .tier small{font-size:12px} .tier b{font-size:14px}
+  .chips{gap:8px;margin-top:9px}
+  .chip span{padding:9px 14px;font-size:14px}
+  .seg2{margin-top:8px}
+  .seg2 button{padding:10px 16px;font-size:14.5px}
+  .sw{padding-block:13px;gap:16px}
+  .sw span{font-size:15.5px} .sw small{font-size:13px}
+  .sw input{width:52px;height:31px}
+  .sw input::after{width:25px;height:25px}
+  .sw input:checked::after{transform:translateX(21px)}
+  .modesw{margin-bottom:14px;border-radius:14px}
+  .form[data-sec]:not([data-sec="bien"]):not([data-sec="rapide"]) .modesw{display:none}
+  .modesw button{padding:10px 12px;font-size:15px;border-radius:11px}
+  .modesw button small{font-size:12.5px}
+  .recap{padding:14px 16px;border-radius:14px}
+  .recap .row{font-size:14.5px}
+  .aide,.assume{font-size:14px;border-radius:14px}
+  .btn{min-height:46px;padding:10px 16px;font-size:15px;border-radius:12px}
+  .btn.sm{min-height:38px;padding:7px 13px;font-size:14px}
+  .ctas{gap:10px}
+  .ctas .btn{flex:1 1 auto}
+  .hyp.rapide .ctas .btn.primary{background:var(--surface);color:var(--accent-ink);border-color:var(--line-strong)}
+  .tip{width:20px;height:20px;position:relative}
+  .tip::after{content:"";position:absolute;inset:-12px}
+  .flag{font-size:13.5px}
+
+  /* Étape suivante, en bas de chaque section */
+  .m-secnav{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 16px 18px;border-top:1px solid var(--line)}
+  .m-secnav .pas{flex:1 0 100%;margin:0;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);font-weight:600}
+  .m-secnav .pas i{flex:1;height:5px;border-radius:3px;background:var(--surface-3);overflow:hidden}
+  .m-secnav .pas i b{display:block;height:100%;border-radius:3px;background:var(--accent)}
+  .m-secnav .btn{min-height:52px;font-size:15.5px}
+  .m-secnav .btn.primary{flex:1}
+  .m-secnav .prev{width:52px;padding:0;flex:none}
+  .m-secnav svg{width:20px;height:20px}
+
+  /* Écran Résultats : indicateurs compacts */
+  .band{position:static;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:16px;margin-bottom:12px}
+  .band .kpi:nth-child(1){grid-column:1/-1;order:1}
+  .band .kpi:nth-child(3),.band .kpi:nth-child(4){grid-column:span 1;order:2}
+  .band .kpi:nth-child(2),.band .kpi:nth-child(5){grid-column:1/-1;order:3;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:center}
+  .band .kpi:nth-child(5){order:4}
+  .band .kpi:nth-child(2) .kpi-l,.band .kpi:nth-child(5) .kpi-l{grid-column:1;grid-row:1;min-width:0}
+  .band .kpi:nth-child(2) .kpi-v,.band .kpi:nth-child(5) .kpi-v{grid-column:2;grid-row:1;font-size:21px;text-align:right}
+  .band .kpi:nth-child(2) .kpi-s,.band .kpi:nth-child(5) .kpi-s{grid-column:1/-1;grid-row:2}
+  .kpi{padding:12px 12px 13px}
+  .kpi-l{font-size:12.5px}
+  .kpi select{font-size:16px;padding:7px 15px 7px 0}
+  .yearchip,.yearchip select{font-size:16px}
+  .kpi-v{font-size:22px}
+  .band .kpi:nth-child(1) .kpi-v{font-size:30px}
+  .kpi-s{font-size:12.5px;white-space:normal}
+  .seg button{padding:8px 8px;font-size:12px}
+  .band .kpi:nth-child(1) .kpi-l{justify-content:space-between;gap:6px}
+  .spark{width:112px;height:42px}
+  .estbar{margin:0 0 12px;padding:11px 13px;border-radius:14px;font-size:14px;flex-wrap:wrap}
+  .estbar .ek button{padding:7px 12px;font-size:13.5px}
+  .estbar .m-plus{display:inline-flex;margin-left:auto}
+  .estbar>span:nth-child(2){flex:1 1 200px;min-width:0}
+  .estbar:not(.ouvert) .ek,.estbar:not(.ouvert) .eh{display:none}
+
+  /* Onglets des analyses : pastilles collantes */
+  .tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;gap:6px;padding:10px 12px;background:var(--surface);border-radius:16px 16px 0 0;scrollbar-width:none;scroll-padding-inline:12px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:none;min-height:40px;padding:8px 15px;border:1px solid var(--line-strong);border-radius:999px;font-size:14.5px}
+  .tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .ana-body{padding:14px 14px 18px}
+  .ana-h h2{font-size:20px}
+  .ana-h p{font-size:14px}
+  .subtabs{display:flex;width:100%;overflow-x:auto;scrollbar-width:none}
+  .subtabs::-webkit-scrollbar{display:none}
+  .subtabs button{flex:1 0 auto;min-height:40px;font-size:14px}
+  .duo,.donut-wrap{grid-template-columns:minmax(0,1fr)}
+  .duo>*,.donut-wrap>*{min-width:0}
+  .verdict{border-radius:14px}
+  .verdict .big{font-size:20px}
+  .verdict p{font-size:14.5px}
+  .fig figcaption{font-size:14px}
+  .fig .sub{font-size:13px}
+  .list .r{font-size:14.5px;padding:9px 0}
+  .alert{font-size:14px}
+  .note{font-size:13.5px}
+  .range{gap:14px}
+  .range input{height:32px}
+  .scale-t{font-size:14px;flex-wrap:wrap}
+  .stat .l{font-size:12.5px}
+  /* Tableaux larges : ils défilent dans leur cadre, avec une ombre qui signale la suite */
+  .tbl-wrap{max-height:none;border-radius:12px;
+    background:linear-gradient(90deg,var(--surface) 30%,transparent) left center/24px 100% no-repeat local,linear-gradient(270deg,var(--surface) 30%,transparent) right center/24px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%,rgba(20,32,48,.16),transparent) left center/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,rgba(20,32,48,.16),transparent) right center/12px 100% no-repeat scroll;background-color:var(--surface)}
+  .tbl{font-size:13.5px}
+  .tbl td{padding:9px 10px}
+  /* Leviers et comparaison des régimes : une carte par ligne */
+  .tbl-wrap.cards{background:none;border:0;border-radius:0;overflow:visible}
+  .tbl-wrap.cards table,.tbl-wrap.cards tbody,.tbl-wrap.cards tr,.tbl-wrap.cards td{display:block}
+  .tbl-wrap.cards thead{display:none}
+  .tbl-wrap.cards tbody{display:grid;gap:10px}
+  .tbl-wrap.cards tr{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;padding:13px 14px;border:1px solid var(--line);border-radius:14px}
+  .tbl-wrap.cards tr.hl{border-color:var(--accent);background:var(--accent-soft)}
+  .tbl-wrap.cards tr.hl td{background:transparent}
+  .tbl-wrap.cards td,.tbl-wrap.cards td:first-child{position:static;padding:0;border:0;text-align:left;white-space:normal;min-width:0;background:transparent}
+  .tbl-wrap.cards td:first-child{grid-column:1/-1;font-weight:600;font-size:14.5px}
+  .tbl-wrap.cards td[data-l]::before{content:attr(data-l);display:block;font-size:12px;font-weight:600;color:var(--faint)}
+  .tbl-wrap.cards td:last-child{grid-column:1/-1}
+  .tbl-wrap.cards td:last-child .btn{width:100%}
+  .tbl-wrap.cards td:last-child .badge{margin-left:0}
+  .lev td small{font-size:12.5px;font-weight:400}
+  .tbl-wrap.lev tr{grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center}
+  .tbl-wrap.lev td[data-l]{grid-column:1;font-size:14px}
+  .tbl-wrap.lev td[data-l]::before{display:inline;margin-right:6px;font-size:13px}
+  .tbl-wrap.lev td:last-child{grid-column:2;grid-row:2/span 2}
+  .tbl-wrap.lev td:last-child .btn{width:auto}
+  .foot{font-size:12.5px;padding-inline:4px}
+
+  /* Barre d'onglets en bas */
+  .m-nav{display:grid;grid-template-columns:repeat(3,1fr);position:fixed;left:0;right:0;bottom:0;z-index:45;min-height:var(--nav-h);padding:5px max(8px,env(safe-area-inset-right,0px)) calc(5px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));background:var(--surface);background:color-mix(in srgb,var(--surface) 90%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+  .m-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:54px;border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;border-radius:14px}
+  .m-nav .pi{display:grid;place-items:center;width:58px;height:30px;border-radius:999px;transition:background .15s}
+  .m-nav svg{width:23px;height:23px}
+  .m-nav button[aria-current="page"]{color:var(--accent-ink)}
+  .m-nav button[aria-current="page"] .pi{background:var(--accent-soft)}
+
+  /* Fenêtres : elles montent du bas, comme dans une appli */
+  .modal{place-items:end stretch;padding:max(28px,env(safe-area-inset-top,0px)) 0 0}
+  .dialog{width:100%;max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px);border-radius:22px 22px 0 0;border-bottom:0;padding:8px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:m-sheet .24s cubic-bezier(.2,.8,.2,1)}
+  .dialog::before{content:"";display:block;width:42px;height:5px;border-radius:3px;background:var(--line-strong);margin:2px auto 12px}
+  .dialog-h h2{font-size:20px}
+  .x{width:40px;height:40px;border-radius:12px}
+  .simrow{grid-template-columns:minmax(0,1fr);padding:12px 14px;border-radius:14px}
+  .simrow .a{justify-content:flex-start}
+  .rap{padding:16px;border-radius:14px}
+  .mlist{display:grid;gap:4px;margin:2px 0 0}
+  .mlist button{display:grid;grid-template-columns:24px 1fr;gap:14px;align-items:center;text-align:left;border:0;background:transparent;border-radius:14px;padding:12px 10px;cursor:pointer;color:var(--ink);font:inherit}
+  .mlist button:active{background:var(--surface-2)}
+  .mlist svg{width:22px;height:22px;color:var(--accent-ink)}
+  .mlist b{display:block;font-size:16px;font-weight:600}
+  .mlist small{display:block;font-size:13px;color:var(--muted)}
+  .mlist .sw{padding:12px 10px;border-top:1px solid var(--line);margin-top:6px}
+  .mlist .sw span{display:flex;align-items:center;gap:14px;font-size:16px;font-weight:600}
+  .mlist .sw svg{flex:none}
+
+  /* Bulles d'information : une carte en bas de l'écran, fermée d'un toucher */
+  #tt.m{left:12px!important;right:12px;top:auto!important;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 12px)!important;max-width:none;padding:13px 44px 14px 15px;border-radius:16px;font-size:14.5px;line-height:1.5;pointer-events:auto;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+  #tt.m::after{content:"×";position:absolute;top:9px;right:14px;font-size:22px;line-height:1;opacity:.7}
+}
+@keyframes m-sheet{from{transform:translateY(48px);opacity:.5}to{transform:none;opacity:1}}
+@keyframes m-pulse{0%{box-shadow:0 0 0 0 rgba(229,182,95,.75)}100%{box-shadow:0 0 0 12px rgba(229,182,95,0)}}
+@media (prefers-reduced-motion: reduce){.dialog,.m-live.pulse{animation:none}}
+/* Téléphone en paysage : barres plus basses, indicateurs sur quatre colonnes */
+@media (max-height:500px) and (max-width:1000px) and (pointer:coarse){
+  :root{--nav-h:52px}
+  html{scroll-padding-top:62px}
+  .m-nav{padding-top:3px;padding-bottom:calc(3px + env(safe-area-inset-bottom,0px))}
+  .m-nav button{flex-direction:row;gap:6px;min-height:44px;font-size:13px}
+  .m-nav .pi{width:44px;height:28px}
+  .m-live{min-height:46px;padding-block:5px;margin-bottom:8px}
+  .m-live b{font-size:16px}
+  .band{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .band .kpi:nth-child(1),.band .kpi:nth-child(2),.band .kpi:nth-child(5){grid-column:span 2}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 @media print{
   :root{color-scheme:light!important}
   html,body{background:#fff!important;color:#000}
-  .app,.modal,#tt,.theme-toggle{display:none!important}
+  .app,.modal,#tt,.theme-toggle,.m-nav,.m-live{display:none!important}
   @page{size:A4;margin:13mm 14mm 15mm}
   #report{display:block!important;font:9.5pt/1.5 var(--f-body);color:#142030;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   #report p{margin:0}
@@ -479,6 +726,11 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></g></symbol>
     <symbol id="i-print" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M7 14h10v6H7z"/></g></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 20h16M7 16v-4M12 16V7M17 16v-7"/></g></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5.5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="18.5" cy="12" r="1.8"/></g></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
     <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   </defs>
 </svg>
@@ -493,7 +745,11 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
       <button type="button" class="btn" id="btn-dup"><svg><use href="#i-copy"/></svg>Dupliquer</button>
       <button type="button" class="btn" id="btn-print" hidden><svg><use href="#i-print"/></svg>Imprimer un rapport</button>
     </div>
+    <button type="button" class="m-menu" id="m-menu" aria-label="Menu : nouvelle simulation, dupliquer, rapport, thème" aria-haspopup="dialog"><svg aria-hidden="true"><use href="#i-more"/></svg></button>
   </header>
+
+  <div class="m-hello" id="m-hello" hidden><p><b>Tu découvres un exemple.</b> Pour ton bien, trois chiffres suffisent : la surface, le prix et le loyer.</p><div class="m-hello-a"><button type="button" class="btn primary" data-hello="go">Simuler mon bien</button><button type="button" class="btn" data-hello="non">Voir l'exemple</button></div></div>
+  <button type="button" class="m-live" id="m-live"></button>
 
   <section class="band" id="band" aria-label="Indicateurs clés">
     <div class="kpi">
@@ -539,6 +795,7 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
     <section class="card hyp" aria-label="Hypothèses">
       <nav class="rail" id="rail" role="tablist" aria-orientation="vertical" aria-label="Sections des hypothèses"></nav>
       <div class="form" id="form" role="tabpanel"></div>
+      <div class="m-secnav" id="m-secnav"></div>
     </section>
     <section class="card ana" aria-label="Analyses">
       <div class="tabs" id="tabs" role="tablist" aria-label="Analyses"></div>
@@ -550,6 +807,12 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
     <p>Règles fiscales 2026 : barème de l'impôt sur le revenu (loi de finances du 19 février 2026), prélèvements sociaux à 18,6 % sur les loyers meublés et 17,2 % sur les revenus fonciers et les plus-values immobilières (LFSS 2026), plafonds micro-BIC (83 600 € ; 15 000 € pour un meublé de tourisme non classé) et micro-foncier (15 000 €), déficit foncier imputable jusqu'à 10 700 €, réintégration des amortissements LMNP dans la plus-value, frais de notaire au barème réglementé. Les résultats sont des estimations pour comparer des scénarios : ils ne remplacent ni un notaire ni un expert-comptable.</p>
     <p>Tes simulations restent enregistrées dans ce navigateur. Pour les garder ailleurs, utilise « Mes simulations » puis « Exporter ».</p>
   </footer>
+
+  <nav class="m-nav" id="m-nav" aria-label="Navigation principale">
+    <button type="button" data-vue="saisie"><span class="pi"><svg aria-hidden="true"><use href="#i-door"/></svg></span><span>Mon projet</span></button>
+    <button type="button" data-vue="resultats"><span class="pi"><svg aria-hidden="true"><use href="#i-chart"/></svg></span><span>Résultats</span></button>
+    <button type="button" data-mnav="sims"><span class="pi"><svg aria-hidden="true"><use href="#i-list"/></svg></span><span>Simulations</span></button>
+  </nav>
 </div>
 
 <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false"><span>Sombre</span><span class="knob" aria-hidden="true"></span></button>
@@ -1333,6 +1596,9 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 const plural = (n, w) => n + " " + w + (Math.abs(n) > 1 ? "s" : "");
 const TOP = (() => { try { return window.top === window.self; } catch (e) { return false; } })();
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+// Téléphone (≤ 760 px de large) : écrans « Mon projet » et « Résultats » ; au-dessus, l'interface d'ordinateur ne change pas
+const MQ = window.matchMedia ? matchMedia("(max-width:760px), (max-height:500px) and (max-width:1000px) and (pointer:coarse)") : { matches: false };
+const mob = () => MQ.matches;
 
 /* ---------- Stockage ---------- */
 const KEY = "bilan-locatif-v1", UI_KEY = "bilan-locatif-ui", THEME_KEY = "bilan-locatif-theme", PROFILS_KEY = "bilan-locatif-profils", ANCIEN_PROFIL_KEY = "bilan-locatif-profil";
@@ -1378,7 +1644,9 @@ function appliquerProfil(p, champs) {
 }
 let R = simuler(S), X = R.s;
 function calc() { S = normaliser(S); R = simuler(S); X = R.s; }
-const ui = Object.assign({ section: "bien", ana: "synthese", per: "an", metric: "cf", rend: "netNet", emp: "synthese", fisc: "tableau", ech: "an", ampYear: 1, fiscYear: 1 }, store.get(UI_KEY) || {});
+const uiStocke = store.get(UI_KEY);
+const ui = Object.assign({ section: "bien", ana: "synthese", per: "an", metric: "cf", rend: "netNet", emp: "synthese", fisc: "tableau", ech: "an", ampYear: 1, fiscYear: 1 }, uiStocke || {});
+if (!uiStocke && mob()) ui.per = "mois"; // sur téléphone, première visite : le cash-flow par mois, plus parlant
 let saveTimer = null;
 function save() {
   clearTimeout(saveTimer);
@@ -1439,7 +1707,7 @@ function num(k, label, o = {}) {
   return `<div class="fld">
     <div class="fld-top"><label for="f-${id}">${esc(label)}${tip}${infoE}</label>${mode}</div>
     <div class="fld-row">
-      <div class="inp${auto ? " auto" : ""}${estime ? " est" : ""}${req ? " req" : ""}"><input id="f-${id}" data-k="${k}" data-num data-dec="${dec}"${o.autoKey ? ` data-auto="${o.autoKey}"` : ""} inputmode="decimal" autocomplete="off" value="${estime ? "" : fmtIn(raw, dec)}" placeholder="${estime && !flou ? fmtIn(getK(X, k), dec) : ""}"${E && REPERES.has(estKey(k)) ? ` aria-describedby="r-${id}"` : ""}><span class="tag"><span class="t-est" title="Repère standard : tape ton chiffre pour le remplacer">estimé</span><span class="t-req" title="Chiffre à chercher toi-même">à remplir</span></span><span class="u">${esc(o.unit || "")}</span></div>
+      <div class="inp${auto ? " auto" : ""}${estime ? " est" : ""}${req ? " req" : ""}"><input id="f-${id}" data-k="${k}" data-num data-dec="${dec}"${o.autoKey ? ` data-auto="${o.autoKey}"` : ""} inputmode="decimal" enterkeyhint="next" autocomplete="off" value="${estime ? "" : fmtIn(raw, dec)}" placeholder="${estime && !flou ? fmtIn(getK(X, k), dec) : ""}"${E && REPERES.has(estKey(k)) ? ` aria-describedby="r-${id}"` : ""}><span class="tag"><span class="t-est" title="Repère standard : tape ton chiffre pour le remplacer">estimé</span><span class="t-req" title="Chiffre à chercher toi-même">à remplir</span></span><span class="u">${esc(o.unit || "")}</span></div>
       <div class="step" role="group" aria-label="Ajuster"><button type="button" data-step="${-(o.step || 1)}" data-for="f-${id}" aria-label="Diminuer ${esc(label)}">−</button><button type="button" data-step="${o.step || 1}" data-for="f-${id}" aria-label="Augmenter ${esc(label)}">+</button></div>
     </div>
     ${E && REPERES.has(estKey(k)) ? `<div class="tiers" id="r-${id}" data-tiers="${k}" data-dec="${dec}" data-u="${esc(uniteCourte(o.unit))}"></div>` : ""}
@@ -1496,10 +1764,12 @@ function renderEstBar() {
       <span class="ek">${m.map(k => `<button type="button" data-goto="${k}">${REQ_LAB[k]}</button>`).join("")}</span><span class="eh">Tout le reste a déjà un repère standard.</span>`;
     return;
   }
+  el.classList.toggle("ouvert", !!ui.estOuvert);
   el.innerHTML = cl.length ? `<span class="ei" aria-hidden="true">≈</span><span><b>Résultat estimé</b> : ${cl.length === 1 ? "1 chiffre vient" : cl.length + " chiffres viennent"} de repères standards</span>
-    <span class="ek">${cl.map(([k, l]) => `<button type="button" data-goto="${k}">${l}</button>`).join("")}</span><span class="eh">Remplace-les par les vrais quand tu les as.</span>` : "";
+    <button type="button" class="lnk m-plus" data-estplus aria-expanded="${!!ui.estOuvert}">${ui.estOuvert ? "Masquer" : "Lesquels ?"}</button><span class="ek">${cl.map(([k, l]) => `<button type="button" data-goto="${k}">${l}</button>`).join("")}</span><span class="eh">Remplace-les par les vrais quand tu les as.</span>` : "";
 }
 function allerAuChamp(k) {
+  if (mob() && ui.vue !== "saisie") setVue("saisie", { garder: true });
   const sec = REQ_LAB[k] ? "bien" : (CLES.find(c => c[0] === k) || [])[2];
   if (S.mode !== "rapide" && sec && ui.section !== sec) { ui.section = sec; renderRail(); renderForm(); save(); }
   const inp = $(`#form [data-k="${k}"][data-num], #form [data-k="${k}.v"][data-num]`);
@@ -1516,7 +1786,7 @@ function sw(k, label, sub) {
   return `<label class="sw" for="c-${k}"><span>${esc(label)}${sub ? `<small>${sub}</small>` : ""}</span><input type="checkbox" role="switch" id="c-${k}" data-k="${k}"${getK(S, k) ? " checked" : ""}></label>`;
 }
 function txt(k, label, o = {}) {
-  return `<div class="fld"><div class="fld-top"><label for="t-${k}">${esc(label)}</label></div>${o.area ? `<textarea class="txt" id="t-${k}" data-k="${k}" data-text maxlength="2000">${esc(getK(S, k))}</textarea>` : `<input class="txt" id="t-${k}" data-k="${k}" data-text type="text" maxlength="${o.max || 200}" value="${esc(getK(S, k))}"${o.list ? ` list="${o.list}"` : ""}${o.ph ? ` placeholder="${esc(o.ph)}"` : ""} autocomplete="off">`}${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
+  return `<div class="fld"><div class="fld-top"><label for="t-${k}">${esc(label)}</label></div>${o.area ? `<textarea class="txt" id="t-${k}" data-k="${k}" data-text maxlength="2000">${esc(getK(S, k))}</textarea>` : `<input class="txt" id="t-${k}" data-k="${k}" data-text type="text" enterkeyhint="next" maxlength="${o.max || 200}" value="${esc(getK(S, k))}"${o.list ? ` list="${o.list}"` : ""}${o.ph ? ` placeholder="${esc(o.ph)}"` : ""} autocomplete="off">`}${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
 }
 function chargeFld(k, label, hint) {
   const c = S[k], isPct = c.mode === "pct";
@@ -1728,7 +1998,7 @@ const pAffiche = k => { const v = profil()[k]; return v == null ? "" : fmtIn(par
 function pnum(k, label, o = {}) {
   const mode = o.periode ? `<select class="mode" id="m-periode" data-pperiode aria-label="Salaire par mois ou par an"><option value="mois"${parAn(k) ? "" : " selected"}>Par mois</option><option value="an"${parAn(k) ? " selected" : ""}>Par an</option></select>` : "";
   const unite = SALAIRES.includes(k) ? (parAn(k) ? "€ / an" : "€ / mois") : (o.unit || "€ / mois");
-  return `<div class="fld"><div class="fld-top"><label for="p-${k}">${esc(label)}</label>${mode}</div><div class="fld-row"><div class="inp"><input id="p-${k}" data-p="${k}" inputmode="decimal" autocomplete="off" value="${pAffiche(k)}"><span class="u">${unite}</span></div></div>${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
+  return `<div class="fld"><div class="fld-top"><label for="p-${k}">${esc(label)}</label>${mode}</div><div class="fld-row"><div class="inp"><input id="p-${k}" data-p="${k}" inputmode="decimal" enterkeyhint="next" autocomplete="off" value="${pAffiche(k)}"><span class="u">${unite}</span></div></div>${o.hint ? `<p class="hint">${o.hint}</p>` : ""}</div>`;
 }
 // Sous les salaires saisis à l'année : l'équivalent mensuel retenu par la banque
 function salaireMoisTxt(k) { const p = profil(); return p && p.periode === "an" && p[k] != null ? ` Soit <b>${eur(p[k])} par mois</b> pour la banque.` : ""; }
@@ -1813,7 +2083,10 @@ const RECAPS = {
 function renderRail() {
   $("#rail").innerHTML = `<div class="rail-h">Hypothèses</div>` + SECTIONS.map(sct => `<button type="button" role="tab" id="tab-${sct.id}" data-sec="${sct.id}" aria-selected="${ui.section === sct.id}" aria-controls="form">
     <svg class="ic" aria-hidden="true"><use href="#i-${sct.icon}"/></svg><span class="t">${sct.label}</span><span class="m" data-sum="${sct.id}">${esc(railSummary(sct.id))}</span></button>`).join("");
+  if (mob()) centrerPastille($("#rail"), $("#tab-" + ui.section));
 }
+// Fait défiler une barre de pastilles pour que la pastille choisie soit visible, sans bouger la page
+function centrerPastille(barre, b) { if (barre && b && barre.scrollWidth > barre.clientWidth) barre.scrollLeft = Math.max(0, b.offsetLeft - (barre.clientWidth - b.offsetWidth) / 2); }
 function renderRailSums() { $$("[data-sum]").forEach(el => { el.textContent = railSummary(el.dataset.sum); }); }
 const MODESW = () => `<div class="modesw" role="group" aria-label="Niveau de détail"><button type="button" data-mode="rapide" aria-pressed="${S.mode === "rapide"}">Estimation rapide<small>Quelques champs, résultat immédiat</small></button><button type="button" data-mode="complet" aria-pressed="${S.mode === "complet"}">Simulation complète<small>8 sections, tous les paramètres</small></button></div>`;
 FORMS.rapide = () => head("Estimation rapide", "La surface, le prix et le loyer suffisent : le reste suit des repères standards.") +
@@ -1831,8 +2104,19 @@ function renderForm() {
   if (!FORMS[ui.section] || ui.section === "rapide") ui.section = "bien";
   $(".hyp").classList.toggle("rapide", S.mode === "rapide");
   f.innerHTML = MODESW() + (S.mode === "rapide" ? FORMS.rapide() : FORMS[ui.section]());
+  f.dataset.sec = S.mode === "rapide" ? "rapide" : ui.section;
   f.setAttribute("aria-labelledby", "tab-" + ui.section);
-  renderRecaps(); syncEst(); f.scrollTop = st;
+  renderRecaps(); syncEst(); f.scrollTop = st; renderSecNav();
+}
+// Bas de chaque section, sur téléphone : progression et bouton vers la section suivante (puis vers les résultats)
+function renderSecNav() {
+  const el = $("#m-secnav"); if (!el) return;
+  if (S.mode === "rapide") { el.innerHTML = `<button type="button" class="btn primary" data-mgo="resultats">Voir les résultats<svg aria-hidden="true"><use href="#i-chev"/></svg></button>`; return; }
+  const i = Math.max(0, SECTIONS.findIndex(x => x.id === ui.section)), prev = SECTIONS[i - 1], next = SECTIONS[i + 1];
+  el.innerHTML = `<p class="pas"><span>Étape ${i + 1} sur ${SECTIONS.length}</span><i aria-hidden="true"><b style="width:${((i + 1) / SECTIONS.length * 100).toFixed(1)}%"></b></i></p>` +
+    (prev ? `<button type="button" class="btn prev" data-msec="${prev.id}" aria-label="Section précédente : ${esc(prev.label)}"><svg aria-hidden="true"><use href="#i-chev-l"/></svg></button>` : "") +
+    (next ? `<button type="button" class="btn primary" data-msec="${next.id}">Suivant : ${esc(next.label)}<svg aria-hidden="true"><use href="#i-chev"/></svg></button>`
+      : `<button type="button" class="btn primary" data-mgo="resultats">Voir les résultats<svg aria-hidden="true"><use href="#i-chev"/></svg></button>`);
 }
 function renderRecaps() {
   const m = (R.manque || []).length;
@@ -1933,6 +2217,7 @@ const ANA = [["synthese", "Synthèse"], ["treso", "Trésorerie"], ["emprunt", "E
 let anaKey = "";
 function renderTabs() {
   $("#tabs").innerHTML = ANA.map(([id, t]) => `<button type="button" role="tab" id="atab-${id}" data-ana="${id}" aria-selected="${ui.ana === id}" aria-controls="ana">${t}</button>`).join("");
+  if (mob()) centrerPastille($("#tabs"), $("#atab-" + ui.ana));
 }
 function sub(name, list, cur) { return `<div class="subtabs" role="tablist" aria-label="${esc(name)}">${list.map(([id, t]) => `<button type="button" role="tab" data-sub="${name}:${id}" aria-selected="${cur === id}">${t}</button>`).join("")}</div>`; }
 function tipBtn(k) { return `<button type="button" class="tip" data-tip-k="${k}" aria-label="Définition">i</button>`; }
@@ -1964,7 +2249,7 @@ const VIEWS = {
         <figure class="fig"><figcaption>Enrichissement selon l'année de revente</figcaption><p class="sub">Après remboursement du crédit et impôt sur la plus-value.</p><div class="cv"><canvas id="c-enr" role="img" aria-label="Enrichissement selon l'année de revente"></canvas></div></figure>
       </div>
       <div class="duo facts" id="syn-facts" style="margin-top:14px"></div>
-      <div style="margin-top:16px"><div class="h3">Leviers pour améliorer l'opération</div><p class="hint" style="margin:-4px 0 8px" id="syn-lev-p"></p><div class="tbl-wrap lev" id="syn-lev"></div></div>
+      <div style="margin-top:16px"><div class="h3">Leviers pour améliorer l'opération</div><p class="hint" style="margin:-4px 0 8px" id="syn-lev-p"></p><div class="tbl-wrap lev cards" id="syn-lev"></div></div>
       <div class="alerts" id="syn-alerts"></div>`,
     fill() {
       const ref = R.Y[R.k.annee - 1], cfm = ref.cf / 12, rv = R.rv;
@@ -1993,7 +2278,7 @@ const VIEWS = {
           ["Cash-flow avant impôt", eur(ref.cfAvant), ref.cfAvant >= 0 ? "pos" : "neg"], ["Cash-flow après impôt", eur(ref.cf), ref.cf >= 0 ? "pos" : "neg"]]);
       $("#syn-lev-p").textContent = `Effet de chaque décision prise seule, sur le cash-flow de l'année ${R.k.annee} et sur l'enrichissement à la revente.`;
       const lv = leviers(S), sg = v => (Math.round(v) > 0 ? "+" : "") + eur(v), cl = v => Math.round(v) > 0 ? "pos" : Math.round(v) < 0 ? "neg" : "";
-      $("#syn-lev").innerHTML = `<table class="tbl"><thead><tr><th>Levier</th><th>Cash-flow / mois</th><th>Enrichissement à ${R.rv.N} ans</th><th></th></tr></thead><tbody>${lv.map((l, i) => `<tr><td>${esc(l.label)}<small>${esc(l.note || "")}${l.dMise ? " Mise de départ " + sg(l.dMise) + "." : ""}</small></td><td class="${cl(l.dCf)}">${sg(l.dCf)}</td><td class="${cl(l.dEnrich)}"><b>${sg(l.dEnrich)}</b></td><td><button type="button" class="btn sm" data-lever="${i}">Appliquer</button></td></tr>`).join("")}</tbody></table>`;
+      $("#syn-lev").innerHTML = `<table class="tbl"><thead><tr><th>Levier</th><th>Cash-flow / mois</th><th>Enrichissement à ${R.rv.N} ans</th><th></th></tr></thead><tbody>${lv.map((l, i) => `<tr><td>${esc(l.label)}<small>${esc(l.note || "")}${l.dMise ? " Mise de départ " + sg(l.dMise) + "." : ""}</small></td><td class="${cl(l.dCf)}" data-l="Cash-flow / mois">${sg(l.dCf)}</td><td class="${cl(l.dEnrich)}" data-l="Gain à ${R.rv.N} ans"><b>${sg(l.dEnrich)}</b></td><td><button type="button" class="btn sm" data-lever="${i}">Appliquer</button></td></tr>`).join("")}</tbody></table>`;
       VIEWS.synthese.lev = lv;
       const lvl = { critique: "Critique", attention: "Attention", info: "À savoir" };
       $("#syn-alerts").innerHTML = R.warnings.length ? `<div class="h3">Points d'attention</div>` + R.warnings.slice().sort((a, b) => ["critique", "attention", "info"].indexOf(a.niveau) - ["critique", "attention", "info"].indexOf(b.niveau))
@@ -2109,13 +2394,13 @@ const VIEWS = {
   },
   comparatif: {
     build: () => `<div class="ana-h"><div><h2>Quel régime fiscal choisir ?</h2><p id="cp-p"></p></div></div>
-      <div class="tbl-wrap" id="cp-t"></div>
+      <div class="tbl-wrap cards" id="cp-t"></div>
       <figure class="fig" style="margin-top:14px"><figcaption>Impôt payé chaque année selon le régime</figcaption><div class="cv tall"><canvas id="c-cp" role="img" aria-label="Impôt par année et par régime"></canvas></div></figure>
       <p class="note">Le TRI et l'enrichissement tiennent compte de l'impôt sur la plus-value à la revente, y compris la réintégration des amortissements en LMNP et en Jeanbrun. « Conditions » : le régime exige des critères que ton projet ne remplit pas (par exemple Jeanbrun dans l'ancien sans 30 % de travaux). Jeanbrun impose aussi un loyer plafonné, souvent 15 % sous le marché, et 9 ans de location.</p>`,
     fill() {
       $("#cp-p").textContent = `Mêmes hypothèses, revente après ${plural(X.detention, "an")}. ` + ((R.auto || []).includes("loyer") ? "Le loyer estimé tient compte du type de location : environ 12 % de plus en meublé." : "À loyer identique : un meublé se loue souvent 10 à 20 % plus cher qu'un logement nu.");
       const cp = comparerRegimes(S); const best = cp.filter(x => !x.critique).reduce((a, b) => (b.enrichissement > a.enrichissement ? b : a), cp[0]);
-      $("#cp-t").innerHTML = `<table class="tbl"><thead><tr><th>Régime</th><th>Impôt sur ${X.detention} ans</th><th>Cash-flow / mois</th><th>Impôt plus-value</th><th>Enrichissement</th><th>TRI</th><th></th></tr></thead><tbody>${cp.map(x => `<tr class="${x.regime === X.regime ? "hl" : ""}"><td title="${esc(x.label)}">${esc(REGIMES[x.regime].court)}${x.regime === best.regime ? `<span class="badge">Meilleur</span>` : ""}${x.critique ? `<span class="badge soft">Conditions</span>` : ""}</td><td>${eur(x.impotCumul)}</td><td class="${x.cfMoyenMois >= 0 ? "pos" : "neg"}">${eur(x.cfMoyenMois)}</td><td>${eur(x.impotPV)}</td><td><b>${eur(x.enrichissement)}</b></td><td>${x.tri === null ? "—" : pct(x.tri, 1)}</td><td>${x.regime === X.regime ? `<span class="badge soft">Choisi</span>` : `<button type="button" class="btn sm" data-choose="${x.regime}">Choisir</button>`}</td></tr>`).join("")}</tbody></table>`;
+      $("#cp-t").innerHTML = `<table class="tbl"><thead><tr><th>Régime</th><th>Impôt sur ${X.detention} ans</th><th>Cash-flow / mois</th><th>Impôt plus-value</th><th>Enrichissement</th><th>TRI</th><th></th></tr></thead><tbody>${cp.map(x => `<tr class="${x.regime === X.regime ? "hl" : ""}"><td title="${esc(x.label)}">${esc(REGIMES[x.regime].court)}${x.regime === best.regime ? `<span class="badge">Meilleur</span>` : ""}${x.critique ? `<span class="badge soft">Conditions</span>` : ""}</td><td data-l="Impôt sur ${X.detention} ans">${eur(x.impotCumul)}</td><td class="${x.cfMoyenMois >= 0 ? "pos" : "neg"}" data-l="Cash-flow / mois">${eur(x.cfMoyenMois)}</td><td data-l="Impôt plus-value">${eur(x.impotPV)}</td><td data-l="Enrichissement"><b>${eur(x.enrichissement)}</b></td><td data-l="TRI">${x.tri === null ? "—" : pct(x.tri, 1)}</td><td>${x.regime === X.regime ? `<span class="badge soft">Choisi</span>` : `<button type="button" class="btn sm" data-choose="${x.regime}">Choisir</button>`}</td></tr>`).join("")}</tbody></table>`;
       if (!window.Chart) return noChart("c-cp");
       const c = C(), H = Math.max(X.detention, Math.min(R.H, 25));
       draw("c-cp", "line", { labels: Array.from({ length: H }, (_, i) => i + 1), datasets: cp.map((x, i) => line(REGIMES[x.regime].court, x.impots.slice(0, H), c.s[i % 6], { borderWidth: x.regime === S.regime ? 3 : 2 })) },
@@ -2157,8 +2442,8 @@ const VIEWS = {
 /* ---------- Mise à jour générale ---------- */
 function update(o = {}) {
   calc();
-  renderBand(); renderEstBar(); renderRailSums(); renderRecaps(); syncAuto(o.from); syncEst();
-  renderAna();
+  renderBand(); renderEstBar(); renderRailSums(); renderRecaps(); syncAuto(o.from); syncEst(); renderLive();
+  if (mob() && ui.vue === "saisie") anaKey = ""; else renderAna();
   save();
 }
 
@@ -2291,7 +2576,7 @@ function act(a) {
     saveProfils(); calc(); renderForm(); update(); return;
   }
   if (a.startsWith("mode:")) return setMode(a.slice(5));
-  if (a.startsWith("go:")) { ui.ana = a.slice(3); renderTabs(); renderAna(true); save(); if (innerWidth < 1180) $("#tabs").scrollIntoView({ behavior: "smooth", block: "start" }); }
+  if (a.startsWith("go:")) { ui.ana = a.slice(3); if (mob()) setVue("resultats"); renderTabs(); renderAna(true); save(); if (innerWidth < 1180) $("#tabs").scrollIntoView({ behavior: mob() ? "auto" : "smooth", block: "start" }); }
 }
 
 /* ---------- Événements : rail, onglets, bandeau ---------- */
@@ -2311,7 +2596,7 @@ $("#ana").addEventListener("click", e => {
   const b = e.target.closest("button,tr[data-fy]"); if (!b) return;
   if (b.dataset.goto) { allerAuChamp(b.dataset.goto); return; }
   if (b.dataset.sub) { const [n, v] = b.dataset.sub.split(":"); ui[n] = v; renderAna(true); save(); return; }
-  if (b.dataset.tper) { ui.per = b.dataset.tper; renderAna(true); renderBand(); save(); return; }
+  if (b.dataset.tper) { ui.per = b.dataset.tper; renderAna(true); renderBand(); renderLive(); save(); return; }
   if (b.dataset.ech) { ui.ech = b.dataset.ech; renderAna(true); save(); return; }
   if (b.dataset.lever) { const l = (VIEWS.synthese.lev || [])[+b.dataset.lever]; if (l) { Object.assign(S, clone(l.patch)); calc(); renderForm(); update(); renderAna(true); } return; }
   if (b.dataset.choose) { S.regime = b.dataset.choose; calc(); if (ui.section === "fisc") renderForm(); update(); renderAna(true); return; }
@@ -2321,30 +2606,43 @@ $("#ana").addEventListener("input", e => {
   if (e.target.id === "r-amp") { ui.ampYear = +e.target.value; VIEWS.emprunt.fill(); save(); }
   if (e.target.id === "r-fy") { ui.fiscYear = +e.target.value; VIEWS.fisc.fill(); save(); }
 });
-$("#estbar").addEventListener("click", e => { const b = e.target.closest("[data-goto]"); if (b) allerAuChamp(b.dataset.goto); });
+$("#estbar").addEventListener("click", e => { if (e.target.closest("[data-estplus]")) { ui.estOuvert = !ui.estOuvert; renderEstBar(); save(); return; } const b = e.target.closest("[data-goto]"); if (b) allerAuChamp(b.dataset.goto); });
 $("#k-metric").addEventListener("change", e => { ui.metric = e.target.value; renderBand(); save(); });
 $("#k-rend").addEventListener("change", e => { ui.rend = e.target.value; renderBand(); save(); });
 $("#k-year").addEventListener("change", e => { S.anneeRef = +e.target.value; update(); renderForm(); });
-$$(".seg [data-per]").forEach(b => b.addEventListener("click", () => { ui.per = b.dataset.per; renderBand(); if (ui.ana === "treso") renderAna(true); save(); }));
+$$(".seg [data-per]").forEach(b => b.addEventListener("click", () => { ui.per = b.dataset.per; renderBand(); renderLive(); if (ui.ana === "treso") renderAna(true); save(); }));
 $("#sim-name").addEventListener("input", e => { S.name = e.target.value; save(); });
 $("#sim-name").addEventListener("blur", e => { if (!e.target.value.trim()) { S.name = "Simulation sans nom"; e.target.value = S.name; save(); } });
 
 /* ---------- Infobulles ---------- */
 const tt = $("#tt");
+let ttFor = null, ttScroll = 0;
 function showTip(b) {
   const t = b.dataset.tip || TIPS[b.dataset.tipK]; if (!t) return;
-  tt.textContent = t; tt.hidden = false;
+  tt.textContent = t; tt.hidden = false; ttFor = b;
+  tt.classList.toggle("m", mob());
+  if (mob()) {
+    tt.style.left = tt.style.top = "";
+    const r = b.getBoundingClientRect(), c = tt.getBoundingClientRect();
+    if (r.bottom > c.top - 10) { ttScroll = Date.now(); window.scrollBy({ top: r.bottom - c.top + 24, behavior: "smooth" }); }
+    return;
+  }
   const r = b.getBoundingClientRect(), w = tt.offsetWidth, h = tt.offsetHeight;
   let x = Math.min(innerWidth - w - 10, Math.max(10, r.left + r.width / 2 - w / 2)), y = r.bottom + 8;
   if (y + h > innerHeight - 10) y = r.top - h - 8;
   tt.style.left = x + "px"; tt.style.top = y + "px";
 }
-document.addEventListener("mouseover", e => { const b = e.target.closest(".tip"); if (b) showTip(b); });
-document.addEventListener("mouseout", e => { if (e.target.closest(".tip")) tt.hidden = true; });
-document.addEventListener("focusin", e => { const b = e.target.closest && e.target.closest(".tip"); if (b) showTip(b); });
-document.addEventListener("focusout", e => { if (e.target.closest && e.target.closest(".tip")) tt.hidden = true; });
-document.addEventListener("click", e => { const b = e.target.closest(".tip"); if (b) { e.preventDefault(); tt.hidden ? showTip(b) : (tt.hidden = true); } });
-addEventListener("scroll", () => { tt.hidden = true; }, { passive: true });
+// Survol réservé à la souris : au doigt, le survol simulé ouvrait puis refermait aussitôt la bulle
+document.addEventListener("pointerover", e => { if (e.pointerType !== "mouse") return; const b = e.target.closest(".tip"); if (b) showTip(b); });
+document.addEventListener("pointerout", e => { if (e.pointerType !== "mouse") return; if (e.target.closest(".tip")) tt.hidden = true; });
+document.addEventListener("focusin", e => { if (mob()) return; const b = e.target.closest && e.target.closest(".tip"); if (b) showTip(b); });
+document.addEventListener("focusout", e => { if (mob()) return; if (e.target.closest && e.target.closest(".tip")) tt.hidden = true; });
+document.addEventListener("click", e => {
+  const b = e.target.closest(".tip");
+  if (b) { e.preventDefault(); if (mob()) { if (!tt.hidden && ttFor === b) tt.hidden = true; else showTip(b); } else tt.hidden ? showTip(b) : (tt.hidden = true); return; }
+  if (mob() && !tt.hidden) tt.hidden = true; // un toucher ailleurs (ou sur la carte) la referme
+});
+addEventListener("scroll", () => { if (Date.now() - ttScroll > 900) tt.hidden = true; }, { passive: true });
 
 /* ---------- Fenêtres : notaire, simulations, export ---------- */
 const modal = $("#modal"), dialog = $("#dialog");
@@ -2401,13 +2699,15 @@ dialog.addEventListener("click", e => {
   else if (b.hasAttribute("data-new")) { newSim(); closeModal(); }
   else if (b.hasAttribute("data-export")) openExport();
   else if (b.hasAttribute("data-import")) openImport();
-  else if (b.hasAttribute("data-copy")) { const ta = $("#exp"); const done = ok => { $("#exp-msg").textContent = ok ? "Copié dans le presse-papiers." : "Sélectionne le texte et copie-le (Ctrl + C)."; if (!ok) { ta.focus(); ta.select(); } };
+  else if (b.hasAttribute("data-copy")) { const ta = $("#exp"); const done = ok => { $("#exp-msg").textContent = ok ? "Copié dans le presse-papiers." : mob() ? "Le texte est sélectionné : appuie dessus puis choisis « Copier »." : "Sélectionne le texte et copie-le (Ctrl + C)."; if (!ok) { ta.focus(); ta.select(); } };
     try { navigator.clipboard.writeText(ta.value).then(() => done(true), () => done(false)); } catch (err) { done(false); } }
   else if (b.hasAttribute("data-dl")) { const blob = new Blob([$("#exp").value], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "bilan-locatif-simulations.json"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
   else if (b.hasAttribute("data-doimport")) doImport($("#imp").value);
   else if (b.hasAttribute("data-back")) openSims();
   else if (b.dataset.rapport) { const t = b.dataset.rapport; closeModal(); setTimeout(() => imprimer(t), 50); }
+  else if (b.dataset.mm) { const m = b.dataset.mm; if (m === "sims") return openSims(); if (m === "print") return choisirRapport(); closeModal(); if (m === "new") newSim(); else if (m === "dup") { dupSim(); toast("Copie créée : tu peux la modifier sans toucher à l'originale."); } window.scrollTo(0, 0); }
 });
+dialog.addEventListener("change", e => { if (e.target.matches("[data-mm-theme]")) { const next = e.target.checked ? "dark" : "light"; document.documentElement.dataset.theme = next; store.set(THEME_KEY, next); syncThemeBtn(); } });
 function openExport() {
   flush();
   openModal(mHead("Exporter mes simulations") + `<p class="hint" style="margin-top:0">Garde ce texte (dans un fichier, un mail…) pour retrouver tes simulations sur un autre appareil avec « Importer ».</p>
@@ -2436,10 +2736,13 @@ function doImport(text) {
   } catch (err) { msg.className = "msg err"; msg.textContent = "Ce texte n'est pas un export de Bilan Locatif. Vérifie que tu as tout copié, du premier { au dernier }."; }
 }
 function switchTo(id) { flush(); db.cur = id; S = normaliser(db.sims[id].s); store.set(KEY, db); fullRender(); }
-function newSim() { flush(); const id = uid(); const s = clone(NOUVELLE_SIM); if (PR.list[PR.dernier]) s.profil = PR.dernier; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); appliquerProfil(profil()); db.sims[id].s = S; store.set(KEY, db); ui.section = "bien"; ui.ana = "synthese"; fullRender(); $("#form").scrollTop = 0; }
+function newSim() { flush(); const id = uid(); const s = clone(NOUVELLE_SIM); if (PR.list[PR.dernier]) s.profil = PR.dernier;
+  if (mob()) { s.mode = "rapide"; ui.vue = "saisie"; } // sur téléphone, on commence par l'estimation rapide : trois chiffres et le résultat s'affiche
+  db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); appliquerProfil(profil()); db.sims[id].s = S; store.set(KEY, db); ui.section = "bien"; ui.ana = "synthese"; fullRender(); $("#form").scrollTop = 0; }
 $("#btn-sims").addEventListener("click", openSims);
 $("#btn-new").addEventListener("click", newSim);
-$("#btn-dup").addEventListener("click", () => { flush(); const id = uid(); const s = clone(S); s.name = (S.name || "Simulation") + " (copie)"; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); fullRender(); });
+function dupSim() { flush(); const id = uid(); const s = clone(S); s.name = (S.name || "Simulation") + " (copie)"; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); fullRender(); }
+$("#btn-dup").addEventListener("click", dupSim);
 
 /* ---------- Rapport imprimable (hors aperçu intégré) ---------- */
 // Couleurs fixes : le rapport s'imprime toujours sur fond blanc, quel que soit le thème de l'écran
@@ -2674,7 +2977,7 @@ function buildBilan() {
 const RAPPORTS = { banque: () => buildDossier(), perso: () => buildBilan() };
 function imprimer(type) { ui.rapport = type; save(); $("#report").innerHTML = RAPPORTS[type](); window.print(); }
 function choisirRapport() {
-  openModal(mHead("Imprimer un rapport") + `<p class="hint" style="margin-top:0">Deux documents, deux publics. Dans la fenêtre d'impression, choisis « Enregistrer au format PDF » pour garder le fichier.</p>
+  openModal(mHead("Imprimer un rapport") + `<p class="hint" style="margin-top:0">${mob() ? "Deux documents, deux publics. Ton téléphone ouvre ensuite l'impression : sur Android, choisis « Enregistrer au format PDF » ; sur iPhone, touche le bouton Partager puis « Enregistrer dans Fichiers »." : "Deux documents, deux publics. Dans la fenêtre d'impression, choisis « Enregistrer au format PDF » pour garder le fichier."}</p>
     <div class="rapports">
       <button type="button" class="rap" data-rapport="banque"><b>Dossier pour la banque</b><span>Plan de financement, ton endettement, le prévisionnel sur 10 ans, la résistance du projet et les pièces à joindre.</span></button>
       <button type="button" class="rap" data-rapport="perso"><b>Bilan à partager</b><span>Simple et pédagogique, pour toi et tes proches : ce que tu mets, ce que tu récupères, les mots expliqués.</span></button>
@@ -2692,11 +2995,73 @@ syncThemeBtn();
 tbtn.addEventListener("click", () => { const next = isDark() ? "light" : "dark"; document.documentElement.dataset.theme = next; store.set(THEME_KEY, next); syncThemeBtn(); });
 if (window.matchMedia) { const mqd = matchMedia("(prefers-color-scheme: dark)"); if (mqd.addEventListener) mqd.addEventListener("change", syncThemeBtn); }
 
+/* ---------- Téléphone : deux écrans, résultat en direct, menu ---------- */
+function setVue(v, o = {}) {
+  ui.vue = v === "resultats" ? "resultats" : "saisie";
+  document.body.dataset.vue = ui.vue;
+  $$("#m-nav [data-vue]").forEach(b => { if (b.dataset.vue === ui.vue) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  if (ui.vue === "resultats") { renderTabs(); renderAna(true); } // les graphiques se dessinent une fois visibles
+  else { renderRail(); }
+  tt.hidden = true;
+  if (!o.garder) window.scrollTo(0, 0);
+  save();
+}
+// Barre collante de l'écran de saisie : le résultat suit chaque chiffre tapé
+function renderLive() {
+  const el = $("#m-live"), m = R.manque || [];
+  document.body.classList.toggle("m-manque", m.length > 0);
+  el.classList.toggle("manque", m.length > 0);
+  if (m.length) {
+    el.innerHTML = `<span class="ml"><small>Pour voir le résultat</small><b>${m.length === 1 ? "Il manque 1 chiffre" : "Il manque " + m.length + " chiffres"}</b></span><span class="go">${m.map(k => REQ_LAB[k]).join(", ")}<svg aria-hidden="true"><use href="#i-chev"/></svg></span>`;
+    el.setAttribute("aria-label", `Il manque : ${m.map(k => REQ_LAB[k].toLowerCase()).join(", ")}. Toucher pour remplir.`);
+    return;
+  }
+  const ref = R.Y[R.k.annee - 1], an = ui.per === "an", cf = ref.cf / (an ? 1 : 12), e = R.rv.enrichissement, c = v => Math.round(v) < 0 ? "neg" : Math.round(v) > 0 ? "pos" : "";
+  const html = `<span class="ml"><small>Cash-flow, année ${ref.y}</small><b class="${c(cf)}">${eur(cf)} / ${an ? "an" : "mois"}</b></span><span class="ml"><small>${Math.round(e) < 0 ? "Perte" : "Gain"} à ${plural(R.rv.N, "an")}</small><b class="${c(e)}">${Math.round(e) < 0 ? eur(-e) : signe(e)}</b></span><span class="go">Détails<svg aria-hidden="true"><use href="#i-chev"/></svg></span>`;
+  if (el.dataset.v && el.dataset.v !== html && mob()) { el.classList.remove("pulse"); void el.offsetWidth; el.classList.add("pulse"); }
+  el.dataset.v = html; el.innerHTML = html;
+  el.setAttribute("aria-label", `Cash-flow après impôt : ${eur(cf)} par ${an ? "an" : "mois"} en année ${ref.y}. ${Math.round(e) < 0 ? "Perte" : "Gain"} à ${plural(R.rv.N, "an")} : ${eur(Math.abs(e))}. Voir les résultats.`);
+}
+function renderHello() { $("#m-hello").hidden = !(mob() && !ui.helloVu && S.name === DEFAULT_SIM.name); }
+$("#m-hello").addEventListener("click", e => { const b = e.target.closest("[data-hello]"); if (!b) return; ui.helloVu = true; save(); if (b.dataset.hello === "go") newSim(); else renderHello(); });
+$("#m-live").addEventListener("click", () => { const m = R.manque || []; if (m.length) allerAuChamp(m[0]); else setVue("resultats"); });
+$("#m-nav").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.vue) { if (b.dataset.vue === ui.vue) window.scrollTo({ top: 0, behavior: "smooth" }); else setVue(b.dataset.vue); } else if (b.dataset.mnav === "sims") openSims(); });
+// Boutons « Suivant » et « Voir les résultats » sous le formulaire
+$("#m-secnav").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.mgo) return setVue(b.dataset.mgo);
+  if (b.dataset.msec) { ui.section = b.dataset.msec; renderRail(); renderForm(); save(); const h = $(".hyp"), top = h.getBoundingClientRect().top + scrollY - $("#m-live").offsetHeight - 12; window.scrollTo(0, Math.max(0, top)); }
+});
+function openMenu() {
+  const it = (mm, ic, t, d) => `<button type="button" data-mm="${mm}"><svg aria-hidden="true"><use href="#i-${ic}"/></svg><span><b>${t}</b><small>${d}</small></span></button>`;
+  openModal(mHead("Menu") + `<div class="mlist">` + it("new", "plus", "Nouvelle simulation", "Repartir de zéro : la surface, le prix et le loyer suffisent") + it("dup", "copy", "Dupliquer celle-ci", "Tester une variante sans toucher à l'originale") +
+    it("sims", "list", "Mes simulations", "Ouvrir, supprimer, exporter vers un autre appareil") + (TOP ? it("print", "print", "Imprimer un rapport", "Dossier pour la banque ou bilan à partager, en PDF") : "") +
+    `<label class="sw" for="mm-theme"><span><svg aria-hidden="true"><use href="#i-moon"/></svg>Thème sombre</span><input type="checkbox" role="switch" id="mm-theme" data-mm-theme${isDark() ? " checked" : ""}></label></div>`);
+}
+$("#m-menu").addEventListener("click", openMenu);
+// Petit message de confirmation en bas de l'écran
+function toast(t) { tt.textContent = t; tt.classList.add("m"); tt.hidden = false; ttFor = null; clearTimeout(toast.t); toast.t = setTimeout(() => { if (ttFor === null) tt.hidden = true; }, 3200); }
+// Clavier du téléphone : « Suivant » passe au champ d'après, le dernier referme le clavier
+form.addEventListener("keydown", e => {
+  if (!mob() || e.key !== "Enter" || !e.target.matches("input:not([type=checkbox]):not([type=file])")) return;
+  e.preventDefault();
+  const champs = $$("#form input:not([type=checkbox]):not([type=file]), #form textarea").filter(x => x.offsetParent !== null);
+  const n = champs[champs.indexOf(e.target) + 1];
+  if (n) { n.focus(); n.scrollIntoView({ block: "center" }); } else e.target.blur();
+});
+// Passage téléphone ↔ grand écran (rotation, fenêtre redimensionnée)
+// (on ne fait rien si l'état n'a pas vraiment changé : certains navigateurs signalent un changement fugace)
+// et on attend que la taille soit stable, pour ignorer les bascules d'un instant pendant un redimensionnement
+let etatMob = mob(), mqT = 0;
+const surMQ = () => { clearTimeout(mqT); mqT = setTimeout(() => { const m = mob(); if (m === etatMob) return; etatMob = m; renderHello(); if (m) setVue(ui.vue || "saisie", { garder: true }); else { tt.hidden = true; tt.classList.remove("m"); anaKey = ""; renderRail(); renderTabs(); renderAna(true); } }, 180); };
+if (MQ.addEventListener) MQ.addEventListener("change", surMQ); else if (MQ.addListener) MQ.addListener(surMQ);
+
 /* ---------- Démarrage ---------- */
 function fullRender() {
   calc();
   $("#sim-name").value = S.name;
-  renderRail(); renderForm(); renderTabs(); renderBand(); renderEstBar(); renderAna(true);
+  renderRail(); renderForm(); renderTabs(); renderBand(); renderEstBar(); renderLive(); renderHello();
+  if (mob()) setVue(ui.vue || "saisie", { garder: true }); else renderAna(true);
 }
 const band = $("#band");
 const setBandH = () => document.documentElement.style.setProperty("--band-h", band.offsetHeight + "px");
