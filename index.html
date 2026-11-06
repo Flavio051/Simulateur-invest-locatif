@@ -3136,7 +3136,7 @@ const COLLECTEUR = async function (CIBLE) {
   const q = s => Array.from(document.querySelectorAll(s));
   const court = (v, n) => typeof v === "string" && v.length > n ? v.slice(0, n) : v;
   const allege = (o, p) => {
-    if (p > 6 || o == null) return null;
+    if (p > 9 || o == null) return null;
     if (typeof o === "string") return court(o, 6000);
     if (typeof o !== "object") return o;
     if (Array.isArray(o)) return o.slice(0, 60).map(x => allege(x, p + 1));
