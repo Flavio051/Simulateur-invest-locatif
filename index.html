@@ -719,6 +719,34 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
 .equi p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink)}
 .equi-l,.lien-loyer{font-size:13px;color:var(--muted)}
 .equi-l a,.lien-loyer a{color:var(--accent-ink);font-weight:700;white-space:nowrap}
+.fiche-v:empty{display:none}
+.vd{display:grid;gap:2px;padding:9px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);margin:2px 0}
+.vd b{font-family:var(--f-display);font-size:15.5px;line-height:1.3}
+.vd span{font-size:12.5px;color:var(--muted);line-height:1.45}
+.vd.ok{background:var(--pos-soft);border-color:color-mix(in srgb,var(--pos) 30%,var(--line))}.vd.ok b{color:var(--pos)}
+.vd.ko{background:var(--neg-soft);border-color:color-mix(in srgb,var(--neg) 25%,var(--line))}.vd.ko b{color:var(--neg)}
+.vd .vd-n,.vd .vd-t{color:var(--ink)}
+.vd .lnk{font-size:12.5px}
+.loy{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 6px}
+.loy-c{cursor:pointer}
+.loy-c input{position:absolute;opacity:0;pointer-events:none}
+.loy-c span{display:grid;gap:2px;height:100%;padding:10px 12px;border:1px solid var(--line-strong);border-radius:12px;background:var(--surface)}
+.loy-c small{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+.loy-c b{font-family:var(--f-display);font-size:19px;font-variant-numeric:tabular-nums}
+.loy-c b i{font-style:normal;font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:600}
+.loy-c em{font-style:normal;font-size:11.5px;color:var(--muted);line-height:1.35}
+.loy-c input:checked+span{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.loy-c input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
+.loy-l .r span a{color:var(--ink);font-weight:600}
+.loy-l .r small{display:block;font-size:11.5px;color:var(--muted);font-weight:400}
+.loy-l .r b{text-align:right}
+@media print{
+  #report .rp-ann{display:grid;grid-template-columns:58mm 1fr;gap:10pt;align-items:center;margin:8pt 0 12pt;padding:8pt;border:1pt solid #dbe1e8;border-radius:7pt;break-inside:avoid}
+  #report .rp-ann img{width:58mm;height:36mm;object-fit:cover;border-radius:5pt}
+  #report .rp-ann b{display:block;font-size:11pt}
+  #report .rp-ann span{display:block;color:#4f5d71;font-size:8.5pt;margin-top:2pt}
+  #report .rp-ann .rp-url{color:#245d8c;word-break:break-all}
+}
 .inp .tag .t-ann{display:none}
 .inp.ann{border-color:color-mix(in srgb,var(--accent) 45%,var(--line-strong))}
 .inp.ann .tag{display:inline-block;color:var(--accent-ink);background:var(--accent-soft)}
@@ -814,6 +842,7 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
   .rv-ph img{width:112px;height:80px}.rv-ph img:first-child{width:150px}
   .simrow{grid-template-columns:auto minmax(0,1fr)}
   .simrow .a{grid-column:1/-1}
+  .loy{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion: reduce){.fav-btn{animation:none}}
 </style>
@@ -2123,7 +2152,7 @@ function syncEst() {
   const ai = $("#aide"); if (ai) ai.innerHTML = aideHTML();
   const cp = $("#capa"); if (cp) cp.innerHTML = capaHTML();
   // Petits chiffres calculés dans les aides des champs
-  $$("#form [data-live]").forEach(el => { const k = el.dataset.live; if (k === "prixRetenu") el.innerHTML = prixRetenuTxt(); else if (k === "equi") el.innerHTML = equiTxt(); else if (k.startsWith("sal-")) el.innerHTML = salaireMoisTxt(k.slice(4)); else el.textContent = k === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
+  $$("#form [data-live]").forEach(el => { const k = el.dataset.live; if (k === "prixRetenu") el.innerHTML = prixRetenuTxt(); else if (k === "equi") el.innerHTML = equiTxt(); else if (k === "verdict") el.innerHTML = verdictHTML(); else if (k.startsWith("sal-")) el.innerHTML = salaireMoisTxt(k.slice(4)); else el.textContent = k === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
 }
 // Bandeau au-dessus des hypothèses : ce qu'il manque, sinon les chiffres importants qui viennent d'un repère standard
 const REQ_LAB = { surface: "Surface", prix: "Prix", loyer: "Loyer", nuitee: "Prix par nuit" };
@@ -2660,7 +2689,7 @@ const VIEWS = {
       $("#syn-facts").innerHTML = dl("Achat et financement", [["Coût total du projet", eur(R.coutTotal)], ["Dont frais de notaire", eur(R.notaire.total)], ["Montant emprunté", eur(R.emprunt)],
         ["Mensualité, assurance comprise", R.emprunt > 0 ? eur(R.mensualite) : "—"], ["Coût total du crédit", R.emprunt > 0 ? eur(R.coutCredit) : "—"], ["Mise de départ", eur(R.mise)]]) +
         dl("Année " + ref.y, [["Revenus bruts", eur(ref.revenus)], ["Charges", eur(-ref.charges)], ["Crédit et assurance", eur(-ref.credit)], [S.regime === "sciIs" ? "Impôt de la SCI" : "Impôt", eur(-ref.impot)],
-          ["Cash-flow avant impôt", eur(ref.cfAvant), ref.cfAvant >= 0 ? "pos" : "neg"], ["Cash-flow après impôt", eur(ref.cf), ref.cf >= 0 ? "pos" : "neg"]].concat((() => { const v = loyerEquilibre(); return v != null ? [["Loyer d'équilibre (hors charges)", eur(v) + " / mois", X.loyer >= v ? "pos" : "neg"]] : []; })()));
+          ["Cash-flow avant impôt", eur(ref.cfAvant), ref.cfAvant >= 0 ? "pos" : "neg"], ["Cash-flow après impôt", eur(ref.cf), ref.cf >= 0 ? "pos" : "neg"]].concat((() => { const v = loyerEquilibre(); const pe = prixEquilibre(); return (v != null ? [["Loyer d'équilibre (hors charges)", eur(v) + " / mois", X.loyer >= v ? "pos" : "neg"]] : []).concat(pe && pe.prix ? [["Prix pour qu'il se paie seul", eur(pe.prix) + " (" + pc(pe.v, 1) + ")"]] : []); })()));
       $("#syn-lev-p").textContent = `Effet de chaque décision prise seule, sur le cash-flow de l'année ${R.k.annee} et sur l'enrichissement à la revente.`;
       const lv = leviers(S), sg = v => (Math.round(v) > 0 ? "+" : "") + eur(v), cl = v => Math.round(v) > 0 ? "pos" : Math.round(v) < 0 ? "neg" : "";
       $("#syn-lev").innerHTML = `<table class="tbl"><thead><tr><th>Levier</th><th>Cash-flow / mois</th><th>Enrichissement à ${R.rv.N} ans</th><th></th></tr></thead><tbody>${lv.map((l, i) => `<tr><td>${esc(l.label)}<small>${esc(l.note || "")}${l.dMise ? " Mise de départ " + sg(l.dMise) + "." : ""}</small></td><td class="${cl(l.dCf)}" data-l="Cash-flow / mois">${sg(l.dCf)}</td><td class="${cl(l.dEnrich)}" data-l="Gain à ${R.rv.N} ans"><b>${sg(l.dEnrich)}</b></td><td><button type="button" class="btn sm" data-lever="${i}">Appliquer</button></td></tr>`).join("")}</tbody></table>`;
@@ -2958,6 +2987,8 @@ function act(a) {
   if (a === "ann-favori") return ouvrirImport();
   if (a === "ann-retirer") return retirerAnnonce();
   if (a === "ann-desc") return ouvrirDescription();
+  if (a === "prix-equi") { const pe = prixEquilibre(); if (pe && pe.v != null) { S.variationPrix = pe.v; calc(); renderForm(); update(); toast(`Prix testé : ${eur(X.prix)}. C'est le prix à viser pour qu'il se paie seul.`); } return; }
+  if (a === "prix-reset") { S.variationPrix = 0; calc(); renderForm(); update(); return; }
   if (a === "profil-suppr" || a === "profil-suppr-non") { ui.supprProfil = a === "profil-suppr"; return renderForm(); }
   if (a === "profil-suppr-ok") {
     const id = S.profil; delete PR.list[id]; ui.supprProfil = false;
@@ -3142,7 +3173,7 @@ const SIM_URL = location.origin + location.pathname;
 // Le bouton favori s'exécute sur la page de l'annonce, dans le navigateur de la personne : il ramasse ce que la page affiche
 // (données du site, texte, photos) et ouvre le simulateur avec ces données après le « # » de l'adresse, jamais envoyé à un serveur.
 // Pas de commentaire « // » dans cette fonction : le favori est enregistré sur une seule ligne.
-const COLLECTEUR = async function (CIBLE) {
+const COLLECTEUR = /* FAVORI:DEBUT */async function (CIBLE) {
   if (location.href.indexOf(CIBLE) === 0) { alert("Ce bouton s'utilise depuis une annonce : glisse-le dans ta barre de favoris, ouvre une annonce (leboncoin, SeLoger, PAP, Bien'ici…) puis clique dessus."); return; }
   const q = s => Array.from(document.querySelectorAll(s));
   const court = (v, n) => typeof v === "string" && v.length > n ? v.slice(0, n) : v;
@@ -3158,18 +3189,22 @@ const COLLECTEUR = async function (CIBLE) {
   const P = { v: 1, url: location.href.split("#")[0], host: location.hostname.replace(/^www\./, ""), titre: document.title, og: {} };
   q('meta[property^="og:"],meta[name="description"]').forEach(m => { P.og[m.getAttribute("property") || m.name] = court(m.content, 600); });
   P.ld = q('script[type="application/ld+json"]').map(s => s.textContent).filter(t => /RealEstate|Product|Accommodation|Offer|Residence|Apartment|House|Place/i.test(t)).map(t => court(t, 12000)).slice(0, 4);
-  try { const n = document.getElementById("__NEXT_DATA__"); const ad = n && JSON.parse(n.textContent).props.pageProps.ad; if (ad) { const a = Object.assign({}, ad); delete a.similar; delete a.counters; P.lbc = allege(a, 0); } } catch (e) {}
+  try { const n = document.getElementById("__NEXT_DATA__"); const pp = n && JSON.parse(n.textContent).props.pageProps; const ad = pp && pp.ad; if (ad) { const a = Object.assign({}, ad); delete a.similar; delete a.counters; P.lbc = allege(a, 0); }
+    const sd = pp && pp.searchData; if (!ad && sd && Array.isArray(sd.ads)) P.loc = { total: sd.total, ads: sd.ads.slice(0, 60).map(a => { const A = {}; (a.attributes || []).forEach(x => { A[x.key] = x.value; }); return { p: a.price && a.price[0], hc: A.rent_excluding_charges, ch: A.monthly_charges, cc: A.charges_included, s: A.square, r: A.rooms, m: A.furnished, ty: A.lease_type, cat: a.category_id, t: court(a.subject || "", 80), u: a.url, c: a.location && a.location.city }; }) }; } catch (e) {}
   try { const u = window.__UFRN_LIFECYCLE_SERVERREQUEST__, c = u && u.app_cldp && u.app_cldp.data && u.app_cldp.data.classified; if (c) P.slg = allege({ metadata: c.metadata, images: c.domains && c.domains.medias && c.domains.medias.images, sections: c.sections }, 0); } catch (e) {}
   try { if (/bienici\.com$/.test(location.hostname)) { const id = location.pathname.split("/").filter(Boolean).pop(); const r = await fetch("/realEstateAd.json?id=" + encodeURIComponent(id), { credentials: "same-origin" }); if (r.ok) P.bi = allege(await r.json(), 0); } } catch (e) {}
-  P.texte = court(((document.querySelector("main") || document.body).innerText || "").replace(/\n{3,}/g, "\n\n"), 20000);
-  const imgs = q("img");
+  P.texte = P.loc ? "" : court(((document.querySelector("main") || document.body).innerText || "").replace(/\n{3,}/g, "\n\n"), 20000);
+  const imgs = P.loc ? [] : q("img");
   P.photos = Array.from(new Set(imgs.filter(i => !i.complete || i.naturalWidth >= 240).map(i => i.currentSrc || i.src || i.getAttribute("data-src") || "").filter(s => /^https:/.test(s)))).slice(0, 40);
   const lien = CIBLE + "#annonce=" + encodeURIComponent(JSON.stringify(P));
-  const w = window.open(lien, "_blank");
+  const w = window.open(lien, "bilan-locatif");
   if (!w) location.href = lien;
-};
+}/* FAVORI:FIN */;
+// Le favori charge d'abord la dernière version du code depuis le site (pas besoin de le réinstaller après une mise à jour) ;
+// si le site ne répond pas ou que la page l'interdit, il utilise la version recopiée dans le favori.
 function lienFavori() {
-  const code = "(" + COLLECTEUR.toString() + ")(" + JSON.stringify(SIM_URL) + ")";
+  const C = JSON.stringify(SIM_URL);
+  const code = `(async()=>{const C=${C};try{const t=await (await fetch(C+"?favori="+Date.now())).text();const a=t.indexOf("/* FAVORI:DEBUT */"),b=t.indexOf("/* FAVORI:FIN */");if(a<0||b<0)throw 0;await (0,eval)("("+t.slice(a+18,b)+")")(C);}catch(e){await (${COLLECTEUR.toString()})(C);}})()`;
   return "javascript:" + encodeURIComponent(code.replace(/\n\s*/g, " "));
 }
 const annEgal = (k, raw) => { const c = S.annonce && S.annonce.champs; return !!c && raw != null && c[k] != null && Math.abs(c[k] - raw) < 0.5; };
@@ -3208,6 +3243,7 @@ function ficheHTML() {
       <div class="fiche-src"><span>${esc(A.site || "Annonce")}</span>${A.publieLe ? `<span>· ${jourLabel(A.publieLe)}</span>` : ""}${j != null && j >= 60 ? `<button type="button" class="pill attention tip" data-tip="${esc(`Annonce en ligne depuis ${j} jours : le vendeur est souvent plus ouvert à la négociation. Teste une offre plus basse avec « Variation du prix ».`)}">Négociable ?</button>` : ""}${I.baisse ? `<span class="pill info">Prix en baisse</span>` : ""}</div>
       <h3 class="fiche-t">${esc(A.titre || "Mon bien")}</h3>
       <div class="fiche-l">${esc([S.ville, I.quartier].filter(Boolean).join(" · "))}${pm2 ? `<span class="fiche-pm">${pm2}</span>` : ""}</div>
+      <div class="fiche-v" data-live="verdict">${verdictHTML()}</div>
       <div class="fiche-c">${dpeBadge(X.dpe)}${I.ges ? dpeBadge(I.ges, "GES") : ""}${chips.map(c => `<span>${esc(c)}</span>`).join("")}</div>
       <div class="fiche-a">${/^https?:\/\//.test(A.url || "") ? `<a class="btn sm" href="${esc(A.url)}" target="_blank" rel="noopener noreferrer">Voir l'annonce<span aria-hidden="true"> ↗</span></a>` : ""}${A.desc ? `<button type="button" class="btn sm" data-act="ann-desc">Description</button>` : ""}<button type="button" class="lnk" data-act="ann-retirer">Retirer l'annonce</button></div>
     </div></div>`;
@@ -3282,6 +3318,53 @@ function ouvrirImport() {
 }
 
 /* Écran de vérification : rien n'est rempli sans ton accord */
+/* Loyers du marché : la page de locations leboncoin lue par le bouton favori */
+let REV_LOY = null;
+function lireLoyers(P) {
+  const L = P.loc || {}, cc = [];
+  const ads = (Array.isArray(L.ads) ? L.ads : []).filter(a => a && (String(a.cat) === "10" || a.ty === "rent")).map(a => {
+    const p = nbFr(a.p), s = nbFr(a.s), ch = nbFr(a.ch); let hc = nbFr(a.hc), est = false;
+    if (!(hc > 0)) { if (String(a.cc) === "1") { if (ch > 0 && ch < p) hc = p - ch; else { hc = Math.round(p * 0.92); est = true; } } else hc = p; }
+    return { hc, s, est, m: String(a.m || ""), r: nbFr(a.r), u: /^https:\/\//.test(a.u || "") ? a.u : "", t: String(a.t || "").slice(0, 80), c: String(a.c || "").slice(0, 60) };
+  }).filter(a => a.hc >= 100 && a.s >= 8 && a.hc / a.s >= 4 && a.hc / a.s <= 80);
+  const m2 = ads.map(a => a.hc / a.s).sort((x, y) => x - y);
+  const qt = f => { if (!m2.length) return null; const i = (m2.length - 1) * f, a = Math.floor(i), b = Math.ceil(i); return m2[a] + (m2[b] - m2[a]) * (i - a); };
+  const meub = ads.filter(a => a.m === "1").length, nonMeub = ads.filter(a => a.m === "2").length;
+  const villes = {}; ads.forEach(a => { if (a.c) villes[a.c] = (villes[a.c] || 0) + 1; });
+  const ville = Object.entries(villes).sort((a, b) => b[1] - a[1]).map(x => x[0])[0] || "";
+  return { ads, n: ads.length, total: nbFr(L.total) || ads.length, q1: qt(0.25), med: qt(0.5), q3: qt(0.75), ville, url: P.url || "",
+    sMin: ads.length ? Math.min(...ads.map(a => a.s)) : 0, sMax: ads.length ? Math.max(...ads.map(a => a.s)) : 0,
+    meuble: meub > ads.length * 0.7 ? true : nonMeub > ads.length * 0.7 ? false : null };
+}
+function ouvrirLoyers(P) {
+  const L = lireLoyers(P);
+  if (L.n < 3) { toast(L.n ? "Trop peu de locations sur cette page pour en tirer un loyer : élargis la recherche." : "Je n'ai pas trouvé de locations sur cette page : ouvre une recherche de locations leboncoin."); return; }
+  REV_LOY = L;
+  const surf = X.surface > 0 ? X.surface : null, r10 = v => Math.round(v / 10) * 10;
+  const prop = k => surf ? r10(L[k] * surf) : null;
+  const proches = surf ? L.ads.slice().sort((a, b) => Math.abs(a.s - surf) - Math.abs(b.s - surf)).slice(0, 6) : L.ads.slice(0, 6);
+  const choix = [["q1", "Prudent", "un quart des annonces sont en dessous"], ["med", "Médian", "la moitié au-dessus, la moitié en dessous"], ["q3", "Haut", "un quart des annonces sont au-dessus"]];
+  openModal(mHead("Loyers du marché") +
+    `<p class="hint" style="margin-top:0">${plural(L.n, "location")} lue${L.n > 1 ? "s" : ""} sur leboncoin${L.ville ? " à " + esc(L.ville) : ""}${L.meuble === true ? ", meublées" : L.meuble === false ? ", non meublées" : ""}, de ${nf(0).format(L.sMin)} à ${nf(0).format(L.sMax)} m²${L.total > L.n ? ` (sur ${nf(0).format(L.total)} : la première page suffit)` : ""}. Loyers hors charges.</p>
+    <div class="loy">${choix.map(([k, t, d]) => `<label class="loy-c"><input type="radio" name="loy" value="${k}"${k === "med" ? " checked" : ""}><span><small>${t}</small><b>${surf ? eur(prop(k)) + " <i>/ mois</i>" : nf(1).format(L[k]) + " €/m²"}</b><em>${nf(1).format(L[k])} €/m² · ${d}</em></span></label>`).join("")}</div>
+    ${surf ? `<p class="hint">Pour ${esc(S.name)} : ${nf(1).format(surf)} m² × le loyer au m² choisi.${S.annonce || S.loyer == null ? "" : ` Loyer actuel de la simulation : ${eur(S.loyer)}.`}</p>` : `<p class="note">Cette simulation n'a pas encore de surface : remplis-la pour obtenir un loyer en euros.</p>`}
+    <div class="rt" style="margin-top:12px">Les plus proches en surface</div>
+    <div class="list loy-l">${proches.map(a => `<div class="r"><span>${a.u ? `<a href="${esc(a.u)}" target="_blank" rel="noopener noreferrer">${esc(a.t || "Location")}</a>` : esc(a.t || "Location")}<small>${nf(0).format(a.s)} m²${a.r ? " · " + plural(a.r, "pièce") : ""}${a.est ? " · charges estimées" : ""}</small></span><b>${eur(a.hc)}<small>${nf(1).format(a.hc / a.s)} €/m²</small></b></div>`).join("")}</div>
+    <label class="sw" for="loy-just" style="margin-top:10px"><span>Ajouter la justification au dossier banque<small>« D'où vient ce loyer ? » se remplit avec ces chiffres et la date.</small></span><input type="checkbox" role="switch" id="loy-just" checked></label>
+    <p class="note">Ce sont des loyers demandés : un bien se loue souvent un peu en dessous, et il faut compter la vacance. Le prudent est le plus sûr, surtout pour la banque.</p>
+    <div class="ctas">${surf ? `<button type="button" class="btn primary" data-loy-ok>Utiliser ce loyer</button>` : ""}<button type="button" class="btn" data-loy-non>${surf ? "Annuler" : "Fermer"}</button></div>`);
+}
+function appliquerLoyers() {
+  const L = REV_LOY; if (!L || !(X.surface > 0)) return;
+  const k = ($("#dialog input[name=loy]:checked") || {}).value || "med", v = Math.round(L[k] * X.surface / 10) * 10;
+  const just = $("#loy-just") && $("#loy-just").checked;
+  closeModal(); REV_LOY = null;
+  S.loyer = v; if (S.location === "courte") S.location = "annee";
+  if (just) S.justifLoyer = `Leboncoin le ${new Date().toLocaleDateString("fr-FR")} : ${L.n} locations${L.ville ? " à " + L.ville : ""}${L.meuble === true ? " meublées" : L.meuble === false ? " non meublées" : ""} de ${nf(0).format(L.sMin)} à ${nf(0).format(L.sMax)} m², médiane ${nf(1).format(L.med)} €/m² hors charges (de ${nf(1).format(L.q1)} à ${nf(1).format(L.q3)}). Loyer retenu : ${nf(1).format(L[k])} €/m², soit ${nf(0).format(v)} €.`.slice(0, 400);
+  calc(); renderForm(); update(); renderAna(true);
+  toast(`Loyer de ${eur(v)} / mois ajouté : le bilan est prêt.`);
+}
+
 /* Loyer d'équilibre : le loyer hors charges à partir duquel le bien se paie seul (crédit, charges et impôts), l'année affichée */
 let EQUI = { k: "", v: null };
 function loyerEquilibre() {
@@ -3309,7 +3392,7 @@ function liensLoyer() {
 function liensLoyerHTML(cls) {
   const L = liensLoyer(); if (!L.length) return "";
   const m = (REGIMES[X.regime] || {}).meuble;
-  return `<span class="${cls || "lien-loyer"}">Voir les loyers ${m === true ? "meublés " : m === false ? "non meublés " : ""}de ${nf(0).format(Math.round(X.surface * 0.8))} à ${nf(0).format(Math.round(X.surface * 1.2))} m² : ${L.map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${n} ↗</a>`).join(" · ")}</span>`;
+  return `<span class="${cls || "lien-loyer"}">Voir les loyers ${m === true ? "meublés " : m === false ? "non meublés " : ""}de ${nf(0).format(Math.round(X.surface * 0.8))} à ${nf(0).format(Math.round(X.surface * 1.2))} m² : ${L.map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="opener">${n} ↗</a>`).join(" · ")}${mob() ? "" : `<br>Sur la page leboncoin, clique sur ⚡ Bilan Locatif dans tes favoris : les loyers reviennent ici, triés.`}</span>`;
 }
 function equiHTML() {
   const v = loyerEquilibre();
@@ -3317,6 +3400,28 @@ function equiHTML() {
   return `<div class="equi"><div class="equi-h"><span>Loyer d'équilibre</span><b>${eur(v)} <small>/ mois hors charges</small></b></div>
     <p>Loué au moins ce prix, le bien paie seul son crédit, ses charges et ses impôts (année ${Math.min(R.H, X.anneeRef)}). Au-dessus, il te rapporte chaque mois ; en dessous, tu complètes de ta poche.</p>
     ${liensLoyerHTML("equi-l")}</div>`;
+}
+/* Prix d'équilibre : le prix d'achat (variation du prix affiché) auquel le bien se paierait seul, au loyer saisi */
+let PEQ = { k: "", v: null };
+function prixEquilibre() {
+  if ((R.manque || []).length || !(X.prixAffiche > 0)) return null;
+  const base = clone(S), key = JSON.stringify(base);
+  if (PEQ.k === key) return PEQ.v;
+  const cf = v => { const r = simuler(Object.assign(clone(base), { variationPrix: v })); return r.manque.length ? NaN : r.Y[Math.min(r.H, r.s.anneeRef) - 1].cf; };
+  let res;
+  if (cf(base.variationPrix || 0) >= 0) res = { ok: true };
+  else if (!(cf(-60) >= 0)) res = { impossible: true };
+  else { let lo = -60, hi = base.variationPrix || 0; for (let i = 0; i < 22; i++) { const m = (lo + hi) / 2; if (cf(m) >= 0) lo = m; else hi = m; } const v = Math.floor(lo * 2) / 2; res = { v, prix: Math.round(X.prixAffiche * (1 + v / 100) / 500) * 500 }; }
+  PEQ = { k: key, v: res }; return res;
+}
+function verdictHTML() {
+  const m = R.manque || [];
+  if (m.length === 1 && m[0] === "loyer") { const v = loyerEquilibre(); return v != null ? `<div class="vd"><b>À louer au moins ${eur(v)} / mois</b><span>pour qu'il se paie tout seul (crédit, charges et impôts).</span></div>` : ""; }
+  if (m.length) return "";
+  const ref = R.Y[Math.min(R.H, X.anneeRef) - 1], cf = ref.cf / 12, ok = cf >= -0.5, pe = prixEquilibre();
+  const teste = X.variationPrix ? `<span class="vd-t">Prix testé : ${eur(X.prix)} (${X.variationPrix > 0 ? "+" : ""}${pc(X.variationPrix, 1)}) · <button type="button" class="lnk" data-act="prix-reset">Revenir au prix affiché</button></span>` : "";
+  const nego = !ok && pe && pe.prix ? `<span class="vd-n">Il se paierait seul à <b>${eur(pe.prix)}</b> (${pc(pe.v, 1)}). <button type="button" class="lnk" data-act="prix-equi">Tester ce prix</button></span>` : !ok && pe && pe.impossible ? `<span class="vd-n">Même à −60 %, il ne se paierait pas seul : c'est le loyer qui coince.</span>` : "";
+  return `<div class="vd ${ok ? "ok" : "ko"}"><b>${ok ? `✔ Se paie tout seul${cf >= 0.5 ? " : +" + eur(cf) + " / mois" : ""}` : `Tu complètes ${eur(-cf)} / mois`}</b><span>Après crédit, charges et impôts (année ${ref.y}) · rendement brut ${pct(R.k.brut, 1)}</span>${nego}${teste}</div>`;
 }
 function equiTxt() {
   const v = loyerEquilibre(), L = liensLoyerHTML("lien-loyer");
@@ -3410,11 +3515,21 @@ function lireHash() {
   try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
   if (!P) { toast("L'annonce n'a pas pu être lue : réessaie depuis sa page."); return; }
   if (!ui.favoriOk) { ui.favoriOk = true; save(); }
+  try { window.focus(); } catch (e) {}
+  if (P.loc) return ouvrirLoyers(P);
   const r = lireAnnonce(P);
   if (!r.champs.prix && !r.champs.surface) { toast("Je n'ai pas trouvé de prix ni de surface sur cette page : ouvre bien l'annonce elle-même."); return; }
   ouvrirRevue(r);
 }
 addEventListener("hashchange", lireHash);
+if (TOP) try { window.name = "bilan-locatif"; } catch (e) {}
+// Un autre onglet du simulateur a enregistré (import d'une annonce, d'un loyer) : on reprend ses données ici aussi
+addEventListener("storage", e => {
+  if (e.key !== KEY || !e.newValue) return;
+  const d = store.get(KEY); if (!d || !d.sims || !Object.keys(d.sims).length) return;
+  clearTimeout(saveTimer); saveTimer = null; db = d; if (!db.sims[db.cur]) db.cur = Object.keys(db.sims)[0];
+  S = normaliser(db.sims[db.cur].s); S.annonce = annoncePropre(S.annonce); if (!modal.hidden && !REV && !REV_LOY) closeModal(); fullRender();
+});
 document.addEventListener("paste", e => {
   if (!e.target.matches || !e.target.matches(".im-zone")) return;
   const cd = e.clipboardData; if (!cd) return;
@@ -3432,6 +3547,8 @@ dialog.addEventListener("click", e => {
   const a = e.target.closest("[data-favori]");
   if (a) { e.preventDefault(); a.classList.remove("secoue"); void a.offsetWidth; a.classList.add("secoue"); const m = $("#fav-msg"); if (m) { m.className = "msg"; m.textContent = "Ne clique pas ici : maintiens le bouton enfoncé et fais-le glisser jusqu'à ta barre de favoris, en haut du navigateur."; } return; }
   if (e.target.closest("[data-imp-coller]")) collerPressePapiers();
+  else if (e.target.closest("[data-loy-ok]")) appliquerLoyers();
+  else if (e.target.closest("[data-loy-non]")) { REV_LOY = null; closeModal(); }
   else if (e.target.closest("[data-rv-ok]")) appliquerRevue();
   else if (e.target.closest("[data-rv-non]")) { REV = null; closeModal(); }
 });
@@ -3548,7 +3665,7 @@ function buildDossier() {
   const pieces = ["Pièce d'identité et justificatif de domicile", "Trois derniers bulletins de salaire et contrat de travail", "Deux derniers avis d'imposition", "Trois derniers relevés de tous les comptes", "Justificatif de l'apport (relevés d'épargne)",
     "Compromis de vente", courte ? "Étude des recettes : annonces comparables, autorisation de la mairie si nécessaire" : "Deux attestations de valeur locative d'agences différentes, ou le bail en cours", x.travaux ? "Devis des travaux" : null, "Diagnostics du bien, dont le DPE",
     p && p.credits ? "Tableaux d'amortissement des crédits en cours" : null, p && p.loyers ? "Baux et avis de taxe foncière des biens déjà loués" : null].filter(Boolean);
-  return haut + `<h1>${titre}</h1><p class="rp-sous">Investissement locatif · ${locTxt()} (${esc(REGIMES[x.regime].label)}) · détention prévue ${plural(N, "an")}</p>
+  return haut + `<h1>${titre}</h1><p class="rp-sous">Investissement locatif · ${locTxt()} (${esc(REGIMES[x.regime].label)}) · détention prévue ${plural(N, "an")}</p>${rpAnnonce()}
   <div class="rp-tuiles q4">
     ${rpTuile("Financement demandé", pret ? eur(r.emprunt) : "Aucun", pret ? `Sur ${plural(x.duree, "an")} à ${pc(x.taux, 2)}` : "Achat comptant")}
     ${rpTuile("Mensualité", pret ? eur(r.mensualite) : "—", pret ? "Assurance comprise" : "")}
@@ -3626,7 +3743,7 @@ function buildBilan() {
     ["TRI", "Le rendement annuel de ton argent sur toute la durée, comme le taux d'un livret qui donnerait le même résultat."],
     ["Taux d'endettement", "La part de tes revenus qui part en crédits. Les banques s'arrêtent à 35 %."]
   ];
-  return haut + `<p class="rp-sous">${sous}</p>${x.note ? `<p class="rp-note">${esc(x.note)}</p>` : ""}
+  return haut + `<p class="rp-sous">${sous}</p>${rpAnnonce()}${x.note ? `<p class="rp-note">${esc(x.note)}</p>` : ""}
   <div class="rp-verdict"><p class="big">${verdict}</p><p>${effortTxt}</p>${pret ? `<p>Le crédit de ${eur(r.emprunt)} sera entièrement remboursé en ${plural(x.duree, "an")} ; le bien est revendu après ${plural(N, "an")} dans cette simulation.</p>` : ""}</div>
   <h2>L'opération en clair, sur ${plural(N, "an")}</h2>
   <div class="rp-encl">
@@ -3667,7 +3784,18 @@ function buildBilan() {
 }
 // Deux documents pour deux publics : la banque (financement) et toi ou tes proches (pédagogie)
 const RAPPORTS = { banque: () => buildDossier(), perso: () => buildBilan() };
-function imprimer(type) { ui.rapport = type; save(); $("#report").innerHTML = RAPPORTS[type](); window.print(); }
+function imprimer(type) {
+  ui.rapport = type; save(); const rp = $("#report"); rp.innerHTML = RAPPORTS[type]();
+  // On attend que la photo de l'annonce soit chargée (au plus 2,5 s) avant d'ouvrir l'impression
+  const imgs = Array.from(rp.querySelectorAll("img")).filter(i => !i.complete);
+  if (!imgs.length) return window.print();
+  Promise.race([Promise.all(imgs.map(i => new Promise(r => { i.onload = i.onerror = r; }))), new Promise(r => setTimeout(r, 2500))]).then(() => window.print());
+}
+function rpAnnonce() {
+  const A = S.annonce; if (!A || !(A.photos || []).length && !A.url) return "";
+  const ph = (A.photos || [])[0], j = joursEnLigne(A.publieLe);
+  return `<div class="rp-ann">${ph ? `<img src="${esc(ph)}" alt="" referrerpolicy="no-referrer">` : ""}<div><b>${esc(A.titre || "Annonce")}</b><span>${esc([A.site, j != null ? "en ligne depuis " + plural(j, "jour") : "", A.publieLe ? "publiée le " + new Date(A.publieLe).toLocaleDateString("fr-FR") : ""].filter(Boolean).join(" · "))}</span>${/^https?:\/\//.test(A.url || "") ? `<span class="rp-url">${esc(A.url.replace(/^https?:\/\/(www\.)?/, "").split("?")[0].slice(0, 90))}</span>` : ""}</div></div>`;
+}
 function choisirRapport() {
   openModal(mHead("Imprimer un rapport") + `<p class="hint" style="margin-top:0">${mob() ? "Deux documents, deux publics. Ton téléphone ouvre ensuite l'impression : sur Android, choisis « Enregistrer au format PDF » ; sur iPhone, touche le bouton Partager puis « Enregistrer dans Fichiers »." : "Deux documents, deux publics. Dans la fenêtre d'impression, choisis « Enregistrer au format PDF » pour garder le fichier."}</p>
     <div class="rapports">
