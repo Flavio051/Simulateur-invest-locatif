@@ -711,6 +711,14 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
   #report .rp-check li::before{content:"";position:absolute;left:0;top:2pt;width:8pt;height:8pt;border:1px solid #7a8799;border-radius:2pt}
 }
 /* Import d'annonce : encadré, fiche du bien, vérification, bouton favori */
+.equi{display:grid;gap:8px;padding:16px 18px;border-radius:12px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line))}
+.equi-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.equi-h span{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-ink)}
+.equi-h b{font-family:var(--f-display);font-size:26px;letter-spacing:-.01em;color:var(--ink);font-variant-numeric:tabular-nums}
+.equi-h b small{font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0}
+.equi p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.equi-l,.lien-loyer{font-size:13px;color:var(--muted)}
+.equi-l a,.lien-loyer a{color:var(--accent-ink);font-weight:700;white-space:nowrap}
 .inp .tag .t-ann{display:none}
 .inp.ann{border-color:color-mix(in srgb,var(--accent) 45%,var(--line-strong))}
 .inp.ann .tag{display:inline-block;color:var(--accent-ink);background:var(--accent-soft)}
@@ -821,6 +829,7 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
     <symbol id="i-tag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.5V4h8.5L21 13.5 13.5 21z"/><circle cx="7.6" cy="8.4" r="1.4"/></g></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6.5-6 6.5-11.5a6.5 6.5 0 0 0-13 0C5.5 15 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></g></symbol>
     <symbol id="i-list" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></g></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.2 2.5 4.8 13.1c-.4.5 0 1.2.6 1.2h5.1l-1.2 7c-.1.7.8 1.1 1.2.5l8.4-10.6c.4-.5 0-1.2-.6-1.2h-5.1l1.2-7c.1-.7-.8-1.1-1.2-.5Z" fill="currentColor"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></g></symbol>
     <symbol id="i-print" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M7 14h10v6H7z"/></g></symbol>
@@ -838,6 +847,7 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
     <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.5 16 5l12 9.5V27H4z"/><path d="M9 21.5l4.5-4.5 3.5 3 6-6.5"/><path d="M19.5 13.5H23V17"/></g></svg>Bilan Locatif</div>
     <div class="simname"><input id="sim-name" type="text" aria-label="Nom de la simulation" maxlength="80"><svg aria-hidden="true"><use href="#i-pen"/></svg></div>
     <div class="actions">
+      <button type="button" class="btn primary" id="btn-imp"><svg><use href="#i-bolt"/></svg>Importer une annonce</button>
       <button type="button" class="btn" id="btn-sims"><svg><use href="#i-list"/></svg>Mes simulations</button>
       <button type="button" class="btn" id="btn-new"><svg><use href="#i-plus"/></svg>Nouvelle</button>
       <button type="button" class="btn" id="btn-dup"><svg><use href="#i-copy"/></svg>Dupliquer</button>
@@ -846,7 +856,7 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
     <button type="button" class="m-menu" id="m-menu" aria-label="Menu : nouvelle simulation, dupliquer, rapport, thème" aria-haspopup="dialog"><svg aria-hidden="true"><use href="#i-more"/></svg></button>
   </header>
 
-  <div class="m-hello" id="m-hello" hidden><p><b>Tu découvres un exemple.</b> Pour ton bien, trois chiffres suffisent : la surface, le prix et le loyer.</p><div class="m-hello-a"><button type="button" class="btn primary" data-hello="go">Simuler mon bien</button><button type="button" class="btn" data-hello="non">Voir l'exemple</button></div></div>
+  <div class="m-hello" id="m-hello" hidden><p><b>Tu découvres un exemple.</b> Pour ton bien, colle son annonce : prix, surface, DPE et photos se remplissent seuls.</p><div class="m-hello-a"><button type="button" class="btn primary" data-hello="go">Coller une annonce</button><button type="button" class="btn" data-hello="non">Voir l'exemple</button></div></div>
   <button type="button" class="m-live" id="m-live"></button>
 
   <section class="band" id="band" aria-label="Indicateurs clés">
@@ -2113,7 +2123,7 @@ function syncEst() {
   const ai = $("#aide"); if (ai) ai.innerHTML = aideHTML();
   const cp = $("#capa"); if (cp) cp.innerHTML = capaHTML();
   // Petits chiffres calculés dans les aides des champs
-  $$("#form [data-live]").forEach(el => { const k = el.dataset.live; if (k === "prixRetenu") el.innerHTML = prixRetenuTxt(); else if (k.startsWith("sal-")) el.innerHTML = salaireMoisTxt(k.slice(4)); else el.textContent = k === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
+  $$("#form [data-live]").forEach(el => { const k = el.dataset.live; if (k === "prixRetenu") el.innerHTML = prixRetenuTxt(); else if (k === "equi") el.innerHTML = equiTxt(); else if (k.startsWith("sal-")) el.innerHTML = salaireMoisTxt(k.slice(4)); else el.textContent = k === "tmi" ? tmiFoyer(X.revenusFoyer, X.parts) + " %" : eur(R.notaire.total); });
 }
 // Bandeau au-dessus des hypothèses : ce qu'il manque, sinon les chiffres importants qui viennent d'un repère standard
 const REQ_LAB = { surface: "Surface", prix: "Prix", loyer: "Loyer", nuitee: "Prix par nuit" };
@@ -2220,7 +2230,7 @@ const FORMS = {
       num("prix", "Prix d'achat", { id: "prix-b", unit: "€", step: 1000, hint: "Le prix affiché sur l'annonce, hors frais de notaire." }) +
       num("variationPrix", "Variation du prix", { id: "variationPrix-b", unit: "%", step: 1, dec: 1, hint: `<span data-live="prixRetenu">${prixRetenuTxt()}</span>` }) +
       (courte ? num("nuitee", "Prix moyen par nuit", { id: "nuitee-b", unit: "€", step: 5, hint: "D'après des annonces comparables sur Airbnb ou Booking." })
-        : num("loyer", "Loyer hors charges", { id: "loyer-b", unit: "€ / mois", step: 10, hint: "Ta recherche dans les annonces de location du quartier : voir ci-dessous." })) +
+        : num("loyer", "Loyer hors charges", { id: "loyer-b", unit: "€ / mois", step: 10, hint: `<span data-live="equi">${equiTxt()}</span>Ta recherche dans les annonces de location du quartier : voir ci-dessous.` })) +
       txt("marche", "Le quartier et la demande locative", { area: true, hint: "Transports, employeurs, écoles ou facs proches, délai pour louer, prix des ventes récentes (explorateur DVF). Repris dans le dossier pour la banque." }) +
       txt("justifLoyer", "D'où vient ce loyer ?", { max: 400, ph: "Ex. : 3 annonces comparables à 1 000–1 190 €, attestation de l'agence X", hint: "Repris dans le dossier pour la banque, qui demande de justifier le loyer." }) +
       sel("etatSel", "État du bien", [["neuf", "Neuf (VEFA)"], ["bon", "Ancien, bon état"], ["rafraichir", "Ancien, à rafraîchir"], ["renover", "Ancien, à rénover"], ["lourd", "Ancien, rénovation lourde"]],
@@ -2289,7 +2299,7 @@ const FORMS = {
     let h = head("Exploitation", "Ce que le bien encaisse chaque année.") +
       sel("location", "Type de location", [["annee", "Location à l'année"], ["courte", "Location courte durée"]]);
     if (S.location === "annee") {
-      h += num("loyer", "Loyer hors charges", { unit: "€ / mois", step: 10, hint: "Ta recherche dans les annonces de location du quartier (aide dans « Le bien »)." }) +
+      h += num("loyer", "Loyer hors charges", { unit: "€ / mois", step: 10, hint: `<span data-live="equi">${equiTxt()}</span>Ta recherche dans les annonces de location du quartier (aide dans « Le bien »).` }) +
         num("chargesLoc", "Charges locatives", { unit: "€ / mois", step: 5, hint: "Provisions refacturées au locataire : elles s'ajoutent aux revenus et compensent les frais de copropriété." }) +
         num("occupation", "Taux d'occupation", { unit: "%", step: 1 }) +
         num("evolLoyer", "Évolution annuelle du loyer", { unit: "%", step: 0.25, dec: 2, hint: "Révision annuelle selon l'IRL de l'Insee." });
@@ -2468,7 +2478,7 @@ FORMS.rapide = () => head("Estimation rapide", "La surface, le prix et le loyer 
   txt("ville", "Ville", { ph: "Ex. Reims", max: 120 }) +
   num("surface", "Surface habitable", { unit: "m²", step: 1, hint: "Sur l'annonce." }) +
   num("prix", "Prix d'achat", { unit: "€", step: 1000, hint: `Frais de notaire calculés au barème : <span data-live="notaire">${eur(R.notaire.total)}</span>.` }) +
-  num("loyer", "Loyer mensuel hors charges", { unit: "€ / mois", step: 10, hint: "Ta recherche : l'annonce du milieu parmi cinq locations proches, hors charges." }) +
+  num("loyer", "Loyer mensuel hors charges", { unit: "€ / mois", step: 10, hint: `<span data-live="equi">${equiTxt()}</span>Ta recherche : l'annonce du milieu parmi cinq locations proches, hors charges.` }) +
   num("apport", "Apport", { unit: "€", step: 1000 }) +
   num("duree", "Durée du crédit", { unit: "ans", step: 1 }) +
   num("taux", "Taux du crédit", { unit: "%", step: 0.05, dec: 2, hint: `En gris : le taux moyen d'${TAUX_MAJ} ; vérifie le tien auprès de ta banque.` }) +
@@ -2602,7 +2612,7 @@ function attenteHTML() {
   const courte = X.location === "courte", m = R.manque;
   const items = [["surface", "Surface", "Sur l'annonce", "m²"], ["prix", "Prix d'achat", "Sur l'annonce", "€"],
     courte ? ["nuitee", "Prix par nuit", "Ta recherche sur Airbnb ou Booking", "€"] : ["loyer", "Loyer hors charges", "Ta recherche dans les annonces de location du quartier", "€ / mois"]];
-  return `<div class="attente"><h3>Encore ${m.length === 1 ? "un chiffre" : m.length === 2 ? "deux chiffres" : "trois chiffres"} et le bilan s'affiche</h3>
+  return `<div class="attente">${m.length === 1 && m[0] === "loyer" ? equiHTML() : ""}<h3>Encore ${m.length === 1 ? "un chiffre" : m.length === 2 ? "deux chiffres" : "trois chiffres"} et le bilan s'affiche</h3>
     <p class="sub">Tout le reste a déjà un repère standard : frais de notaire, crédit, charges, impôts. Tu les affineras ensuite.</p>
     <ul>${items.map(([k, l, o, u]) => { const ok = !m.includes(k);
       return `<li class="${ok ? "ok" : ""}"><div><b>${l}</b><small>${o}</small></div>${ok ? `<span class="ok-v">✓ ${fmtIn(getK(S, k), 0)} ${u}</span>` : `<button type="button" class="btn sm primary" data-goto="${k}">Remplir</button>`}</li>`; }).join("")}</ul></div>`;
@@ -2650,7 +2660,7 @@ const VIEWS = {
       $("#syn-facts").innerHTML = dl("Achat et financement", [["Coût total du projet", eur(R.coutTotal)], ["Dont frais de notaire", eur(R.notaire.total)], ["Montant emprunté", eur(R.emprunt)],
         ["Mensualité, assurance comprise", R.emprunt > 0 ? eur(R.mensualite) : "—"], ["Coût total du crédit", R.emprunt > 0 ? eur(R.coutCredit) : "—"], ["Mise de départ", eur(R.mise)]]) +
         dl("Année " + ref.y, [["Revenus bruts", eur(ref.revenus)], ["Charges", eur(-ref.charges)], ["Crédit et assurance", eur(-ref.credit)], [S.regime === "sciIs" ? "Impôt de la SCI" : "Impôt", eur(-ref.impot)],
-          ["Cash-flow avant impôt", eur(ref.cfAvant), ref.cfAvant >= 0 ? "pos" : "neg"], ["Cash-flow après impôt", eur(ref.cf), ref.cf >= 0 ? "pos" : "neg"]]);
+          ["Cash-flow avant impôt", eur(ref.cfAvant), ref.cfAvant >= 0 ? "pos" : "neg"], ["Cash-flow après impôt", eur(ref.cf), ref.cf >= 0 ? "pos" : "neg"]].concat((() => { const v = loyerEquilibre(); return v != null ? [["Loyer d'équilibre (hors charges)", eur(v) + " / mois", X.loyer >= v ? "pos" : "neg"]] : []; })()));
       $("#syn-lev-p").textContent = `Effet de chaque décision prise seule, sur le cash-flow de l'année ${R.k.annee} et sur l'enrichissement à la revente.`;
       const lv = leviers(S), sg = v => (Math.round(v) > 0 ? "+" : "") + eur(v), cl = v => Math.round(v) > 0 ? "pos" : Math.round(v) < 0 ? "neg" : "";
       $("#syn-lev").innerHTML = `<table class="tbl"><thead><tr><th>Levier</th><th>Cash-flow / mois</th><th>Enrichissement à ${R.rv.N} ans</th><th></th></tr></thead><tbody>${lv.map((l, i) => `<tr><td>${esc(l.label)}<small>${esc(l.note || "")}${l.dMise ? " Mise de départ " + sg(l.dMise) + "." : ""}</small></td><td class="${cl(l.dCf)}" data-l="Cash-flow / mois">${sg(l.dCf)}</td><td class="${cl(l.dEnrich)}" data-l="Gain à ${R.rv.N} ans"><b>${sg(l.dEnrich)}</b></td><td><button type="button" class="btn sm" data-lever="${i}">Appliquer</button></td></tr>`).join("")}</tbody></table>`;
@@ -2945,7 +2955,7 @@ function setMode(m) {
 function act(a) {
   if (a === "notaire") return openNotaire();
   if (a === "ann-coller") return collerPressePapiers();
-  if (a === "ann-favori") return ouvrirFavori();
+  if (a === "ann-favori") return ouvrirImport();
   if (a === "ann-retirer") return retirerAnnonce();
   if (a === "ann-desc") return ouvrirDescription();
   if (a === "profil-suppr" || a === "profil-suppr-non") { ui.supprProfil = a === "profil-suppr"; return renderForm(); }
@@ -3086,7 +3096,7 @@ dialog.addEventListener("click", e => {
   else if (b.hasAttribute("data-doimport")) doImport($("#imp").value);
   else if (b.hasAttribute("data-back")) openSims();
   else if (b.dataset.rapport) { const t = b.dataset.rapport; closeModal(); setTimeout(() => imprimer(t), 50); }
-  else if (b.dataset.mm) { const m = b.dataset.mm; if (m === "sims") return openSims(); if (m === "print") return choisirRapport(); closeModal(); if (m === "new") newSim(); else if (m === "dup") { dupSim(); toast("Copie créée : tu peux la modifier sans toucher à l'originale."); } window.scrollTo(0, 0); }
+  else if (b.dataset.mm) { const m = b.dataset.mm; if (m === "sims") return openSims(); if (m === "imp") return ouvrirImport(); if (m === "print") return choisirRapport(); closeModal(); if (m === "new") newSim(); else if (m === "dup") { dupSim(); toast("Copie créée : tu peux la modifier sans toucher à l'originale."); } window.scrollTo(0, 0); }
 });
 dialog.addEventListener("change", e => { if (e.target.matches("[data-mm-theme]")) { const next = e.target.checked ? "dark" : "light"; document.documentElement.dataset.theme = next; store.set(THEME_KEY, next); syncThemeBtn(); } });
 function openExport() {
@@ -3121,6 +3131,7 @@ function newSim() { flush(); const id = uid(); const s = clone(NOUVELLE_SIM); if
   if (mob()) { s.mode = "rapide"; ui.vue = "saisie"; } // sur téléphone, on commence par l'estimation rapide : trois chiffres et le résultat s'affiche
   db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); appliquerProfil(profil()); db.sims[id].s = S; store.set(KEY, db); ui.section = "bien"; ui.ana = "synthese"; fullRender(); $("#form").scrollTop = 0; }
 $("#btn-sims").addEventListener("click", openSims);
+$("#btn-imp").addEventListener("click", ouvrirImport);
 $("#btn-new").addEventListener("click", newSim);
 function dupSim() { flush(); const id = uid(); const s = clone(S); s.name = (S.name || "Simulation") + " (copie)"; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); fullRender(); }
 $("#btn-dup").addEventListener("click", dupSim);
@@ -3203,14 +3214,14 @@ function ficheHTML() {
 }
 function importerHTML() {
   return `<div class="importer">
-    <div class="im-h"><span class="im-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13.2 2.5 4.8 13.1c-.4.5 0 1.2.6 1.2h5.1l-1.2 7c-.1.7.8 1.1 1.2.5l8.4-10.6c.4-.5 0-1.2-.6-1.2h-5.1l1.2-7c.1-.7-.8-1.1-1.2-.5Z"/></svg></span><div><b>Pars d'une annonce</b><span>Prix, surface, DPE, charges et photos remplis pour toi. Tu vérifies, tu valides.</span></div></div>
-    <textarea class="txt im-zone" id="im-zone" rows="2" placeholder="Colle ici le lien ou le texte de l'annonce" aria-label="Lien ou texte de l'annonce"></textarea>
-    <div class="im-a"><button type="button" class="btn sm primary" data-act="ann-coller">Coller l'annonce</button><button type="button" class="btn sm" data-act="ann-favori">${mob() ? "Comment faire ?" : "Bouton 1 clic depuis l'annonce"}</button></div>
-    <p class="msg" id="im-msg" aria-live="polite"></p>
+    <div class="im-h"><span class="im-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13.2 2.5 4.8 13.1c-.4.5 0 1.2.6 1.2h5.1l-1.2 7c-.1.7.8 1.1 1.2.5l8.4-10.6c.4-.5 0-1.2-.6-1.2h-5.1l1.2-7c.1-.7-.8-1.1-1.2-.5Z"/></svg></span><div><b>Colle une annonce, on remplit le reste</b><span>Prix, surface, DPE, charges et photos en quelques secondes. Tu vérifies avant de valider.</span></div></div>
+    <textarea class="txt im-zone" id="im-zone" rows="2" placeholder="Colle ici le texte de l'annonce (ou son lien)" aria-label="Texte ou lien de l'annonce"></textarea>
+    <div class="im-a"><button type="button" class="btn sm primary" data-act="ann-coller">Coller l'annonce</button><button type="button" class="btn sm" data-act="ann-favori">${mob() ? "Comment faire ?" : ui.favoriOk ? "Mon bouton 1 clic" : "Installer le bouton 1 clic"}</button></div>
+    <p class="msg im-msg" id="im-msg" aria-live="polite"></p>
     <p class="im-sites">leboncoin · SeLoger · PAP · Bien'ici · Logic-Immo · sites d'agences</p>
   </div>`;
 }
-function msgImport(html, err) { const m = $("#im-msg"); if (!m) return toast(html.replace(/<[^>]+>/g, "")); m.className = "msg" + (err ? " err" : ""); m.innerHTML = html; }
+function msgImport(html, err) { const m = (!modal.hidden && $("#dialog .im-msg")) || $("#form .im-msg"); if (!m) return toast(html.replace(/<[^>]+>/g, "")); m.className = "msg" + (err ? " err" : ""); m.innerHTML = html; }
 
 /* Copier-coller : le texte de la page (et ses photos, quand le navigateur copie aussi le HTML) */
 function traiterCollage(html, text) {
@@ -3227,7 +3238,7 @@ function traiterCollage(html, text) {
   if (u && texte.replace(u[0], "").trim().length < 40) {
     ui.annUrl = u[0]; const site = siteAnnonce(hoteDe(u[0])) || "l'annonce";
     msgImport(`<b>Lien gardé.</b> ${esc(site)} ne laisse pas lire ses annonces depuis un autre site : ouvre l'annonce, ${mob() ? "appuie longuement sur le texte, « Tout sélectionner » puis « Copier »" : "fais Ctrl + A puis Ctrl + C"}, reviens ici et colle. <a href="${esc(u[0])}" target="_blank" rel="noopener noreferrer">Ouvrir l'annonce ↗</a>${mob() ? "" : ` Ou utilise le <button type="button" class="lnk" data-act="ann-favori">bouton 1 clic</button>.`}`);
-    const z = $("#im-zone"); if (z) z.value = "";
+    $$(".im-zone").forEach(z => { z.value = ""; });
     return;
   }
   const url = u && /annonce|\/ad\/|detail|vente|achat/i.test(u[0]) ? u[0] : (liens.find(l => /\/ad\/|annonces?\/|detail/i.test(l)) || ui.annUrl || "");
@@ -3251,23 +3262,66 @@ async function collerPressePapiers() {
     } else if (navigator.clipboard && navigator.clipboard.readText) { const t = await navigator.clipboard.readText(); if (t) return traiterCollage("", t); }
     throw new Error("vide");
   } catch (e) {
-    const z = $("#im-zone"); if (z) z.focus();
+    const z = (!modal.hidden && $("#dialog .im-zone")) || $("#im-zone"); if (z) z.focus();
     msgImport(mob() ? "Appuie longuement dans le cadre puis choisis « Coller »." : "Clique dans le cadre puis colle avec Ctrl + V (Cmd + V sur Mac).");
   }
 }
-function ouvrirFavori() {
+function ouvrirImport() {
   const desk = !mob();
-  openModal(mHead("Remplir le simulateur depuis une annonce") + (desk ? `<div class="fav">
-      <div class="fav-s"><span class="fav-n">1</span><div><b>Glisse ce bouton dans ta barre de favoris</b><a class="fav-btn" href="${esc(lienFavori())}" data-favori>⚡ Bilan Locatif</a><p class="hint">À faire une seule fois. Barre de favoris cachée ? Ctrl + Maj + B (Cmd + Maj + B sur Mac).</p><p class="msg" id="fav-msg" aria-live="polite"></p></div></div>
+  const coller = `<div class="rt"${desk ? ` style="margin-top:18px"` : ""}>${desk ? "Ou colle l'annonce" : "Colle l'annonce"}</div>
+    <p class="hint" style="margin:2px 0 8px">${desk ? "Sur l'annonce : Ctrl + A puis Ctrl + C (Cmd sur Mac). Reviens ici et colle." : "Sur l'annonce, dans ton navigateur : appui long sur le texte, « Tout sélectionner », « Copier ». Reviens ici et colle."}</p>
+    <textarea class="txt im-zone" rows="3" placeholder="Colle ici le texte de l'annonce (ou son lien)" aria-label="Texte ou lien de l'annonce"></textarea>
+    <div class="im-a" style="margin-top:8px"><button type="button" class="btn primary" data-imp-coller>Coller l'annonce</button></div>
+    <p class="msg im-msg" aria-live="polite"></p>`;
+  openModal(mHead("Importer une annonce") + `<p class="hint" style="margin-top:0">Prix, surface, DPE, charges et photos repris pour toi. Tu vérifies avant de valider.</p>` + (desk ? `<div class="rt">Le plus rapide : le bouton 1 clic${ui.favoriOk ? ` <span class="pill info">installé</span>` : ""}</div><div class="fav">
+      <div class="fav-s"><span class="fav-n">1</span><div><b>${ui.favoriOk ? "Ton bouton est dans tes favoris" : "Glisse ce bouton dans ta barre de favoris"}</b><a class="fav-btn" href="${esc(lienFavori())}" data-favori>⚡ Bilan Locatif</a><p class="hint">${ui.favoriOk ? "Tu l'as déjà utilisé : rien à refaire. Sur un autre navigateur, glisse-le à nouveau." : "À faire une seule fois. Barre de favoris cachée ? Ctrl + Maj + B (Cmd + Maj + B sur Mac)."}</p><p class="msg" id="fav-msg" aria-live="polite"></p></div></div>
       <div class="fav-s"><span class="fav-n">2</span><div><b>Ouvre une annonce</b><p class="hint">leboncoin, SeLoger, PAP, Bien'ici, Logic-Immo ou le site d'une agence.</p></div></div>
-      <div class="fav-s"><span class="fav-n">3</span><div><b>Clique sur « ⚡ Bilan Locatif » dans tes favoris</b><p class="hint">Le simulateur s'ouvre avec les chiffres et les photos de l'annonce. Tu vérifies, tu valides.</p></div></div>
-    </div>` : "") +
-    `<div class="rt" style="margin-top:${desk ? 18 : 0}px">${desk ? "Sans bouton : le copier-coller" : "Sur téléphone, en trois gestes"}</div>
-    <ol class="fav-ol"><li>Ouvre l'annonce dans ton navigateur${desk ? "" : " (pas dans l'appli du site : « Partager », puis « Ouvrir dans le navigateur »)"}.</li><li>${desk ? "Ctrl + A puis Ctrl + C (Cmd sur Mac)." : "Appui long sur le texte, « Tout sélectionner », puis « Copier »."}</li><li>Reviens ici et touche « Coller l'annonce ».</li></ol>
-    <p class="note">Rien ne passe par un serveur : le bouton lit la page que tu as ouverte et la transmet au simulateur, dans ton navigateur. Les chiffres restent enregistrés chez toi.</p>`);
+      <div class="fav-s"><span class="fav-n">3</span><div><b>Clique sur « ⚡ Bilan Locatif » dans tes favoris</b><p class="hint">Le simulateur s'ouvre avec les chiffres et les photos. Tu vérifies, tu valides.</p></div></div>
+    </div>` : "") + coller +
+    `<p class="note">Rien ne passe par un serveur : le bouton lit la page que tu as ouverte et la transmet au simulateur, dans ton navigateur. Les chiffres restent enregistrés chez toi.</p>`);
 }
 
 /* Écran de vérification : rien n'est rempli sans ton accord */
+/* Loyer d'équilibre : le loyer hors charges à partir duquel le bien se paie seul (crédit, charges et impôts), l'année affichée */
+let EQUI = { k: "", v: null };
+function loyerEquilibre() {
+  if (S.location === "courte" || !(X.prix > 0) || !(X.surface > 0) || (R.manque || []).some(k => k !== "loyer")) return null;
+  const base = clone(S), key = JSON.stringify(base);
+  if (EQUI.k === key) return EQUI.v;
+  const cf = l => { const r = simuler(Object.assign(clone(base), { loyer: l })); return r.manque.length ? NaN : r.Y[Math.min(r.H, r.s.anneeRef) - 1].cf; };
+  let lo = 0, hi = Math.max(1500, X.prix / 50), v = null;
+  if (!(cf(hi) >= 0)) { hi *= 4; if (!(cf(hi) >= 0)) hi = null; }
+  if (hi) { for (let i = 0; i < 24; i++) { const mid = (lo + hi) / 2; if (cf(mid) >= 0) hi = mid; else lo = mid; } v = Math.ceil(hi / 10) * 10; }
+  EQUI = { k: key, v }; return v;
+}
+const cpSim = () => { const m = String(S.adresse || "").match(/\b(\d{5})\b/) || String(S.ville || "").match(/\b(\d{5})\b/); return m ? m[1] : ""; };
+const slugVille = v => String(v || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/['’\s]+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
+// Liens vers les locations comparables (même ville, surface à ± 20 %, meublé ou non selon le régime choisi)
+function liensLoyer() {
+  const ville = String(S.ville || "").replace(/\b\d{5}\b/g, "").trim(), cp = cpSim(), surf = X.surface;
+  if (!ville || !(surf > 0)) return [];
+  const mn = Math.max(9, Math.round(surf * 0.8)), mx = Math.round(surf * 1.2), maison = S.typeBien === "maison";
+  const meuble = (REGIMES[X.regime] || {}).meuble, out = [];
+  out.push(["leboncoin", `https://www.leboncoin.fr/recherche?category=10&locations=${encodeURIComponent(ville + (cp ? "_" + cp : ""))}&real_estate_type=${maison ? 1 : 2}&square=${mn}-${mx}${meuble === true ? "&furnished=1" : meuble === false ? "&furnished=2" : ""}`]);
+  if (cp) out.push(["Bien'ici", `https://www.bienici.com/recherche/location/${slugVille(ville)}-${cp}/${maison ? "maison" : "appartement"}?surface-min=${mn}&surface-max=${mx}`]);
+  return out;
+}
+function liensLoyerHTML(cls) {
+  const L = liensLoyer(); if (!L.length) return "";
+  const m = (REGIMES[X.regime] || {}).meuble;
+  return `<span class="${cls || "lien-loyer"}">Voir les loyers ${m === true ? "meublés " : m === false ? "non meublés " : ""}de ${nf(0).format(Math.round(X.surface * 0.8))} à ${nf(0).format(Math.round(X.surface * 1.2))} m² : ${L.map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${n} ↗</a>`).join(" · ")}</span>`;
+}
+function equiHTML() {
+  const v = loyerEquilibre();
+  if (v == null) return "";
+  return `<div class="equi"><div class="equi-h"><span>Loyer d'équilibre</span><b>${eur(v)} <small>/ mois hors charges</small></b></div>
+    <p>Loué au moins ce prix, le bien paie seul son crédit, ses charges et ses impôts (année ${Math.min(R.H, X.anneeRef)}). Au-dessus, il te rapporte chaque mois ; en dessous, tu complètes de ta poche.</p>
+    ${liensLoyerHTML("equi-l")}</div>`;
+}
+function equiTxt() {
+  const v = loyerEquilibre(), L = liensLoyerHTML("lien-loyer");
+  return (v != null ? `<b>Équilibre : ${eur(v)} / mois.</b> ` : "") + (L ? L + "<br>" : "");
+}
 const REV_CH = [
   ["prix", "Prix d'achat", "€"], ["agence", "Honoraires d'agence à ta charge", "€"], ["surface", "Surface habitable", "m²"], ["typeBien", "Type de bien"], ["ville", "Ville"], ["cp", "Code postal"],
   ["dpe", "DPE"], ["etat", "État du bien"], ["copro", "Charges de copropriété", "€ / an"], ["tf", "Taxe foncière", "€ / an"], ["loyer", "Loyer du locataire en place", "€ / mois"]];
@@ -3294,7 +3348,7 @@ function revInput(k, c) {
 function ouvrirRevue(r) {
   REV = r;
   const ch = REV_CH.filter(([k]) => r.champs[k]);
-  const manque = [!r.champs.prix && "le prix", !r.champs.surface && "la surface", !r.champs.loyer && "le loyer (à chercher : cinq annonces de location proches)", !r.champs.copro && "les charges de copropriété", !r.champs.tf && "la taxe foncière (demande-la au vendeur)"].filter(Boolean);
+  const manque = [!r.champs.prix && "le prix", !r.champs.surface && "la surface", !r.champs.loyer && "le loyer", !r.champs.copro && "les charges de copropriété", !r.champs.tf && "la taxe foncière (demande-la au vendeur)"].filter(Boolean);
   const vide = S.prix == null && S.surface == null && !S.annonce;
   const ph = r.photos || [];
   openModal(mHead("Voilà ce qu'on a trouvé") +
@@ -3302,7 +3356,7 @@ function ouvrirRevue(r) {
       <div class="rv-t"><b>${esc(r.titre || "Annonce")}</b><span>${esc([r.site, r.publieLe ? jourLabel(r.publieLe) : ""].filter(Boolean).join(" · "))}${ph.length ? " · " + plural(ph.length, "photo") : ""}</span></div></div>
     <p class="hint" style="margin:10px 0 4px">Vérifie chaque chiffre : décoche ce qui est faux, corrige si besoin. <span class="rv-l s-site">annonce</span> : donnée du site ; <span class="rv-l s-texte">texte</span> : lu dans la description.</p>
     <div class="rv">${ch.map(([k, lab, u]) => { const c = r.champs[k], note = revNote(k, c, r); return `<div class="rv-r"><label class="rv-c"><input type="checkbox" data-rv-on="${k}" checked><span>${esc(lab)}${note ? `<small>${esc(note)}</small>` : ""}</span></label><div class="rv-i">${revInput(k, c)}${u ? `<span class="u">${esc(u)}</span>` : ""}</div><span class="rv-l s-${c.src}">${c.src === "site" ? "annonce" : "texte"}</span></div>`; }).join("")}</div>
-    ${manque.length ? `<p class="note" style="margin-top:12px"><b>Pas dans l'annonce :</b> ${esc(manque.join(", "))}. ${r.champs.loyer ? "" : "Le loyer reste à toi : c'est le chiffre qui compte le plus."}</p>` : ""}
+    ${manque.length ? `<p class="note" style="margin-top:12px"><b>Pas dans l'annonce :</b> ${esc(manque.join(", "))}. ${r.champs.loyer ? "" : "Pour le loyer, le simulateur te donne juste après le loyer d'équilibre et les annonces de location comparables."}</p>` : ""}
     ${vide ? "" : `<div class="rv-cible" role="radiogroup" aria-label="Où mettre ces chiffres"><label><input type="radio" name="rv-cible" value="nouvelle" checked> Nouvelle simulation</label><label><input type="radio" name="rv-cible" value="actuelle"> Mettre à jour « ${esc(S.name)} »</label></div>`}
     <div class="ctas"><button type="button" class="btn primary" data-rv-ok>Remplir le simulateur</button><button type="button" class="btn" data-rv-non>Annuler</button></div>`);
 }
@@ -3342,7 +3396,8 @@ function appliquerRevue() {
   calc(); fullRender(); flush();
   $("#form").scrollTop = 0; window.scrollTo(0, 0);
   const n = Object.keys(c).length;
-  toast(n ? `${plural(n, "chiffre")} repris de l'annonce.${"loyer" in c ? "" : " Il reste le loyer à chercher."}` : "Annonce ajoutée.");
+  const eq = "loyer" in c ? null : loyerEquilibre();
+  toast(n ? `${plural(n, "chiffre")} repris de l'annonce.${"loyer" in c ? "" : eq != null ? ` Loyer d'équilibre : ${eur(eq)} / mois.` : " Il reste le loyer à chercher."}` : "Annonce ajoutée.");
 }
 function ouvrirDescription() {
   const A = S.annonce; if (!A) return;
@@ -3354,20 +3409,21 @@ function lireHash() {
   let P = null; try { P = JSON.parse(decodeURIComponent(h.slice(9))); } catch (e) {}
   try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
   if (!P) { toast("L'annonce n'a pas pu être lue : réessaie depuis sa page."); return; }
+  if (!ui.favoriOk) { ui.favoriOk = true; save(); }
   const r = lireAnnonce(P);
   if (!r.champs.prix && !r.champs.surface) { toast("Je n'ai pas trouvé de prix ni de surface sur cette page : ouvre bien l'annonce elle-même."); return; }
   ouvrirRevue(r);
 }
 addEventListener("hashchange", lireHash);
-form.addEventListener("paste", e => {
-  if (!e.target.matches("#im-zone")) return;
+document.addEventListener("paste", e => {
+  if (!e.target.matches || !e.target.matches(".im-zone")) return;
   const cd = e.clipboardData; if (!cd) return;
   const html = cd.getData("text/html"), text = cd.getData("text/plain");
   if (!html && !text) return;
   e.preventDefault(); e.target.value = ""; traiterCollage(html, text);
 });
 // Texte déposé ou saisi à la main dans le cadre : lu quand on quitte le cadre
-form.addEventListener("change", e => { if (e.target.matches("#im-zone") && e.target.value.trim()) { const v = e.target.value; e.target.value = ""; traiterCollage("", v); } });
+document.addEventListener("change", e => { if (e.target.matches && e.target.matches(".im-zone") && e.target.value.trim()) { const v = e.target.value; e.target.value = ""; traiterCollage("", v); } });
 // Carrousel : compteur de photos, et photo retirée si elle ne se charge plus (annonce supprimée)
 form.addEventListener("scroll", e => { const tr = e.target; if (!tr.classList || !tr.classList.contains("fp-track")) return; const n = tr.parentElement.querySelector(".fp-n"); if (n) n.textContent = Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth)) + 1 + " / " + tr.children.length; }, true);
 form.addEventListener("error", e => { const im = e.target; if (!im.matches || !im.matches(".fp-track img")) return; const tr = im.parentElement, box = tr.closest(".fiche-ph"); im.remove(); if (!tr.children.length) box.remove(); else { const n = box.querySelector(".fp-n"); if (n) n.textContent = "1 / " + tr.children.length; } }, true);
@@ -3375,7 +3431,8 @@ dialog.addEventListener("error", e => { if (e.target.matches && e.target.matches
 dialog.addEventListener("click", e => {
   const a = e.target.closest("[data-favori]");
   if (a) { e.preventDefault(); a.classList.remove("secoue"); void a.offsetWidth; a.classList.add("secoue"); const m = $("#fav-msg"); if (m) { m.className = "msg"; m.textContent = "Ne clique pas ici : maintiens le bouton enfoncé et fais-le glisser jusqu'à ta barre de favoris, en haut du navigateur."; } return; }
-  if (e.target.closest("[data-rv-ok]")) appliquerRevue();
+  if (e.target.closest("[data-imp-coller]")) collerPressePapiers();
+  else if (e.target.closest("[data-rv-ok]")) appliquerRevue();
   else if (e.target.closest("[data-rv-non]")) { REV = null; closeModal(); }
 });
 
@@ -3669,7 +3726,7 @@ $("#m-secnav").addEventListener("click", e => {
 });
 function openMenu() {
   const it = (mm, ic, t, d) => `<button type="button" data-mm="${mm}"><svg aria-hidden="true"><use href="#i-${ic}"/></svg><span><b>${t}</b><small>${d}</small></span></button>`;
-  openModal(mHead("Menu") + `<div class="mlist">` + it("new", "plus", "Nouvelle simulation", "Repartir de zéro : la surface, le prix et le loyer suffisent") + it("dup", "copy", "Dupliquer celle-ci", "Tester une variante sans toucher à l'originale") +
+  openModal(mHead("Menu") + `<div class="mlist">` + it("imp", "bolt", "Importer une annonce", "Colle l'annonce : prix, surface, DPE, charges et photos remplis pour toi") + it("new", "plus", "Nouvelle simulation", "Repartir de zéro : la surface, le prix et le loyer suffisent") + it("dup", "copy", "Dupliquer celle-ci", "Tester une variante sans toucher à l'originale") +
     it("sims", "list", "Mes simulations", "Ouvrir, supprimer, exporter vers un autre appareil") + (TOP ? it("print", "print", "Imprimer un rapport", "Dossier pour la banque ou bilan à partager, en PDF") : "") +
     `<label class="sw" for="mm-theme"><span><svg aria-hidden="true"><use href="#i-moon"/></svg>Thème sombre</span><input type="checkbox" role="switch" id="mm-theme" data-mm-theme${isDark() ? " checked" : ""}></label></div>`);
 }
