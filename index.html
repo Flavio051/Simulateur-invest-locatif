@@ -710,6 +710,104 @@ textarea.code{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regula
   #report .rp-check li{break-inside:avoid;padding-left:14pt;position:relative;margin:0 0 4pt}
   #report .rp-check li::before{content:"";position:absolute;left:0;top:2pt;width:8pt;height:8pt;border:1px solid #7a8799;border-radius:2pt}
 }
+/* Import d'annonce : encadré, fiche du bien, vérification, bouton favori */
+.inp .tag .t-ann{display:none}
+.inp.ann{border-color:color-mix(in srgb,var(--accent) 45%,var(--line-strong))}
+.inp.ann .tag{display:inline-block;color:var(--accent-ink);background:var(--accent-soft)}
+.inp.ann .tag .t-est,.inp.ann .tag .t-req{display:none}
+.inp.ann .tag .t-ann{display:inline}
+.form .importer+.fld,.form .fiche+.fld{border-top:0}
+.importer{margin:4px 0 12px;padding:14px;border-radius:14px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));background:linear-gradient(135deg,var(--accent-soft),var(--surface) 75%);display:grid;gap:10px}
+.im-h{display:flex;gap:12px;align-items:flex-start}
+.im-ico{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:var(--accent);color:var(--on-accent);font-size:19px;box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 35%,transparent)}
+.im-h b{display:block;font-family:var(--f-display);font-size:16px;line-height:1.25}
+.im-h span{display:block;color:var(--muted);font-size:13px;line-height:1.4;margin-top:2px}
+.im-zone{margin:0;resize:vertical;min-height:44px;background:var(--surface)}
+.im-zone::placeholder{color:var(--faint)}
+.im-a{display:flex;flex-wrap:wrap;gap:8px}
+.importer .msg{margin:0;color:var(--ink);line-height:1.45}
+.importer .msg:empty{display:none}
+.importer .msg.err{color:var(--neg)}
+.importer .msg a{color:var(--accent-ink);font-weight:600}
+.im-sites{margin:0;font-size:11.5px;color:var(--faint);letter-spacing:.01em}
+.fiche{margin:4px 0 12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+.fiche-ph{position:relative;background:var(--surface-3)}
+.fp-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;aspect-ratio:16/9;max-height:300px;outline:none}
+.fp-track::-webkit-scrollbar{display:none}
+.fp-track img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:center;user-select:none;-webkit-user-drag:none}
+.fp-nav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#142030;font-size:22px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);display:grid;place-items:center;opacity:0;transition:opacity .15s}
+.fiche-ph:hover .fp-nav,.fp-nav:focus-visible{opacity:1}
+.fp-nav.prev{left:10px}.fp-nav.next{right:10px}
+.fp-n{position:absolute;right:10px;bottom:10px;background:rgba(10,16,24,.66);color:#fff;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
+.fiche-b{padding:12px 14px 14px;display:grid;gap:6px}
+.fiche-src{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600}
+.fiche-src .pill{cursor:pointer;border:0;font:inherit;font-size:10.5px;font-weight:700}
+.form .fiche .fiche-t,.fiche-t{margin:0;padding:0;border:0;font-family:var(--f-display);font-size:18px;line-height:1.25;font-weight:700;letter-spacing:-.005em;text-transform:none;color:var(--ink);text-wrap:balance}
+.fiche-l{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;font-size:13px;color:var(--muted)}
+.fiche-pm{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.fiche-c{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.fiche-c>span:not(.dpe-b){font-size:12px;font-weight:600;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.dpe-b{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:13px;color:var(--dpe-ink,#fff);background:var(--dpe);border-radius:7px;padding:2px 9px 2px 7px}
+.dpe-b small{font-size:9.5px;font-weight:700;letter-spacing:.06em;opacity:.92}
+.fiche-a{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px}
+.fiche-a a.btn{text-decoration:none}
+.fiche-a .lnk{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.desc-ann{white-space:pre-wrap;font-size:14px;line-height:1.55;color:var(--ink);max-height:60vh;overflow:auto;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.rv-top{display:grid;gap:10px}
+.rv-ph{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;position:relative}
+.rv-ph img{flex:none;width:132px;height:92px;object-fit:cover;border-radius:9px;background:var(--surface-3)}
+.rv-ph img:first-child{width:180px}
+.rv-ph span{flex:none;display:grid;place-items:center;width:64px;border-radius:9px;background:var(--surface-2);color:var(--muted);font-weight:700;font-size:13px}
+.rv-t b{display:block;font-family:var(--f-display);font-size:16px;line-height:1.3}
+.rv-t span{font-size:12.5px;color:var(--muted)}
+.rv{display:grid;border-top:1px solid var(--line)}
+.rv-r{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,190px) 58px;gap:6px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.rv-c{display:flex;gap:9px;align-items:flex-start;font-weight:600;font-size:13.5px;cursor:pointer}
+.rv-c input{margin-top:2px;width:16px;height:16px;accent-color:var(--accent);flex:none}
+.rv-c small{display:block;font-weight:400;font-size:12px;color:var(--muted);line-height:1.4;margin-top:1px}
+.rv-r:has(input[type=checkbox]:not(:checked)) .rv-i,.rv-r:has(input[type=checkbox]:not(:checked)) .rv-l{opacity:.4}
+.rv-i{display:flex;align-items:center;gap:6px}
+.rv-i .txt,.rv-i .selbox{margin:0;padding:6px 9px;font-variant-numeric:tabular-nums}
+.rv-i .selbox{padding-right:28px}
+.rv-i .u{font-size:12px;color:var(--muted);white-space:nowrap}
+.rv-l{justify-self:end;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:2px 7px;white-space:nowrap}
+.rv-l.s-site{background:var(--accent-soft);color:var(--accent-ink)}
+.rv-l.s-texte{background:var(--warn-soft);color:var(--warn)}
+.hint .rv-l{display:inline-block;vertical-align:1px}
+.rv-cible{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:13.5px;font-weight:600}
+.rv-cible label{display:inline-flex;gap:7px;align-items:center;cursor:pointer}
+.rv-cible input{accent-color:var(--accent)}
+.fav{display:grid;gap:14px;margin-top:4px}
+.fav-s{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+.fav-s b{font-size:14.5px}
+.fav-s .hint{margin:4px 0 0}
+.fav-n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:13px}
+.fav-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:9px 16px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:14px;text-decoration:none;cursor:grab;box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 40%,transparent);animation:fav-pulse 2.2s ease-in-out 3}
+.fav-btn:active{cursor:grabbing}
+@keyframes fav-pulse{0%,100%{transform:none}50%{transform:translateY(-2px);box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 45%,transparent)}}
+.fav-btn.secoue{animation:fav-secoue .4s}
+@keyframes fav-secoue{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.fav-ol{margin:6px 0 0;padding-left:20px;display:grid;gap:5px;font-size:13.5px;line-height:1.45}
+.simrow{grid-template-columns:auto minmax(0,1fr) auto}
+.simrow .th{width:52px;height:52px;border-radius:10px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;color:var(--faint)}
+.simrow .th img{width:100%;height:100%;object-fit:cover}
+.simrow .th svg{width:20px;height:20px}
+@media (max-width:760px), (max-height:500px) and (max-width:1000px) and (pointer:coarse){
+  .importer{padding:14px;border-radius:16px}
+  .im-a .btn{flex:1;min-height:42px}
+  .fiche{border-radius:16px}
+  .fp-track{max-height:240px}
+  .fp-nav{display:none}
+  .fiche-a .btn{min-height:38px}
+  .rv-r{grid-template-columns:minmax(0,1fr) auto;padding:10px 0}
+  .rv-r .rv-i{grid-column:1/2;padding-left:25px}
+  .rv-r .rv-l{grid-row:1;grid-column:2}
+  .rv-i .txt,.rv-i .selbox{font-size:16px;flex:1}
+  .rv-ph img{width:112px;height:80px}.rv-ph img:first-child{width:150px}
+  .simrow{grid-template-columns:auto minmax(0,1fr)}
+  .simrow .a{grid-column:1/-1}
+}
+@media (prefers-reduced-motion: reduce){.fav-btn{animation:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1610,6 +1708,7 @@ let db = store.get(KEY);
 if (!db || typeof db !== "object" || !db.sims || !Object.keys(db.sims).length) { const id = uid(); db = { cur: id, sims: { [id]: { s: clone(DEFAULT_SIM), updated: Date.now() } } }; }
 if (!db.sims[db.cur]) db.cur = Object.keys(db.sims)[0];
 let S = normaliser(db.sims[db.cur].s);
+S.annonce = annoncePropre(S.annonce); // annonce importée (lien, photos, infos du site), gérée hors du moteur de calcul
 // Profils emprunteurs nommés (seul, à deux…) : enregistrés à part dans ce navigateur, chaque simulation choisit le sien.
 // Rien n'est envoyé ailleurs : le site public ne contient que le code, jamais ces chiffres.
 const PROFIL_CHAMPS = ["salaire", "salaire2", "loyers", "credits", "apport", "epargne"], TMIS = [0, 11, 30, 41, 45];
@@ -1681,6 +1780,280 @@ const REG_TXT = {
   sciIs: () => "La SCI paie l'impôt sur les sociétés : 15 % jusqu'à 42 500 € de bénéfice, 25 % au-delà, après charges, intérêts et amortissements. Les cash-flows positifs remboursent d'abord ton compte courant d'associé, sans impôt. À la revente, la plus-value se calcule sur la valeur nette comptable et supporte l'IS ; le boni distribué supporte la flat tax de 31,4 %."
 };
 
+/* ---------- Lecture d'une annonce (leboncoin, SeLoger, PAP, Bien'ici…) ---------- */
+/* LECTEUR:DEBUT */
+// Ce que reçoit lireAnnonce() : la page vue par le bouton favori (données du site + texte + photos), ou un copier-coller (texte + photos).
+// Ce qu'elle rend : les chiffres trouvés, chacun avec sa source (« site » : donnée structurée du site ; « texte » : lu dans le texte),
+// pour que la personne vérifie avant de remplir. Rien n'est inventé : un chiffre introuvable reste absent.
+const SITES_ANNONCE = [["leboncoin.fr", "leboncoin"], ["selogerneuf.com", "SeLoger Neuf"], ["seloger.com", "SeLoger"], ["pap.fr", "PAP"], ["bienici.com", "Bien'ici"],
+  ["logic-immo.com", "Logic-Immo"], ["lefigaro.fr", "Figaro Immobilier"], ["ouestfrance-immo.com", "Ouest-France Immo"], ["paruvendu.fr", "ParuVendu"], ["superimmo.com", "Superimmo"],
+  ["avendrealouer.fr", "AVendreALouer"], ["orpi.com", "Orpi"], ["century21.fr", "Century 21"], ["laforet.com", "Laforêt"], ["guy-hoquet.com", "Guy Hoquet"], ["iadfrance.fr", "iad"],
+  ["safti.fr", "Safti"], ["capifrance.fr", "Capifrance"], ["stephaneplazaimmobilier.com", "Stéphane Plaza Immobilier"], ["green-acres.fr", "Green-Acres"], ["etreproprio.com", "EtreProprio"],
+  ["entreparticuliers.com", "Entre Particuliers"], ["jinka.fr", "Jinka"], ["notaires.fr", "Immobilier des notaires"]];
+function siteAnnonce(host) {
+  host = String(host || "").toLowerCase().replace(/^www\./, "");
+  const f = SITES_ANNONCE.find(([d]) => host === d || host.endsWith("." + d));
+  return f ? f[1] : host;
+}
+const hoteDe = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return ""; } };
+// « 199 000 », « 165.000 », « 1 800,00 », « 85,83 » → nombre
+function nbFr(s) {
+  if (s == null || s === "") return null;
+  if (typeof s === "number") return Number.isFinite(s) ? s : null;
+  let t = String(s).replace(/[\s  ]/g, "");
+  if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, "");
+  t = t.replace(",", ".");
+  const v = parseFloat(t);
+  return Number.isFinite(v) ? v : null;
+}
+const N_RE = "(\\d{1,3}(?:[ \\u00a0\\u202f.]\\d{3})+(?:,\\d+)?|\\d+(?:[.,]\\d+)?)"; // un nombre écrit à la française
+const MOIS_FR = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+function dateFr(t) {
+  let m = t.match(/(?:publi[ée]e?|mise? en ligne|en ligne depuis|parue?)\s+le\s+(\d{1,2})(?:er)?\s+(janvier|f[ée]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[ée]cembre)\s+(\d{4})/i);
+  if (m) { const mo = MOIS_FR.findIndex(x => x.normalize("NFD").replace(/[̀-ͯ]/g, "") === m[2].toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")); if (mo >= 0) return new Date(+m[3], mo, +m[1], 12).toISOString(); }
+  m = t.match(/(?:publi[ée]e?|mise? en ligne|en ligne depuis|parue?)\s+le\s+(\d{1,2})\/(\d{1,2})\/(\d{4})/i);
+  if (m) return new Date(+m[3], +m[2] - 1, +m[1], 12).toISOString();
+  return null;
+}
+function dateIso(v) {
+  if (!v) return null;
+  const s = String(v).trim().replace(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}(:\d{2})?)$/, "$1T$2"); // leboncoin : « 2026-11-04 19:40:39 », heure de Paris
+  const d = new Date(s);
+  return Number.isFinite(d.getTime()) && d.getFullYear() > 2000 ? d.toISOString() : null;
+}
+// Toutes les chaînes d'un objet, pour chercher dedans comme dans un texte
+function chaines(o, out = [], p = 0) {
+  if (o == null || p > 8 || out.length > 4000) return out;
+  if (typeof o === "string") { if (o.length > 1 && !/^https?:\/\//.test(o)) out.push(o); }
+  else if (Array.isArray(o)) o.forEach(x => chaines(x, out, p + 1));
+  else if (typeof o === "object") Object.values(o).forEach(x => chaines(x, out, p + 1));
+  return out;
+}
+const htmlTexte = h => String(h || "").replace(/<br\s*\/?>/gi, "\n").replace(/<\/(p|div|li)>/gi, "\n").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&rsquo;/g, "'").replace(/&quot;/g, '"').replace(/[ \t]+/g, " ");
+// Première correspondance valable d'une liste d'expressions (ok : filtre facultatif sur la correspondance)
+function trouve(t, res, ok) {
+  for (const re of res) {
+    const g = new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g");
+    for (const m of t.matchAll(g)) if (!ok || ok(m)) return m;
+  }
+  return null;
+}
+function periodeAn(v, per, lab) {
+  per = String(per || "").toLowerCase(); lab = String(lab || "").toLowerCase();
+  if (/mois|mensuel/.test(per)) return { an: v * 12, sur: "mois" };
+  if (/trim/.test(per)) return { an: v * 4, sur: "trimestre" };
+  if (/an|annu/.test(per)) return { an: v, sur: "an" };
+  if (/mensuel/.test(lab)) return { an: v * 12, sur: "mois" };
+  if (/annu|budget|par an/.test(lab)) return { an: v, sur: "an" };
+  return v <= 350 ? { an: v * 12, sur: "mois", devine: true } : { an: v, sur: "an", devine: true };
+}
+function lireAnnonce(P) {
+  P = P && typeof P === "object" ? P : {};
+  const url = typeof P.url === "string" && /^https?:\/\//.test(P.url) ? P.url.slice(0, 600) : "";
+  const host = String(P.host || hoteDe(url) || "").replace(/^www\./, "");
+  const res = { site: host ? siteAnnonce(host) : "", url, titre: "", desc: "", photos: [], publieLe: null, modifieLe: null, infos: {}, champs: {} };
+  const C = res.champs, I = res.infos;
+  const pose = (k, v, src, extra) => { if (v == null || v === "" || (typeof v === "number" && !Number.isFinite(v))) return; if (C[k] && C[k].src === "site" && src !== "site") return; C[k] = Object.assign({ v, src }, extra || {}); };
+  const og = P.og && typeof P.og === "object" ? P.og : {};
+  // Données structurées (JSON-LD) présentes sur la plupart des sites
+  const LD = [];
+  for (const t of Array.isArray(P.ld) ? P.ld : []) { try { const j = JSON.parse(t); (Array.isArray(j) ? j : [j]).forEach(x => { if (x && typeof x === "object") { LD.push(x); if (Array.isArray(x["@graph"])) LD.push(...x["@graph"]); } }); } catch (e) {} }
+  const photos = [];
+  const addPh = u => { if (typeof u === "string" && /^https:\/\//.test(u) && photos.length < 30 && !photos.some(p => p.split("?")[0] === u.split("?")[0])) photos.push(u.slice(0, 500)); };
+  let desc = "", titre = "";
+
+  /* leboncoin : l'annonce complète est dans la page */
+  const L = P.lbc && typeof P.lbc === "object" ? P.lbc : null;
+  if (L) {
+    const A = {}; (Array.isArray(L.attributes) ? L.attributes : []).forEach(a => { if (a && a.key) A[a.key] = a; });
+    const av = k => A[k] ? A[k].value : null, al = k => A[k] ? (A[k].value_label || A[k].value) : null;
+    titre = L.subject || ""; desc = L.body || "";
+    const prixAff = Array.isArray(L.price) ? nbFr(L.price[0]) : nbFr(L.price);
+    if (prixAff) I.prixAffiche = prixAff;
+    const charge = av("fees_at_the_expanse_of");
+    if (charge === "buyer") {
+      const hors = nbFr(av("price_except_fees")), pct = nbFr(av("negotiating_fees_percentage"));
+      I.honoraires = { charge: "acquereur", pct };
+      if (prixAff && hors && hors < prixAff) { pose("prix", hors, "site", { note: "hors honoraires" }); pose("agence", prixAff - hors, "site"); }
+      else if (prixAff && pct > 0 && pct < 20 && av("fai_included") !== "0") { const p = Math.round(prixAff / (1 + pct / 100)); pose("prix", p, "site", { note: "hors honoraires" }); pose("agence", prixAff - p, "site"); }
+      else if (prixAff) pose("prix", prixAff, "site");
+    } else if (prixAff) { pose("prix", prixAff, "site"); if (charge === "seller") { I.honoraires = { charge: "vendeur" }; pose("agence", 0, "site"); } }
+    pose("surface", nbFr(av("square")), "site");
+    const rt = String(av("real_estate_type") || ""); if (rt === "1") pose("typeBien", "maison", "site"); else if (rt === "2") pose("typeBien", "appartement", "site");
+    const e = String(av("energy_rate") || "").toUpperCase(); if (/^[A-G]$/.test(e)) pose("dpe", e, "site");
+    const g = String(av("ges") || "").toUpperCase(); if (/^[A-G]$/.test(g)) I.ges = g;
+    if (nbFr(av("rooms"))) I.pieces = nbFr(av("rooms"));
+    if (nbFr(av("bedrooms"))) I.chambres = nbFr(av("bedrooms"));
+    if (av("floor_number") != null && av("floor_number") !== "") I.etage = nbFr(av("floor_number"));
+    if (av("elevator")) I.ascenseur = String(av("elevator")) === "1";
+    if (av("immo_sell_type") === "new") pose("etat", "neuf", "site");
+    if (av("furnished")) I.meuble = String(av("furnished")) === "1";
+    const loc = L.location || {};
+    pose("ville", loc.city, "site"); pose("cp", loc.zipcode, "site"); if (loc.district) I.quartier = loc.district;
+    res.publieLe = dateIso(L.first_publication_date); res.modifieLe = dateIso(L.index_date);
+    const im = L.images || {}; (im.urls_large || im.urls || []).forEach(addPh);
+    if (L.owner && L.owner.type) I.vendeur = L.owner.type === "pro" ? "pro" : "particulier";
+    if (I.vendeur === "particulier" && !C.agence) pose("agence", 0, "site");
+  }
+
+  /* SeLoger : l'annonce est dans la page, en fiches */
+  const SG = P.slg && typeof P.slg === "object" ? P.slg : null;
+  if (SG) {
+    const s = SG.sections || {}, hf = s.hardFacts || {};
+    titre = titre || [hf.title, (hf.keyfacts || []).join(" · ")].filter(Boolean).join(" · ");
+    const dsc = s.description || s.mainDescription || {};
+    desc = desc || (Array.isArray(dsc.texts) ? dsc.texts.map(x => x && x.text).filter(Boolean).join("\n") : dsc.description || "");
+    (hf.facts || []).forEach(f => {
+      if (!f) return; const v = nbFr(f.splitValue);
+      if (f.type === "livingSpace") pose("surface", v, "site");
+      else if (f.type === "numberOfRooms") I.pieces = v;
+      else if (f.type === "numberOfBedrooms") I.chambres = v;
+      else if (f.type === "numberOfFloors") { const m = String(f.value || "").match(/(\d+)\s*\//); if (m) I.etage = +m[1]; else if (/rdc|rez/i.test(f.value)) I.etage = 0; }
+    });
+    const prixH = hf.price && (hf.price.ariaLabel || hf.price.value); if (prixH) pose("prix", nbFr(String(prixH).replace(/€.*/, "")), "site");
+    const loc = (s.location || {}).address || {}; pose("ville", loc.city, "site"); pose("cp", loc.zipCode, "site"); if (loc.district) I.quartier = loc.district;
+    if (/maison|villa/i.test(hf.title || "")) pose("typeBien", "maison", "site"); else if (/appartement|studio|duplex|loft/i.test(hf.title || "")) pose("typeBien", "appartement", "site");
+    const en = s.energy || {};
+    (en.features || []).forEach(f => { if (f && f.type === "yearOfConstruction" && nbFr(f.value)) I.annee = nbFr(f.value); });
+    (en.certificates || []).forEach(c => (c && c.scales || []).forEach(sc => { const r = sc && sc.efficiencyClass && sc.efficiencyClass.rating; if (!/^[A-G]$/.test(r || "")) return; if (/GHG|GES/i.test(sc.type || sc.name || "")) I.ges = I.ges || r; else pose("dpe", r, "site"); }));
+    const md = SG.metadata || {}; res.publieLe = res.publieLe || dateIso(md.creationDate); res.modifieLe = res.modifieLe || dateIso(md.updateDate);
+    if (md.isNewBuildProject) pose("etat", "neuf", "site");
+    (Array.isArray(SG.images) ? SG.images : []).forEach(x => x && addPh(x.url));
+  }
+
+  /* Bien'ici : l'annonce complète, servie par le site */
+  const B = P.bi && typeof P.bi === "object" ? P.bi : null;
+  if (B) {
+    titre = titre || B.generatedTitle || B.title || "";
+    desc = desc || htmlTexte(B.description);
+    pose("prix", nbFr(B.price), "site"); pose("surface", nbFr(B.surfaceArea), "site");
+    pose("ville", B.city, "site"); pose("cp", B.postalCode, "site");
+    if (B.propertyType === "house") pose("typeBien", "maison", "site"); else if (B.propertyType === "flat") pose("typeBien", "appartement", "site");
+    if (/^[A-G]$/.test(B.energyClassification || "")) pose("dpe", B.energyClassification, "site");
+    if (/^[A-G]$/.test(B.greenhouseGazClassification || "")) I.ges = B.greenhouseGazClassification;
+    const cf = nbFr(B.annualCondominiumFees); if (cf > 0) pose("copro", Math.round(cf), "site", { sur: "an" });
+    if (nbFr(B.roomsQuantity)) I.pieces = nbFr(B.roomsQuantity);
+    if (nbFr(B.bedroomsQuantity)) I.chambres = nbFr(B.bedroomsQuantity);
+    if (B.floor != null && B.floor !== "") I.etage = nbFr(B.floor);
+    if (B.hasElevator != null) I.ascenseur = B.hasElevator === true || B.hasElevator === "true";
+    if (nbFr(B.yearOfConstruction)) I.annee = nbFr(B.yearOfConstruction);
+    if (B.newProperty === true || B.newProperty === "true") pose("etat", "neuf", "site");
+    if (B.isFurnished === true || B.isFurnished === "true") I.meuble = true;
+    if (B.feesChargedTo === "seller") { I.honoraires = { charge: "vendeur" }; pose("agence", 0, "site"); }
+    else if (B.feesChargedTo === "buyer") I.honoraires = { charge: "acquereur", pct: nbFr(B.agencyFeePercentage) };
+    res.publieLe = res.publieLe || dateIso(B.publicationDate); res.modifieLe = res.modifieLe || dateIso(B.modificationDate);
+    if (B.priceHasDecreased === true || B.priceHasDecreased === "true") I.baisse = true;
+    (Array.isArray(B.photos) ? B.photos : []).forEach(p => p && addPh(p.url || p.url_photo));
+  }
+
+  /* JSON-LD : prix, surface, pièces, adresse, date */
+  for (const x of LD) {
+    const t = [].concat(x["@type"] || []).join(" ");
+    if (!/RealEstateListing|Product|Accommodation|Apartment|House|Residence|SingleFamily|Offer/i.test(t)) continue;
+    const it = x.itemOffered || x;
+    const fs = it.floorSize || x.floorSize; if (fs) pose("surface", nbFr(fs.value != null ? fs.value : fs), "site");
+    if (it.numberOfRooms || x.numberOfRooms) I.pieces = I.pieces || nbFr(it.numberOfRooms || x.numberOfRooms);
+    const of = [].concat(x.offers || [])[0];
+    if (of) { const pr = nbFr(of.price != null && of.price !== "" ? of.price : of.priceSpecification && of.priceSpecification.price); if (pr > 1000) pose("prix", pr, "site"); }
+    const ad = it.address || x.address; if (ad && typeof ad === "object") { pose("ville", ad.addressLocality, "site"); pose("cp", ad.postalCode, "site"); }
+    if (/House|SingleFamily/i.test([].concat(it["@type"] || []).join(" "))) pose("typeBien", "maison", "site"); else if (/APARTMENT|Apartment/.test([].concat(it["@type"] || []).join(" "))) pose("typeBien", "appartement", "site");
+    res.publieLe = res.publieLe || dateIso(x.datePosted);
+    if (!desc && typeof x.description === "string" && x.description.length > 200) desc = x.description;
+    if (!titre && typeof x.name === "string") titre = x.name;
+    [].concat(x.image || []).forEach(im => addPh(typeof im === "string" ? im : im && im.url));
+  }
+
+  /* Le texte : ce qui manque encore, et ce que seul le texte dit (charges, taxe foncière, honoraires, bien loué…) */
+  const ogT = String(og["og:title"] || P.titre || "").replace(/\s*[-|–]\s*(leboncoin|seloger|pap|bien[’']ici|logic-immo).*$/i, "").replace(/\s+avec PAP\.fr$/i, "").trim();
+  titre = String(titre || ogT).replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().slice(0, 140);
+  desc = String(desc || "").replace(/\r/g, "").replace(/[ \t]+/g, " ").trim();
+  const T = [titre, ogT, desc, String(P.texte || ""), SG ? chaines(SG.sections).join("\n") : ""].join("\n").replace(/[  ]/g, " ");
+  const tete = [titre, ogT].join("\n").trim() || String(P.texte || "").replace(/[\u00a0\u202f]/g, " ").slice(0, 300);
+  const n = new RegExp(N_RE).source;
+  // Surface : d'abord le titre, puis « Surface : 45 m² » ; on écarte terrain, balcon, terrasse, jardin, cave, pièces
+  if (!C.surface) {
+    const okSurf = src => m => { const v = nbFr(m[1]); const av = src.slice(Math.max(0, m.index - 28), m.index).toLowerCase(); return v >= 8 && v <= 2000 && !/terrain|balcon|terrasse|jardin|cave|s[ée]jour|chambre|cuisine|pi[eè]ce de vie|salon|garage|parcelle|grenier|combles|loggia|cour/.test(av); };
+    const m = trouve(tete, [new RegExp(n + "\\s?m(?:²|2)(?!\\w)", "i")], okSurf(tete)) || trouve(T, [new RegExp("(?:surface(?: habitable)?|superficie|loi carrez)\\s*(?:habitable)?\\s*:?\\s*(?:de\\s+)?" + n + "\\s?m(?:²|2)", "i"), new RegExp(n + "\\s?m(?:²|2)(?!\\w)", "i")], okSurf(T));
+    if (m) pose("surface", Math.round(nbFr(m[1]) * 100) / 100, "texte");
+  }
+  if (!C.prix) {
+    const okPrix = m => { const v = nbFr(m[1]); return v >= 5000 && v <= 50e6; };
+    const m = trouve(tete, [new RegExp(n + "\\s?(?:€|euros?)", "i")], okPrix) || trouve(T, [new RegExp("prix(?:\\s+de\\s+vente)?(?:\\s+(?:FAI|honoraires inclus))?\\s*:?\\s*" + n + "\\s?(?:€|euros?)", "i"), new RegExp(n + "\\s?(?:€|euros?)", "i")], okPrix);
+    if (m) { pose("prix", nbFr(m[1]), "texte"); I.prixAffiche = I.prixAffiche || nbFr(m[1]); }
+  }
+  if (!I.pieces) { const m = trouve(tete + "\n" + T, [/(\d{1,2})\s?pi[eè]ces?\b/i, /\b[TF](\d)\b/]); if (m) I.pieces = +m[1]; else if (/\bstudio\b/i.test(tete)) I.pieces = 1; }
+  if (!I.chambres) { const m = T.match(/(\d{1,2})\s?chambres?\b/i); if (m) I.chambres = +m[1]; }
+  if (!C.typeBien) { if (/\b(maison|villa|pavillon|long[eè]re|corps de ferme|mas)\b/i.test(tete)) pose("typeBien", "maison", "texte"); else if (/\b(appartement|studio|duplex|triplex|loft|t\d|f\d)\b/i.test(tete)) pose("typeBien", "appartement", "texte"); }
+  if (!C.cp || !C.ville) {
+    const m = trouve(tete + "\n" + T, [/([A-ZÉÈÀÂÎÔÛ][A-Za-zÀ-ÿ'’\- ]{1,40}?)\s*\((\d{5})\)/, /\b(\d{5})\s+([A-ZÉÈÀÂÎÔÛ][A-Za-zÀ-ÿ'’\-]{1,40}(?:[ -][A-ZÉÈÀÂÎÔÛ][A-Za-zÀ-ÿ'’\-]{1,30}){0,3})/]);
+    if (m) { const cp = /^\d{5}$/.test(m[1]) ? m[1] : m[2], v = /^\d{5}$/.test(m[1]) ? m[2] : m[1]; pose("cp", cp, "texte"); pose("ville", v.replace(/\b(Appartement|Maison|Vente|Achat|Studio)\b.*$/i, "").trim(), "texte"); }
+  }
+  // DPE : on écarte l'échelle affichée en entier (« Classe énergie A B C D E F G »)
+  if (!C.dpe) {
+    const okL = m => m[1] === m[1].toUpperCase() && !/^\s*[A-G]\s+[A-G]\b/.test(T.slice(m.index + m[0].length, m.index + m[0].length + 8));
+    const m = trouve(T, [/consommation [ée]nerg[ée]tique excessive\s*:?\s*classe\s*([A-G])\b/i,
+      /(?:\bDPE\b|diagnostic de performance [ée]nerg[ée]tique|classe [ée]nerg(?:ie|[ée]tique)|[ée]tiquette [ée]nerg(?:ie|[ée]tique)|performance [ée]nerg[ée]tique)\s*(?:\(DPE\))?\s*(?:[:=\-–]\s*)?(?:class[ée]e?\s*:?\s*)?(?:en\s+)?\b([A-G])\b/i,
+      /\bclass[ée]e?\s+([A-G])\s+(?:au|du|en)\s+DPE\b/i], okL);
+    if (m) pose("dpe", m[1], "texte");
+  }
+  if (!I.ges) { const m = trouve(T, [/(?:\bGES\b|gaz à effet de serre|[ée]missions?)[^A-Z\n]{0,25}?(?:class[ée]e?\s*:?\s*)?\b([A-G])\b/]); if (m && !/^\s*[A-G]\s+[A-G]\b/.test(T.slice(m.index + m[0].length, m.index + m[0].length + 8))) I.ges = m[1]; }
+  // Charges de copropriété (obligatoires dans une annonce en copropriété) et taxe foncière
+  if (!C.copro) {
+    const m = trouve(T, [new RegExp("(charges?\\s+(?:de\\s+)?copropri[ée]t[ée]|charges?\\s+courantes|quote-?part[^\\n€]{0,90}?|charges?\\s+annuelles?|budget\\s+pr[ée]visionnel[^\\n€]{0,60}?|charges?\\s+de\\s+copro|charges\\s*:)\\s*(?:annuelles?|moyennes?|mensuelles?)?[^\\d\\n€]{0,30}?" + n + "\\s*(?:€|euros?\\b|eur\\b)\\s*(?:TTC\\s*)?(?:(?:\\/|par)\\s*(an|ann[ée]e|mois|trimestre|trim)\\b|(annuel(?:les?)?|mensuel(?:les?)?|trimestriel(?:les?)?))?", "i")],
+      m => nbFr(m[2]) >= 5 && !/locati|locataire|pr[ée]vision.{0,20}travaux|fonds de travaux/i.test(m[1]));
+    if (m) { const v = nbFr(m[2]), p = periodeAn(v, m[3] || m[4], m[1]); if (p.an >= 60 && p.an <= 20000) pose("copro", Math.round(p.an), "texte", { lu: v, sur: p.sur, devine: !!p.devine }); }
+  }
+  if (!C.tf) {
+    const m = trouve(T, [new RegExp("taxe\\s+fonci[èe]re[^\\d\\n€]{0,30}?" + n + "\\s*(?:€|euros?)(?:\\s*(?:\\/|par)\\s*(an|mois))?", "i")], m => nbFr(m[1]) >= 50);
+    if (m) { const v = nbFr(m[1]), a = /mois/i.test(m[2] || "") ? v * 12 : v; if (a >= 50 && a <= 20000) pose("tf", Math.round(a), "texte"); }
+  }
+  // Honoraires d'agence : à la charge de l'acheteur, ils sont souvent inclus dans le prix affiché
+  if (!C.agence) {
+    const acq = /honoraires?[^\n]{0,80}?charge\s+(?:de\s+)?l['’ ]?\s*acqu[ée]reur|charge\s+acqu[ée]reur|\bFAI\b|honoraires\s+inclus/i.test(T);
+    const ven = /honoraires?[^\n]{0,60}?charge\s+(?:du\s+|de\s+la\s+)?vendeu?r|charge\s+vendeur|sans\s+frais\s+d['’]agence|pas\s+de\s+frais\s+d['’]agence|0\s*commission|particulier\s+[àa]\s+particulier/i.test(T);
+    const prixAff = C.prix ? C.prix.v : null;
+    if (acq && !ven && prixAff) {
+      const mh = trouve(T, [new RegExp("prix\\s+hors\\s+honoraires\\s*:?\\s*" + n + "\\s*(?:€|euros?)", "i"), new RegExp(n + "\\s*(?:€|euros?)\\s*hors\\s+honoraires", "i")], m => nbFr(m[1]) > 1000);
+      const mp = trouve(T, [new RegExp("honoraires[^\\n%]{0,90}?" + n + "\\s*%", "i"), new RegExp(n + "\\s*%\\s*(?:TTC\\s*)?(?:d['’]honoraires|[^\\n]{0,40}?charge\\s+(?:de\\s+)?l['’ ]?\\s*acqu)", "i")], m => nbFr(m[1]) > 0 && nbFr(m[1]) < 20);
+      I.honoraires = { charge: "acquereur", pct: mp ? nbFr(mp[1]) : null };
+      const hors = mh ? nbFr(mh[1]) : null;
+      if (hors && hors < prixAff && hors > prixAff * 0.8) { I.prixAffiche = prixAff; C.prix = { v: hors, src: "texte", note: "hors honoraires" }; pose("agence", prixAff - hors, "texte"); }
+      else if (mp) { const p = Math.round(prixAff / (1 + nbFr(mp[1]) / 100)); I.prixAffiche = prixAff; C.prix = { v: p, src: "texte", note: "hors honoraires" }; pose("agence", prixAff - p, "texte"); }
+    } else if (ven && !acq) { I.honoraires = I.honoraires || { charge: "vendeur" }; pose("agence", 0, "texte"); }
+  }
+  // État du bien : seulement si le texte le dit clairement
+  if (!C.etat) {
+    const tl = T.toLowerCase();
+    if (/\bvefa\b|programme neuf|logement neuf|livraison pr[ée]vue|frais de notaire r[ée]duits/.test(tl)) pose("etat", "neuf", "texte");
+    else if (/r[ée]novation (?:compl[eè]te|totale|lourde|int[ée]grale)|enti[eè]rement [àa] r[ée]nover|tout [àa] refaire|[àa] r[ée]habiliter|gros [œo]euvre [àa] reprendre/.test(tl)) pose("etat", "lourd", "texte");
+    else if (/[àa] r[ée]nover|gros travaux|travaux importants|r[ée]novation [àa] pr[ée]voir/.test(tl)) pose("etat", "renover", "texte");
+    else if (/[àa] rafra[îi]chir|rafra[îi]chissement|travaux de d[ée]coration|petits travaux|quelques travaux|travaux [àa] pr[ée]voir/.test(tl)) pose("etat", "rafraichir", "texte");
+  }
+  // Bien vendu loué : le loyer du locataire en place est un vrai chiffre
+  const tl2 = T.toLowerCase();
+  if (/(?:vendu|vente|c[ée]d[ée])\s+(?:lou[ée]|occup[ée])|actuellement\s+lou[ée]|lou[ée]\s+actuellement|locataire\s+en\s+place|bail\s+en\s+cours|investissement\s+d[ée]j[àa]\s+en\s+place|d[ée]j[àa]\s+lou[ée]/.test(tl2)) I.venduLoue = true;
+  if (!C.loyer) {
+    const m = trouve(T, [new RegExp("loyer(?:\\s+(?:actuel|mensuel|en\\s+place|hors\\s+charges|hc|charges\\s+comprises|cc))*\\s*(?:de|:|=|à|est\\s+de|s['’][ée]l[eè]ve\\s+[àa])?\\s*" + n + "\\s*(?:€|euros?)\\s*(hc|hors\\s+charges|cc|charges\\s+comprises|ttc)?", "i"), new RegExp("lou[ée]\\s+(?:au\\s+prix\\s+de\\s+|pour\\s+|[àa]\\s+|actuellement\\s+)?" + n + "\\s*(?:€|euros?)\\s*(hc|hors\\s+charges|cc|charges\\s+comprises)?", "i")],
+      m => { const v = nbFr(m[1]); return v >= 100 && v <= 15000 && !/estim|potentiel|possible|envisageable|pourrait|march[ée]|th[ée]orique|attendu/i.test(T.slice(Math.max(0, m.index - 40), m.index + m[0].length)); });
+    if (m && (I.venduLoue || /loyer\s+(?:actuel|en\s+place)/i.test(m[0]))) { I.venduLoue = true; pose("loyer", nbFr(m[1]), "texte", { cc: /cc|charges\s+comprises|ttc/i.test(m[2] || "") }); }
+  }
+  if (I.meuble == null && /\bmeubl[ée]e?s?\b/i.test(T) && !/non[\s-]meubl/i.test(T)) I.meuble = true;
+  if (I.etage == null) { const m = T.match(/(\d{1,2})\s*(?:e|er|[èe]me|ᵉ)?\s+(?:et\s+dernier\s+)?[ée]tage\b(?!s)|[ée]tage\s*:?\s*(\d{1,2})\b/i); if (m) I.etage = +(m[1] || m[2]); else if (/rez[\s-]de[\s-]chauss[ée]e|\bRDC\b/i.test(T)) I.etage = 0; }
+  if (I.ascenseur == null) { if (/sans\s+ascenseur|pas\s+d['’]ascenseur/i.test(T)) I.ascenseur = false; else if (/\bascenseur\b/i.test(T)) I.ascenseur = true; }
+  if (!I.annee) { const m = T.match(/(?:construit(?:e)?\s+en|construction\s+(?:de\s+|en\s+)?|ann[ée]e\s+de\s+construction\s*:?\s*|r[ée]sidence\s+(?:r[ée]cente\s+)?(?:de|construite\s+en)\s+)\s*((?:18|19|20)\d{2})/i); if (m) I.annee = +m[1]; }
+  if (/baisse\s+de\s+prix|prix\s+en\s+baisse|nouveau\s+prix/i.test(T)) I.baisse = true;
+  res.publieLe = res.publieLe || dateFr(T);
+  if (C.cp && !/^\d{5}$/.test(String(C.cp.v))) delete C.cp;
+  if (C.ville) C.ville.v = String(C.ville.v).replace(/\s+/g, " ").trim().slice(0, 80);
+  // Photos : celles du site d'abord, sinon celles vues sur la page
+  addPh(og["og:image"]);
+  if (photos.length < 3) (Array.isArray(P.photos) ? P.photos : []).filter(u => typeof u === "string" && !/thumb|vignette|logo|icon|avatar|sprite|placeholder|1x1|pixel|emoji|picto|badge|flag|visuels|static|\.svg|\.gif/i.test(u)).forEach(addPh);
+  res.photos = photos.slice(0, 20);
+  res.titre = titre; res.desc = desc.slice(0, 3000);
+  return res;
+}
+/* LECTEUR:FIN */
+
 /* ---------- Champs du formulaire ---------- */
 let fid = 0;
 const NUL_UI = new Set([...NULLABLES, ...CHARGES.map(c => c + ".v")]);
@@ -1699,6 +2072,7 @@ function num(k, label, o = {}) {
   const req = !auto && raw == null && requis(S).includes(k); // à chercher soi-même : surface, prix, loyer
   const estime = !auto && raw == null && !req;
   const flou = estime && (R.incertains || []).includes(estKey(k)); // repère qui attend la surface, le prix ou le loyer
+  const ann = !auto && annEgal(k, raw); // chiffre repris de l'annonce, tant qu'il n'est pas modifié
   const E = !auto && R.est ? R.est[estKey(k)] : null;
   const mode = o.mode ? `<select class="mode" id="m-${id}" data-k="${o.mode.k}" aria-label="Mode de saisie : ${esc(label)}">${o.mode.opts.map(([val, t]) => `<option value="${val}"${String(o.mode.value != null ? o.mode.value : getK(S, o.mode.k)) === val ? " selected" : ""}>${esc(t)}</option>`).join("")}</select>` : "";
   const tip = o.tip ? ` <button type="button" class="tip" data-tip="${esc(o.tip)}" aria-label="Aide">i</button>` : "";
@@ -1707,7 +2081,7 @@ function num(k, label, o = {}) {
   return `<div class="fld">
     <div class="fld-top"><label for="f-${id}">${esc(label)}${tip}${infoE}</label>${mode}</div>
     <div class="fld-row">
-      <div class="inp${auto ? " auto" : ""}${estime ? " est" : ""}${req ? " req" : ""}"><input id="f-${id}" data-k="${k}" data-num data-dec="${dec}"${o.autoKey ? ` data-auto="${o.autoKey}"` : ""} inputmode="decimal" enterkeyhint="next" autocomplete="off" value="${estime ? "" : fmtIn(raw, dec)}" placeholder="${estime && !flou ? fmtIn(getK(X, k), dec) : ""}"${E && REPERES.has(estKey(k)) ? ` aria-describedby="r-${id}"` : ""}><span class="tag"><span class="t-est" title="Repère standard : tape ton chiffre pour le remplacer">estimé</span><span class="t-req" title="Chiffre à chercher toi-même">à remplir</span></span><span class="u">${esc(o.unit || "")}</span></div>
+      <div class="inp${auto ? " auto" : ""}${estime ? " est" : ""}${req ? " req" : ""}${ann ? " ann" : ""}"><input id="f-${id}" data-k="${k}" data-num data-dec="${dec}"${o.autoKey ? ` data-auto="${o.autoKey}"` : ""} inputmode="decimal" enterkeyhint="next" autocomplete="off" value="${estime ? "" : fmtIn(raw, dec)}" placeholder="${estime && !flou ? fmtIn(getK(X, k), dec) : ""}"${E && REPERES.has(estKey(k)) ? ` aria-describedby="r-${id}"` : ""}><span class="tag"><span class="t-est" title="Repère standard : tape ton chiffre pour le remplacer">estimé</span><span class="t-req" title="Chiffre à chercher toi-même">à remplir</span><span class="t-ann" title="Repris de l'annonce : tape un autre chiffre pour le remplacer">annonce</span></span><span class="u">${esc(o.unit || "")}</span></div>
       <div class="step" role="group" aria-label="Ajuster"><button type="button" data-step="${-(o.step || 1)}" data-for="f-${id}" aria-label="Diminuer ${esc(label)}">−</button><button type="button" data-step="${o.step || 1}" data-for="f-${id}" aria-label="Augmenter ${esc(label)}">+</button></div>
     </div>
     ${E && REPERES.has(estKey(k)) ? `<div class="tiers" id="r-${id}" data-tiers="${k}" data-dec="${dec}" data-u="${esc(uniteCourte(o.unit))}"></div>` : ""}
@@ -1731,7 +2105,7 @@ function syncEst() {
     const req = raw == null && requis(S).includes(k), flou = (R.incertains || []).includes(estKey(k));
     if (raw == null) { if (document.activeElement !== inp) inp.value = ""; inp.placeholder = req || flou ? "" : fmtIn(getK(X, k), dec); }
     else inp.placeholder = "";
-    w.classList.toggle("est", raw == null && !req); w.classList.toggle("req", req);
+    w.classList.toggle("est", raw == null && !req); w.classList.toggle("req", req); w.classList.toggle("ann", annEgal(k, raw));
   });
   $$("#form [data-tiers]").forEach(el => { el.innerHTML = tiersHTML(el); });
   $$("#form [data-info]").forEach(b => { const k = estKey(b.dataset.info), E = R.est[k]; if (E && E.info) b.dataset.tip = E.info; b.hidden = !E || !E.info || (R.infosIncertaines || []).includes(k); });
@@ -1837,7 +2211,7 @@ function regimeOpts() {
 const FORMS = {
   bien() {
     const courte = S.location === "courte";
-    return head("Le bien", "Trois chiffres viennent de toi : la surface et le prix (sur l'annonce), le loyer (ta recherche). Les autres champs ont un repère standard, que tu remplaces quand tu as le vrai chiffre.") +
+    return head("Le bien", S.annonce ? "Les chiffres repris de l'annonce portent l'étiquette « annonce ». Le loyer vient de ta recherche ; les autres champs ont un repère standard, que tu remplaces quand tu as le vrai chiffre." : "Trois chiffres viennent de toi : la surface et le prix (sur l'annonce), le loyer (ta recherche). Les autres champs ont un repère standard, que tu remplaces quand tu as le vrai chiffre.") + ficheHTML() +
       txt("ville", "Ville", { ph: "Ex. Reims", max: 120 }) +
       txt("adresse", "Adresse", { ph: "N°, rue, code postal et ville", hint: "Le code postal sert à repérer l'encadrement des loyers et l'outre-mer." }) +
       `<div class="fld"><div class="fld-top"><span class="lab">Type de bien</span></div><div class="seg2" role="group" aria-label="Type de bien"><button type="button" data-type="appartement" aria-pressed="${S.typeBien === "appartement"}">Appartement</button><button type="button" data-type="maison" aria-pressed="${S.typeBien === "maison"}">Maison</button></div></div>` +
@@ -2089,7 +2463,7 @@ function renderRail() {
 function centrerPastille(barre, b) { if (barre && b && barre.scrollWidth > barre.clientWidth) barre.scrollLeft = Math.max(0, b.offsetLeft - (barre.clientWidth - b.offsetWidth) / 2); }
 function renderRailSums() { $$("[data-sum]").forEach(el => { el.textContent = railSummary(el.dataset.sum); }); }
 const MODESW = () => `<div class="modesw" role="group" aria-label="Niveau de détail"><button type="button" data-mode="rapide" aria-pressed="${S.mode === "rapide"}">Estimation rapide<small>Quelques champs, résultat immédiat</small></button><button type="button" data-mode="complet" aria-pressed="${S.mode === "complet"}">Simulation complète<small>8 sections, tous les paramètres</small></button></div>`;
-FORMS.rapide = () => head("Estimation rapide", "La surface, le prix et le loyer suffisent : le reste suit des repères standards.") +
+FORMS.rapide = () => head("Estimation rapide", "La surface, le prix et le loyer suffisent : le reste suit des repères standards.") + ficheHTML() +
   txt("ville", "Ville", { ph: "Ex. Reims", max: 120 }) +
   num("surface", "Surface habitable", { unit: "m²", step: 1, hint: "Sur l'annonce." }) +
   num("prix", "Prix d'achat", { unit: "€", step: 1000, hint: `Frais de notaire calculés au barème : <span data-live="notaire">${eur(R.notaire.total)}</span>.` }) +
@@ -2551,6 +2925,7 @@ addEventListener("pointerup", stopHold); addEventListener("pointercancel", stopH
 form.addEventListener("keydown", e => { const b = e.target.closest("[data-step]"); if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); stepField(b); } });
 form.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b || b.dataset.step) return;
+  if (b.dataset.fp) { const tr = b.parentElement.querySelector(".fp-track"); if (tr) tr.scrollBy({ left: +b.dataset.fp * tr.clientWidth, behavior: "smooth" }); return; }
   if (b.dataset.setk) { const k = b.dataset.setk, v = +b.dataset.v; setK(S, k, v); $$(`#form [data-k="${k}"][data-num]`).forEach(x => { x.value = fmtIn(v, +x.dataset.dec || 0); }); update(); return; }
   if (b.dataset.type) { S.typeBien = b.dataset.type; calc(); renderForm(); update(); return; }
   if (b.dataset.tmimode) { S.tmiMode = b.dataset.tmimode; calc(); renderForm(); update(); return; }
@@ -2568,6 +2943,10 @@ function setMode(m) {
 }
 function act(a) {
   if (a === "notaire") return openNotaire();
+  if (a === "ann-coller") return collerPressePapiers();
+  if (a === "ann-favori") return ouvrirFavori();
+  if (a === "ann-retirer") return retirerAnnonce();
+  if (a === "ann-desc") return ouvrirDescription();
   if (a === "profil-suppr" || a === "profil-suppr-non") { ui.supprProfil = a === "profil-suppr"; return renderForm(); }
   if (a === "profil-suppr-ok") {
     const id = S.profil; delete PR.list[id]; ui.supprProfil = false;
@@ -2680,7 +3059,8 @@ function simList() {
   return Object.entries(db.sims).sort((a, b) => b[1].updated - a[1].updated).map(([id, x]) => {
     let r; try { r = simuler(x.s); } catch (e) { r = null; }
     const d = new Date(x.updated);
-    return `<div class="simrow${id === db.cur ? " cur" : ""}" data-id="${id}"><div style="min-width:0"><div class="n">${esc(x.s.name || "Simulation")}</div><div class="d">${d.toLocaleDateString("fr-FR")}${x.s.ville ? " · " + esc(x.s.ville) : ""} · ${r && r.manque.length ? "à compléter" : r ? eur(r.Y[Math.min(r.H, r.s.anneeRef) - 1].cf / 12) + " / mois · " + pct(r.k.brut, 1) + " brut · " + eur(r.coutTotal) : ""}</div></div>
+    const ph = x.s.annonce && x.s.annonce.photos && x.s.annonce.photos[0];
+    return `<div class="simrow${id === db.cur ? " cur" : ""}" data-id="${id}"><div class="th" aria-hidden="true">${ph ? `<img src="${esc(ph)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<svg><use href="#i-pin"/></svg>`}</div><div style="min-width:0"><div class="n">${esc(x.s.name || "Simulation")}</div><div class="d">${d.toLocaleDateString("fr-FR")}${x.s.ville ? " · " + esc(x.s.ville) : ""} · ${r && r.manque.length ? "à compléter" : r ? eur(r.Y[Math.min(r.H, r.s.anneeRef) - 1].cf / 12) + " / mois · " + pct(r.k.brut, 1) + " brut · " + eur(r.coutTotal) : ""}</div></div>
       <div class="a">${id === db.cur ? `<span class="pill info">Ouverte</span>` : `<button type="button" class="btn sm primary" data-open="${id}">Ouvrir</button>`}<button type="button" class="btn sm" data-dup="${id}">Dupliquer</button>${Object.keys(db.sims).length > 1 ? `<button type="button" class="btn sm danger" data-del="${id}">Supprimer</button>` : ""}</div></div>`;
   }).join("");
 }
@@ -2729,13 +3109,13 @@ function doImport(text) {
     const d = JSON.parse(text); const list = Array.isArray(d) ? d : Array.isArray(d.sims) ? d.sims : [d];
     if (d && d.profils && typeof d.profils === "object") { for (const [id, p] of Object.entries(d.profils)) PR.list[String(id).slice(0, 40)] = profilPropre(p); if (!PR.list[PR.dernier]) PR.dernier = Object.keys(PR.list)[0] || ""; saveProfils(); }
     let n = 0, last = null;
-    for (const s of list) { if (!s || typeof s !== "object" || !("prix" in s)) continue; const id = uid() + n; db.sims[id] = { s: normaliser(s), updated: Date.now() + n }; last = id; n++; }
+    for (const s of list) { if (!s || typeof s !== "object" || !("prix" in s)) continue; const id = uid() + n; const sn = normaliser(s); sn.annonce = annoncePropre(sn.annonce); db.sims[id] = { s: sn, updated: Date.now() + n }; last = id; n++; }
     if (!n) throw new Error("vide");
     store.set(KEY, db); msg.className = "msg"; msg.textContent = plural(n, "simulation") + " importée" + (n > 1 ? "s" : "") + ".";
     switchTo(last);
   } catch (err) { msg.className = "msg err"; msg.textContent = "Ce texte n'est pas un export de Bilan Locatif. Vérifie que tu as tout copié, du premier { au dernier }."; }
 }
-function switchTo(id) { flush(); db.cur = id; S = normaliser(db.sims[id].s); store.set(KEY, db); fullRender(); }
+function switchTo(id) { flush(); db.cur = id; S = normaliser(db.sims[id].s); S.annonce = annoncePropre(S.annonce); store.set(KEY, db); fullRender(); }
 function newSim() { flush(); const id = uid(); const s = clone(NOUVELLE_SIM); if (PR.list[PR.dernier]) s.profil = PR.dernier;
   if (mob()) { s.mode = "rapide"; ui.vue = "saisie"; } // sur téléphone, on commence par l'estimation rapide : trois chiffres et le résultat s'affiche
   db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); appliquerProfil(profil()); db.sims[id].s = S; store.set(KEY, db); ui.section = "bien"; ui.ana = "synthese"; fullRender(); $("#form").scrollTop = 0; }
@@ -2743,6 +3123,260 @@ $("#btn-sims").addEventListener("click", openSims);
 $("#btn-new").addEventListener("click", newSim);
 function dupSim() { flush(); const id = uid(); const s = clone(S); s.name = (S.name || "Simulation") + " (copie)"; db.sims[id] = { s, updated: Date.now() }; db.cur = id; S = normaliser(s); store.set(KEY, db); fullRender(); }
 $("#btn-dup").addEventListener("click", dupSim);
+
+
+/* ---------- Import d'une annonce : bouton favori, copier-coller, vérification, fiche ---------- */
+const SIM_URL = location.origin + location.pathname;
+// Le bouton favori s'exécute sur la page de l'annonce, dans le navigateur de la personne : il ramasse ce que la page affiche
+// (données du site, texte, photos) et ouvre le simulateur avec ces données après le « # » de l'adresse, jamais envoyé à un serveur.
+// Pas de commentaire « // » dans cette fonction : le favori est enregistré sur une seule ligne.
+const COLLECTEUR = async function (CIBLE) {
+  if (location.href.indexOf(CIBLE) === 0) { alert("Ce bouton s'utilise depuis une annonce : glisse-le dans ta barre de favoris, ouvre une annonce (leboncoin, SeLoger, PAP, Bien'ici…) puis clique dessus."); return; }
+  const q = s => Array.from(document.querySelectorAll(s));
+  const court = (v, n) => typeof v === "string" && v.length > n ? v.slice(0, n) : v;
+  const allege = (o, p) => {
+    if (p > 6 || o == null) return null;
+    if (typeof o === "string") return court(o, 6000);
+    if (typeof o !== "object") return o;
+    if (Array.isArray(o)) return o.slice(0, 60).map(x => allege(x, p + 1));
+    const r = {};
+    for (const k of Object.keys(o).slice(0, 120)) if (!/geometry|polygon|blurInfo|similar|tracking|feature_gates/i.test(k)) r[k] = allege(o[k], p + 1);
+    return r;
+  };
+  const P = { v: 1, url: location.href.split("#")[0], host: location.hostname.replace(/^www\./, ""), titre: document.title, og: {} };
+  q('meta[property^="og:"],meta[name="description"]').forEach(m => { P.og[m.getAttribute("property") || m.name] = court(m.content, 600); });
+  P.ld = q('script[type="application/ld+json"]').map(s => s.textContent).filter(t => /RealEstate|Product|Accommodation|Offer|Residence|Apartment|House|Place/i.test(t)).map(t => court(t, 12000)).slice(0, 4);
+  try { const n = document.getElementById("__NEXT_DATA__"); const ad = n && JSON.parse(n.textContent).props.pageProps.ad; if (ad) { const a = Object.assign({}, ad); delete a.similar; delete a.counters; P.lbc = allege(a, 0); } } catch (e) {}
+  try { const u = window.__UFRN_LIFECYCLE_SERVERREQUEST__, c = u && u.app_cldp && u.app_cldp.data && u.app_cldp.data.classified; if (c) P.slg = allege({ metadata: c.metadata, images: c.domains && c.domains.medias && c.domains.medias.images, sections: c.sections }, 0); } catch (e) {}
+  try { if (/bienici\.com$/.test(location.hostname)) { const id = location.pathname.split("/").filter(Boolean).pop(); const r = await fetch("/realEstateAd.json?id=" + encodeURIComponent(id), { credentials: "same-origin" }); if (r.ok) P.bi = allege(await r.json(), 0); } } catch (e) {}
+  P.texte = court(((document.querySelector("main") || document.body).innerText || "").replace(/\n{3,}/g, "\n\n"), 20000);
+  const imgs = q("img");
+  P.photos = Array.from(new Set(imgs.filter(i => !i.complete || i.naturalWidth >= 240).map(i => i.currentSrc || i.src || i.getAttribute("data-src") || "").filter(s => /^https:/.test(s)))).slice(0, 40);
+  const lien = CIBLE + "#annonce=" + encodeURIComponent(JSON.stringify(P));
+  const w = window.open(lien, "_blank");
+  if (!w) location.href = lien;
+};
+function lienFavori() {
+  const code = "(" + COLLECTEUR.toString() + ")(" + JSON.stringify(SIM_URL) + ")";
+  return "javascript:" + encodeURIComponent(code.replace(/\n\s*/g, " "));
+}
+const annEgal = (k, raw) => { const c = S.annonce && S.annonce.champs; return !!c && raw != null && c[k] != null && Math.abs(c[k] - raw) < 0.5; };
+function annoncePropre(a) {
+  if (!a || typeof a !== "object") return null;
+  const str = (v, n) => typeof v === "string" ? v.slice(0, n) : "";
+  const champs = {}, infos = {};
+  if (a.champs && typeof a.champs === "object") for (const [k, v] of Object.entries(a.champs)) if (/^[a-z]+(\.v)?$/i.test(k) && v !== null && v !== "" && Number.isFinite(+v)) champs[k] = +v;
+  if (a.infos && typeof a.infos === "object") for (const [k, v] of Object.entries(a.infos)) if (/^[a-z]+$/i.test(k) && (["number", "boolean"].includes(typeof v) || (typeof v === "string" && v.length < 80))) infos[k] = v;
+  const date = v => { const d = Date.parse(v); return Number.isFinite(d) ? new Date(d).toISOString() : null; };
+  return { url: /^https?:\/\//.test(a.url || "") ? str(a.url, 600) : "", site: str(a.site, 40), titre: str(a.titre, 140), desc: str(a.desc, 3000),
+    photos: (Array.isArray(a.photos) ? a.photos : []).filter(u => typeof u === "string" && /^https:\/\//.test(u)).slice(0, 20).map(u => u.slice(0, 500)),
+    publieLe: date(a.publieLe), modifieLe: date(a.modifieLe), le: date(a.le), infos, champs };
+}
+const jourLabel = iso => { if (!iso) return ""; const j = Math.floor((Date.now() - Date.parse(iso)) / 864e5); return j <= 0 ? "en ligne depuis aujourd'hui" : j === 1 ? "en ligne depuis hier" : `en ligne depuis ${j} jours`; };
+const joursEnLigne = iso => iso ? Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 864e5)) : null;
+const etageTxt = e => e == null ? "" : e === 0 ? "Rez-de-chaussée" : e === 1 ? "1er étage" : e + "e étage";
+const DPE_COUL = { A: "#008f5a", B: "#36a447", C: "#9cc43c", D: "#f2d41a", E: "#f0a830", F: "#eb6a26", G: "#d7221f" };
+const dpeBadge = (l, t) => l ? `<span class="dpe-b" style="--dpe:${DPE_COUL[l]};--dpe-ink:${"CDE".includes(l) ? "#1f2a12" : "#fff"}" title="${t || "Diagnostic énergétique"} : classe ${l}"><small>${t === "GES" ? "GES" : "DPE"}</small>${l}</span>` : "";
+const typeCourt = (type, pieces) => type === "maison" ? "Maison" : pieces === 1 ? "Studio" : pieces ? "T" + pieces : "Appartement";
+
+/* La fiche du bien (en haut de « Le bien » et de l'estimation rapide) ; sans annonce, l'encadré d'import */
+function ficheHTML() {
+  const A = S.annonce;
+  if (!A) return importerHTML();
+  const I = A.infos || {}, ph = A.photos || [];
+  const j = joursEnLigne(A.publieLe);
+  const chips = [X.surface > 0 ? nf(1).format(X.surface) + " m²" : "", I.pieces ? plural(I.pieces, "pièce") : "", I.chambres ? plural(I.chambres, "chambre") : "",
+    I.etage != null ? etageTxt(I.etage) + (I.ascenseur === true ? " avec ascenseur" : I.ascenseur === false && I.etage > 1 ? " sans ascenseur" : "") : "", I.annee ? "Construit en " + I.annee : "",
+    I.meuble ? "Meublé" : "", I.venduLoue ? "Vendu loué" : ""].filter(Boolean);
+  const pm2 = X.surface > 0 && X.prixAffiche > 0 ? eur(X.prixAffiche / X.surface) + " / m²" : "";
+  return `<div class="fiche">
+    ${ph.length ? `<div class="fiche-ph"><div class="fp-track" tabindex="0" role="group" aria-label="Photos du bien">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i + 1} sur ${ph.length}" loading="${i < 2 ? "eager" : "lazy"}" decoding="async" referrerpolicy="no-referrer" draggable="false">`).join("")}</div>
+      ${ph.length > 1 ? `<button type="button" class="fp-nav prev" data-fp="-1" aria-label="Photo précédente">‹</button><button type="button" class="fp-nav next" data-fp="1" aria-label="Photo suivante">›</button><span class="fp-n" aria-hidden="true">1 / ${ph.length}</span>` : ""}</div>` : ""}
+    <div class="fiche-b">
+      <div class="fiche-src"><span>${esc(A.site || "Annonce")}</span>${A.publieLe ? `<span>· ${jourLabel(A.publieLe)}</span>` : ""}${j != null && j >= 60 ? `<button type="button" class="pill attention tip" data-tip="${esc(`Annonce en ligne depuis ${j} jours : le vendeur est souvent plus ouvert à la négociation. Teste une offre plus basse avec « Variation du prix ».`)}">Négociable ?</button>` : ""}${I.baisse ? `<span class="pill info">Prix en baisse</span>` : ""}</div>
+      <h3 class="fiche-t">${esc(A.titre || "Mon bien")}</h3>
+      <div class="fiche-l">${esc([S.ville, I.quartier].filter(Boolean).join(" · "))}${pm2 ? `<span class="fiche-pm">${pm2}</span>` : ""}</div>
+      <div class="fiche-c">${dpeBadge(X.dpe)}${I.ges ? dpeBadge(I.ges, "GES") : ""}${chips.map(c => `<span>${esc(c)}</span>`).join("")}</div>
+      <div class="fiche-a">${/^https?:\/\//.test(A.url || "") ? `<a class="btn sm" href="${esc(A.url)}" target="_blank" rel="noopener noreferrer">Voir l'annonce<span aria-hidden="true"> ↗</span></a>` : ""}${A.desc ? `<button type="button" class="btn sm" data-act="ann-desc">Description</button>` : ""}<button type="button" class="lnk" data-act="ann-retirer">Retirer l'annonce</button></div>
+    </div></div>`;
+}
+function importerHTML() {
+  return `<div class="importer">
+    <div class="im-h"><span class="im-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13.2 2.5 4.8 13.1c-.4.5 0 1.2.6 1.2h5.1l-1.2 7c-.1.7.8 1.1 1.2.5l8.4-10.6c.4-.5 0-1.2-.6-1.2h-5.1l1.2-7c.1-.7-.8-1.1-1.2-.5Z"/></svg></span><div><b>Pars d'une annonce</b><span>Prix, surface, DPE, charges et photos remplis pour toi. Tu vérifies, tu valides.</span></div></div>
+    <textarea class="txt im-zone" id="im-zone" rows="2" placeholder="Colle ici le lien ou le texte de l'annonce" aria-label="Lien ou texte de l'annonce"></textarea>
+    <div class="im-a"><button type="button" class="btn sm primary" data-act="ann-coller">Coller l'annonce</button><button type="button" class="btn sm" data-act="ann-favori">${mob() ? "Comment faire ?" : "Bouton 1 clic depuis l'annonce"}</button></div>
+    <p class="msg" id="im-msg" aria-live="polite"></p>
+    <p class="im-sites">leboncoin · SeLoger · PAP · Bien'ici · Logic-Immo · sites d'agences</p>
+  </div>`;
+}
+function msgImport(html, err) { const m = $("#im-msg"); if (!m) return toast(html.replace(/<[^>]+>/g, "")); m.className = "msg" + (err ? " err" : ""); m.innerHTML = html; }
+
+/* Copier-coller : le texte de la page (et ses photos, quand le navigateur copie aussi le HTML) */
+function traiterCollage(html, text) {
+  let texte = String(text || "").trim(), photos = [], liens = [];
+  if (html) {
+    try {
+      const d = new DOMParser().parseFromString(html, "text/html");
+      photos = Array.from(d.images).map(i => i.getAttribute("src") || i.getAttribute("data-src") || "").filter(u => /^https:\/\//.test(u));
+      liens = Array.from(d.querySelectorAll("a[href]")).map(a => a.getAttribute("href")).filter(u => /^https:\/\//.test(u));
+      if (!texte) texte = (d.body && d.body.textContent || "").trim();
+    } catch (e) {}
+  }
+  const u = texte.match(/https?:\/\/[^\s<>"']+/);
+  if (u && texte.replace(u[0], "").trim().length < 40) {
+    ui.annUrl = u[0]; const site = siteAnnonce(hoteDe(u[0])) || "l'annonce";
+    msgImport(`<b>Lien gardé.</b> ${esc(site)} ne laisse pas lire ses annonces depuis un autre site : ouvre l'annonce, ${mob() ? "appuie longuement sur le texte, « Tout sélectionner » puis « Copier »" : "fais Ctrl + A puis Ctrl + C"}, reviens ici et colle. <a href="${esc(u[0])}" target="_blank" rel="noopener noreferrer">Ouvrir l'annonce ↗</a>${mob() ? "" : ` Ou utilise le <button type="button" class="lnk" data-act="ann-favori">bouton 1 clic</button>.`}`);
+    const z = $("#im-zone"); if (z) z.value = "";
+    return;
+  }
+  const url = u && /annonce|\/ad\/|detail|vente|achat/i.test(u[0]) ? u[0] : (liens.find(l => /\/ad\/|annonces?\/|detail/i.test(l)) || ui.annUrl || "");
+  const r = lireAnnonce({ url, host: hoteDe(url), texte, photos });
+  if (!r.champs.prix && !r.champs.surface) {
+    msgImport(`Je n'ai trouvé ni prix ni surface dans ce texte. Sur la page de l'annonce, sélectionne tout (${mob() ? "appui long, « Tout sélectionner »" : "Ctrl + A"}) puis copie, avant de coller ici.`, true);
+    return;
+  }
+  ui.annUrl = "";
+  ouvrirRevue(r);
+}
+async function collerPressePapiers() {
+  try {
+    if (navigator.clipboard && navigator.clipboard.read) {
+      const items = await navigator.clipboard.read(); let html = "", text = "";
+      for (const it of items) {
+        if (it.types.includes("text/html")) html = await (await it.getType("text/html")).text();
+        if (it.types.includes("text/plain")) text = await (await it.getType("text/plain")).text();
+      }
+      if (html || text) return traiterCollage(html, text);
+    } else if (navigator.clipboard && navigator.clipboard.readText) { const t = await navigator.clipboard.readText(); if (t) return traiterCollage("", t); }
+    throw new Error("vide");
+  } catch (e) {
+    const z = $("#im-zone"); if (z) z.focus();
+    msgImport(mob() ? "Appuie longuement dans le cadre puis choisis « Coller »." : "Clique dans le cadre puis colle avec Ctrl + V (Cmd + V sur Mac).");
+  }
+}
+function ouvrirFavori() {
+  const desk = !mob();
+  openModal(mHead("Remplir le simulateur depuis une annonce") + (desk ? `<div class="fav">
+      <div class="fav-s"><span class="fav-n">1</span><div><b>Glisse ce bouton dans ta barre de favoris</b><a class="fav-btn" href="${esc(lienFavori())}" data-favori>⚡ Bilan Locatif</a><p class="hint">À faire une seule fois. Barre de favoris cachée ? Ctrl + Maj + B (Cmd + Maj + B sur Mac).</p><p class="msg" id="fav-msg" aria-live="polite"></p></div></div>
+      <div class="fav-s"><span class="fav-n">2</span><div><b>Ouvre une annonce</b><p class="hint">leboncoin, SeLoger, PAP, Bien'ici, Logic-Immo ou le site d'une agence.</p></div></div>
+      <div class="fav-s"><span class="fav-n">3</span><div><b>Clique sur « ⚡ Bilan Locatif » dans tes favoris</b><p class="hint">Le simulateur s'ouvre avec les chiffres et les photos de l'annonce. Tu vérifies, tu valides.</p></div></div>
+    </div>` : "") +
+    `<div class="rt" style="margin-top:${desk ? 18 : 0}px">${desk ? "Sans bouton : le copier-coller" : "Sur téléphone, en trois gestes"}</div>
+    <ol class="fav-ol"><li>Ouvre l'annonce dans ton navigateur${desk ? "" : " (pas dans l'appli du site : « Partager », puis « Ouvrir dans le navigateur »)"}.</li><li>${desk ? "Ctrl + A puis Ctrl + C (Cmd sur Mac)." : "Appui long sur le texte, « Tout sélectionner », puis « Copier »."}</li><li>Reviens ici et touche « Coller l'annonce ».</li></ol>
+    <p class="note">Rien ne passe par un serveur : le bouton lit la page que tu as ouverte et la transmet au simulateur, dans ton navigateur. Les chiffres restent enregistrés chez toi.</p>`);
+}
+
+/* Écran de vérification : rien n'est rempli sans ton accord */
+const REV_CH = [
+  ["prix", "Prix d'achat", "€"], ["agence", "Honoraires d'agence à ta charge", "€"], ["surface", "Surface habitable", "m²"], ["typeBien", "Type de bien"], ["ville", "Ville"], ["cp", "Code postal"],
+  ["dpe", "DPE"], ["etat", "État du bien"], ["copro", "Charges de copropriété", "€ / an"], ["tf", "Taxe foncière", "€ / an"], ["loyer", "Loyer du locataire en place", "€ / mois"]];
+const ETATS_REV = [["neuf", "Neuf (VEFA)"], ["bon", "Ancien, bon état"], ["rafraichir", "Ancien, à rafraîchir"], ["renover", "Ancien, à rénover"], ["lourd", "Ancien, rénovation lourde"]];
+let REV = null;
+function revNote(k, c, r) {
+  const I = r.infos;
+  if (k === "prix" && c.note === "hors honoraires" && I.prixAffiche) return `Affiché ${eur(I.prixAffiche)} honoraires compris : on les sépare, car les frais de notaire se calculent sans eux.`;
+  if (k === "agence" && c.v === 0) return I.honoraires && I.honoraires.charge === "vendeur" ? "Payés par le vendeur." : "Vente entre particuliers : pas d'honoraires.";
+  if (k === "copro" && c.sur && c.sur !== "an") return `${eur(c.lu)} par ${c.sur} sur l'annonce${c.devine ? " (période supposée : vérifie)" : ""}.`;
+  if (k === "copro" && c.devine) return "Période non précisée : on suppose par an, vérifie.";
+  if (k === "loyer") return c.cc ? "Charges comprises sur l'annonce : retire les charges récupérables." : "Le bien est vendu loué : c'est le loyer réel actuel.";
+  if (k === "etat") return "Déduit du texte de l'annonce.";
+  return "";
+}
+function revInput(k, c) {
+  const v = c.v;
+  if (k === "typeBien") return `<select class="selbox rv-v" data-rv="${k}"><option value="appartement"${v === "appartement" ? " selected" : ""}>Appartement</option><option value="maison"${v === "maison" ? " selected" : ""}>Maison</option></select>`;
+  if (k === "dpe") return `<select class="selbox rv-v" data-rv="${k}">${"ABCDEFG".split("").map(l => `<option${l === v ? " selected" : ""}>${l}</option>`).join("")}</select>`;
+  if (k === "etat") return `<select class="selbox rv-v" data-rv="${k}">${ETATS_REV.map(([a, t]) => `<option value="${a}"${a === v ? " selected" : ""}>${t}</option>`).join("")}</select>`;
+  if (k === "ville" || k === "cp") return `<input class="txt rv-v" data-rv="${k}" value="${esc(v)}" maxlength="${k === "cp" ? 5 : 80}"${k === "cp" ? ` inputmode="numeric"` : ""}>`;
+  return `<input class="txt rv-v" data-rv="${k}" inputmode="decimal" value="${esc(fmtIn(v, k === "surface" ? 2 : 0))}">`;
+}
+function ouvrirRevue(r) {
+  REV = r;
+  const ch = REV_CH.filter(([k]) => r.champs[k]);
+  const manque = [!r.champs.prix && "le prix", !r.champs.surface && "la surface", !r.champs.loyer && "le loyer (à chercher : cinq annonces de location proches)", !r.champs.copro && "les charges de copropriété", !r.champs.tf && "la taxe foncière (demande-la au vendeur)"].filter(Boolean);
+  const vide = S.prix == null && S.surface == null && !S.annonce;
+  const ph = r.photos || [];
+  openModal(mHead("Voilà ce qu'on a trouvé") +
+    `<div class="rv-top">${ph.length ? `<div class="rv-ph">${ph.slice(0, 6).map((u, i) => `<img src="${esc(u)}" alt="" loading="${i < 3 ? "eager" : "lazy"}" referrerpolicy="no-referrer">`).join("")}${ph.length > 6 ? `<span>+${ph.length - 6}</span>` : ""}</div>` : ""}
+      <div class="rv-t"><b>${esc(r.titre || "Annonce")}</b><span>${esc([r.site, r.publieLe ? jourLabel(r.publieLe) : ""].filter(Boolean).join(" · "))}${ph.length ? " · " + plural(ph.length, "photo") : ""}</span></div></div>
+    <p class="hint" style="margin:10px 0 4px">Vérifie chaque chiffre : décoche ce qui est faux, corrige si besoin. <span class="rv-l s-site">annonce</span> : donnée du site ; <span class="rv-l s-texte">texte</span> : lu dans la description.</p>
+    <div class="rv">${ch.map(([k, lab, u]) => { const c = r.champs[k], note = revNote(k, c, r); return `<div class="rv-r"><label class="rv-c"><input type="checkbox" data-rv-on="${k}" checked><span>${esc(lab)}${note ? `<small>${esc(note)}</small>` : ""}</span></label><div class="rv-i">${revInput(k, c)}${u ? `<span class="u">${esc(u)}</span>` : ""}</div><span class="rv-l s-${c.src}">${c.src === "site" ? "annonce" : "texte"}</span></div>`; }).join("")}</div>
+    ${manque.length ? `<p class="note" style="margin-top:12px"><b>Pas dans l'annonce :</b> ${esc(manque.join(", "))}. ${r.champs.loyer ? "" : "Le loyer reste à toi : c'est le chiffre qui compte le plus."}</p>` : ""}
+    ${vide ? "" : `<div class="rv-cible" role="radiogroup" aria-label="Où mettre ces chiffres"><label><input type="radio" name="rv-cible" value="nouvelle" checked> Nouvelle simulation</label><label><input type="radio" name="rv-cible" value="actuelle"> Mettre à jour « ${esc(S.name)} »</label></div>`}
+    <div class="ctas"><button type="button" class="btn primary" data-rv-ok>Remplir le simulateur</button><button type="button" class="btn" data-rv-non>Annuler</button></div>`);
+}
+function nomAnnonce(r, c) {
+  const type = c.typeBien || r.champs.typeBien && r.champs.typeBien.v || "appartement";
+  const surf = c.surface != null ? c.surface : r.champs.surface && r.champs.surface.v;
+  return [typeCourt(type, r.infos.pieces) + (surf ? " " + nf(0).format(surf) + " m²" : ""), c.ville || (r.champs.ville && r.champs.ville.v) || ""].filter(Boolean).join(" · ").slice(0, 80);
+}
+function appliquerRevue() {
+  const r = REV; if (!r) return;
+  const c = {};
+  $$("#dialog [data-rv-on]").forEach(cb => {
+    if (!cb.checked) return; const k = cb.dataset.rvOn, inp = $(`#dialog [data-rv="${k}"]`); if (!inp) return;
+    if (["typeBien", "dpe", "etat", "ville", "cp"].includes(k)) { const v = inp.value.trim(); if (v) c[k] = v; }
+    else { const v = parseNum(inp.value); if (v !== null && v >= 0) c[k] = v; }
+  });
+  const cible = ($("#dialog input[name=rv-cible]:checked") || {}).value || "actuelle";
+  closeModal();
+  if (cible === "nouvelle") newSim();
+  if ("prix" in c) { S.prix = c.prix; S.variationPrix = 0; }
+  if ("agence" in c) { S.agenceMode = "fixe"; S.agence = c.agence; }
+  if ("surface" in c) S.surface = c.surface;
+  if ("typeBien" in c) S.typeBien = c.typeBien === "maison" ? "maison" : "appartement";
+  if ("ville" in c) S.ville = c.ville;
+  if (c.cp && /^\d{5}$/.test(c.cp)) S.adresse = (c.cp + " " + (c.ville || S.ville)).trim();
+  if ("dpe" in c) S.dpe = c.dpe;
+  if ("etat" in c) { if (c.etat === "neuf") S.notaireType = "neuf"; else { S.notaireType = "ancien"; S.etat = c.etat; } }
+  if ("copro" in c) S.copro = { mode: "an", v: c.copro };
+  if ("tf" in c) S.tf = { mode: "an", v: c.tf };
+  if ("loyer" in c) S.loyer = c.loyer;
+  if (("copro" in c || "tf" in c) && S.mode === "rapide") S.mode = "complet"; // les vraies charges ne servent qu'en simulation complète
+  S.name = nomAnnonce(r, c);
+  const champs = {};
+  for (const [k, sk] of [["prix", "prix"], ["agence", "agence"], ["surface", "surface"], ["copro", "copro.v"], ["tf", "tf.v"], ["loyer", "loyer"]]) if (k in c) champs[sk] = c[k];
+  S.annonce = annoncePropre({ url: r.url, site: r.site, titre: r.titre, desc: r.desc, photos: r.photos, publieLe: r.publieLe, modifieLe: r.modifieLe, le: new Date().toISOString(), infos: r.infos, champs });
+  REV = null; ui.section = "bien";
+  calc(); fullRender(); flush();
+  $("#form").scrollTop = 0; window.scrollTo(0, 0);
+  const n = Object.keys(c).length;
+  toast(n ? `${plural(n, "chiffre")} repris de l'annonce.${"loyer" in c ? "" : " Il reste le loyer à chercher."}` : "Annonce ajoutée.");
+}
+function ouvrirDescription() {
+  const A = S.annonce; if (!A) return;
+  openModal(mHead(A.titre || "Description") + `<div class="desc-ann">${esc(A.desc)}</div>${A.url ? `<div class="ctas"><a class="btn" href="${esc(A.url)}" target="_blank" rel="noopener noreferrer">Voir l'annonce ↗</a></div>` : ""}`);
+}
+function retirerAnnonce() { S.annonce = null; calc(); renderForm(); update(); toast("Annonce retirée : les chiffres saisis restent."); }
+function lireHash() {
+  const h = location.hash; if (!/^#annonce=/.test(h)) return;
+  let P = null; try { P = JSON.parse(decodeURIComponent(h.slice(9))); } catch (e) {}
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  if (!P) { toast("L'annonce n'a pas pu être lue : réessaie depuis sa page."); return; }
+  const r = lireAnnonce(P);
+  if (!r.champs.prix && !r.champs.surface) { toast("Je n'ai pas trouvé de prix ni de surface sur cette page : ouvre bien l'annonce elle-même."); return; }
+  ouvrirRevue(r);
+}
+addEventListener("hashchange", lireHash);
+form.addEventListener("paste", e => {
+  if (!e.target.matches("#im-zone")) return;
+  const cd = e.clipboardData; if (!cd) return;
+  const html = cd.getData("text/html"), text = cd.getData("text/plain");
+  if (!html && !text) return;
+  e.preventDefault(); e.target.value = ""; traiterCollage(html, text);
+});
+// Texte déposé ou saisi à la main dans le cadre : lu quand on quitte le cadre
+form.addEventListener("change", e => { if (e.target.matches("#im-zone") && e.target.value.trim()) { const v = e.target.value; e.target.value = ""; traiterCollage("", v); } });
+// Carrousel : compteur de photos, et photo retirée si elle ne se charge plus (annonce supprimée)
+form.addEventListener("scroll", e => { const tr = e.target; if (!tr.classList || !tr.classList.contains("fp-track")) return; const n = tr.parentElement.querySelector(".fp-n"); if (n) n.textContent = Math.round(tr.scrollLeft / Math.max(1, tr.clientWidth)) + 1 + " / " + tr.children.length; }, true);
+form.addEventListener("error", e => { const im = e.target; if (!im.matches || !im.matches(".fp-track img")) return; const tr = im.parentElement, box = tr.closest(".fiche-ph"); im.remove(); if (!tr.children.length) box.remove(); else { const n = box.querySelector(".fp-n"); if (n) n.textContent = "1 / " + tr.children.length; } }, true);
+dialog.addEventListener("error", e => { if (e.target.matches && e.target.matches(".rv-ph img, .simrow .th img")) e.target.remove(); }, true);
+dialog.addEventListener("click", e => {
+  const a = e.target.closest("[data-favori]");
+  if (a) { e.preventDefault(); a.classList.remove("secoue"); void a.offsetWidth; a.classList.add("secoue"); const m = $("#fav-msg"); if (m) { m.className = "msg"; m.textContent = "Ne clique pas ici : maintiens le bouton enfoncé et fais-le glisser jusqu'à ta barre de favoris, en haut du navigateur."; } return; }
+  if (e.target.closest("[data-rv-ok]")) appliquerRevue();
+  else if (e.target.closest("[data-rv-non]")) { REV = null; closeModal(); }
+});
 
 /* ---------- Rapport imprimable (hors aperçu intégré) ---------- */
 // Couleurs fixes : le rapport s'imprime toujours sur fond blanc, quel que soit le thème de l'écran
@@ -3070,6 +3704,7 @@ const rerender = () => { anaKey = ""; renderAna(true); renderBand(); syncThemeBt
 if (window.matchMedia) { const mq = matchMedia("(prefers-color-scheme: dark)"); if (mq.addEventListener) mq.addEventListener("change", rerender); }
 new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 fullRender();
+lireHash();
 })();
 </script>
 
