@@ -1967,7 +1967,8 @@ function lireAnnonce(P) {
   const ogT = String(og["og:title"] || P.titre || "").replace(/\s*[-|–]\s*(leboncoin|seloger|pap|bien[’']ici|logic-immo).*$/i, "").replace(/\s+avec PAP\.fr$/i, "").trim();
   titre = String(titre || ogT).replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().slice(0, 140);
   desc = String(desc || "").replace(/\r/g, "").replace(/[ \t]+/g, " ").trim();
-  const T = [titre, ogT, desc, String(P.texte || ""), SG ? chaines(SG.sections).join("\n") : ""].join("\n").replace(/[  ]/g, " ");
+  const struct = !!(L || SG || B) && desc.length > 80; // le site donne ses données : on lit sa description, pas les menus ni les alertes de la page
+  const T = [titre, ogT, desc, struct ? "" : String(P.texte || ""), SG ? chaines(SG.sections).join("\n") : ""].join("\n").replace(/[  ]/g, " ");
   const tete = [titre, ogT].join("\n").trim() || String(P.texte || "").replace(/[\u00a0\u202f]/g, " ").slice(0, 300);
   const n = new RegExp(N_RE).source;
   // Surface : d'abord le titre, puis « Surface : 45 m² » ; on écarte terrain, balcon, terrasse, jardin, cave, pièces
@@ -2041,7 +2042,7 @@ function lireAnnonce(P) {
   if (I.etage == null) { const m = T.match(/(\d{1,2})\s*(?:e|er|[èe]me|ᵉ)?\s+(?:et\s+dernier\s+)?[ée]tage\b(?!s)|[ée]tage\s*:?\s*(\d{1,2})\b/i); if (m) I.etage = +(m[1] || m[2]); else if (/rez[\s-]de[\s-]chauss[ée]e|\bRDC\b/i.test(T)) I.etage = 0; }
   if (I.ascenseur == null) { if (/sans\s+ascenseur|pas\s+d['’]ascenseur/i.test(T)) I.ascenseur = false; else if (/\bascenseur\b/i.test(T)) I.ascenseur = true; }
   if (!I.annee) { const m = T.match(/(?:construit(?:e)?\s+en|construction\s+(?:de\s+|en\s+)?|ann[ée]e\s+de\s+construction\s*:?\s*|r[ée]sidence\s+(?:r[ée]cente\s+)?(?:de|construite\s+en)\s+)\s*((?:18|19|20)\d{2})/i); if (m) I.annee = +m[1]; }
-  if (/baisse\s+de\s+prix|prix\s+en\s+baisse|nouveau\s+prix/i.test(T)) I.baisse = true;
+  if (/baisse\s+de\s+prix|prix\s+en\s+baisse|nouveau\s+prix/i.test(titre + "\n" + desc)) I.baisse = true;
   res.publieLe = res.publieLe || dateFr(T);
   if (C.cp && !/^\d{5}$/.test(String(C.cp.v))) delete C.cp;
   if (C.ville) C.ville.v = String(C.ville.v).replace(/\s+/g, " ").trim().slice(0, 80);
